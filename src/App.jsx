@@ -5,13 +5,19 @@ import { Search, Activity, Users, ArrowLeft, BarChart2 } from 'lucide-react';
 // Import des composants factorisés
 import LandingPage from './components/layout/LandingPage';
 import ExplorationPath from './components/layout/ExplorationPath';
+import LoginScreen from './components/layout/LoginScreen';
 import FilterPanel from './components/dashboard/FilterPanel';
 import RankingTable from './components/dashboard/RankingTable';
 import PlayerModal from './components/modals/PlayerModal';
 
 function App() {
+  // --- NOUVEAUX ÉTATS DE SÉCURITÉ ---
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
+
   const [view, setView] = useState('LANDING'); 
   const [players, setPlayers] = useState([]);
+
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -89,6 +95,17 @@ function App() {
     } catch (err) { console.error(err); }
   };
 
+  // --- LE BOUCLIER (Placé après tous les hooks) ---
+  if (!isAuthenticated) {
+    return (
+      <LoginScreen 
+        onLoginSuccess={(userData) => {
+          setUser(userData);
+          setIsAuthenticated(true);
+        }} 
+      />
+    );
+  }
   return (
     <div className="min-h-screen text-[rgb(var(--text-main))] font-sans relative">
       <AnimatePresence mode="wait">
