@@ -1,11 +1,18 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X, Users, Activity, Zap, TrendingUp, Database, Globe } from 'lucide-react';
+import PlayerRadar from '../../PlayerRadar';
+
+const formatNumber = (val) => {
+  if (val === null || val === undefined || val === "") return "-";
+  const num = Number(val);
+  return isNaN(num) ? val : (num % 1 === 0 ? num : num.toFixed(2));
+};
 
 const MetricTile = ({ icon, label, value }) => (
   <div className="metric-tile">
     <div className="metric-tile-icon">{icon}</div>
-    <div className="metric-tile-value">{value}</div>
+    <div className="metric-tile-value">{formatNumber(value)}</div>
     <div className="metric-tile-label">{label}</div>
   </div>
 );
@@ -53,11 +60,15 @@ const PlayerModal = ({ player, onClose }) => {
         
         <div className="metrics-grid">
           <MetricTile icon={<Users size={20} />} label="Position Category" value={position} />
-          <MetricTile icon={<Activity size={20} />} label="Season Age" value={`${player.season_age || player.age || '—'} ans`} />
-          <MetricTile icon={<Zap size={20} />} label="Impact Score" value={(player.note_ponderee || 0).toFixed(1)} />
+          <MetricTile icon={<Activity size={20} />} label="Age" value={`${player.age || '—'} ans`} />
+          <MetricTile icon={<Zap size={20} />} label="Impact Score" value={player.note_ponderee || 0} />
           <MetricTile icon={<TrendingUp size={20} />} label="Total Matches" value={player.total_matches || player.appearances || "—"} />
           <MetricTile icon={<Database size={20} />} label="Minutes Played" value={`${player.minutes_on_field || 0} min`} />
           <MetricTile icon={<Globe size={20} />} label="Nationality" value={player.passport_area_name || player.area_name || "—"} />
+        </div>
+
+        <div className="px-8 pb-8">
+           <PlayerRadar player={player} />
         </div>
 
         <div className="p-8 pt-0 mt-auto flex justify-end">

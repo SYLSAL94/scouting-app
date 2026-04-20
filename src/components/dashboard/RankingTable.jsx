@@ -1,9 +1,20 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Trophy, Medal } from 'lucide-react';
+
+const RankBadge = ({ rank }) => {
+  if (rank === 1) return <Trophy className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />;
+  if (rank === 2) return <Medal className="w-6 h-6 text-slate-300 drop-shadow-[0_0_8px_rgba(203,213,225,0.5)]" />;
+  if (rank === 3) return <Medal className="w-6 h-6 text-amber-600 drop-shadow-[0_0_8px_rgba(180,83,9,0.5)]" />;
+  return (
+    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-bold text-[rgb(var(--text-muted))]">
+      {rank}
+    </div>
+  );
+};
 
 const RankingTable = ({ 
   players, loading, error, currentPage, pageSize, totalPlayers, totalPages,
-  setCurrentPage, handlePlayerClick 
+  setCurrentPage, handlePlayerClick, selectedSortBy
 }) => {
   if (loading) {
     return (
@@ -26,47 +37,64 @@ const RankingTable = ({
   }
 
   return (
-    <div className="ranking-table-container">
+    <div className="ranking-table-container backdrop-blur-md bg-white/5 shadow-2xl border border-white/10 rounded-2xl overflow-hidden">
       <table className="ranking-table">
         <thead>
-          <tr>
-            <th className="text-center">Rank</th>
-            <th>Player</th>
-            <th>Team</th>
-            <th>Position</th>
-            <th className="text-center">Age</th>
-            <th className="text-right">Impact Score</th>
+          <tr className="bg-white/5">
+            <th className="text-center p-6 bg-transparent">Rank</th>
+            <th className="p-6">Player</th>
+            <th className="p-6">Team</th>
+            <th className="p-6">Position</th>
+            <th className="text-center p-6">Age</th>
+            <th className="text-center p-6">Mins</th>
+            <th className="text-right p-6">
+              {selectedSortBy === 'note_ponderee' ? 'Impact Score' : 
+               selectedSortBy === 'goals' ? 'Goals' :
+               selectedSortBy === 'assists' ? 'Assists' :
+               selectedSortBy === 'expected_goals' ? 'xG' :
+               selectedSortBy === 'age' ? 'Age' : 'Value'}
+            </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-white/5">
           {players.map((player, index) => {
             const globalIndex = (currentPage - 1) * pageSize + index;
+            const rank = globalIndex + 1;
+            
+            // Valeur dynamique basée sur la métrique avec formateur robuste
+            const rawValue = player[selectedSortBy];
+            let formattedValue = "-";
+            if (rawValue !== undefined && rawValue !== null && rawValue !== "") {
+                const num = Number(rawValue);
+                // Force l'arrondi à 2 décimales si c'est un flottant, sinon garde l'entier ou le texte
+                formattedValue = isNaN(num) ? rawValue : (num % 1 === 0 ? num : num.toFixed(2));
+            }
+
             return (
               <tr 
                 key={player.unique_id || globalIndex} 
-                onClick={() => handlePlayerClick(player.unique_id || player.id)} 
+                onClick={() => handlePlayerClick(player)} 
                 style={{ cursor: 'pointer' }}
-                className="hover:bg-white/5 transition-colors"
+                className="hover:bg-white/5 transition-all duration-200 group"
               >
-                <td className="text-center">
-                  <div className="flex justify-center">
-                    <div className={`rank-badge ${globalIndex < 3 ? `rank-${globalIndex + 1}` : ''}`}>
-                      {globalIndex + 1}
-                    </div>
+                <td className="text-center p-4">
+                  <div className="flex justify-center items-center">
+                    <RankBadge rank={rank} />
                   </div>
                 </td>
                 <td>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full overflow-hidden bg-white/5 border border-white/10">
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-white/5 border border-white/10 group-hover:border-sky-500/50 transition-colors">
                       {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> : null}
                     </div>
-                    <span className="font-bold">{player.full_name || player.name}</span>
+                    <span className="font-bold group-hover:text-sky-400 transition-colors">{player.name || player.full_name || 'Nom inconnu'}</span>
                   </div>
                 </td>
-                <td className="text-[rgb(var(--text-muted))]">{player.last_club_name || player.team_name}</td>
-                <td><span className="px-2 py-0.5 rounded bg-white/5 text-xs border border-white/5">{player.position_category || '—'}</span></td>
-                <td className="text-center">{player.season_age || player.age}</td>
-                <td className="text-right font-mono font-black text-sky-400">{(player.note_ponderee || 0).toFixed(1)}</td>
+                <td className="text-[rgb(var(--text-muted))]">{player.last_club_name || 'Équipe inconnue'}</td>
+                <td><span className="px-2 py-0.5 rounded bg-white/5 text-xs border border-white/5">{player.position_category || 'Non renseigné'}</span></td>
+                <td className="text-center">{player.age || '—'}</td>
+                <td className="text-center text-[rgb(var(--text-muted))] text-xs font-mono">{player.minutes_on_field || 0}'</td>
+                <td className="text-right font-mono font-black text-sky-400 text-lg">{formattedValue}</td>
               </tr>
             );
           })}

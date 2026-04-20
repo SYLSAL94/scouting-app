@@ -66,6 +66,7 @@ const LoginScreen = ({ onLoginSuccess }) => {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-sky-500 transition-colors"
               required 
+              autoComplete="current-password"
             />
           </div>
           <button 

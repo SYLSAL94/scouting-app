@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 .env
 .env.local
+api_scouting.py
+
+Exemple"node_modules/" 
