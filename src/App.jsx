@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Activity, Users, ArrowLeft, BarChart2 } from 'lucide-react';
+import { Search, Activity, Users, ArrowLeft, BarChart2, X } from 'lucide-react';
 
 // Import des composants factorisés
 import LandingPage from './components/layout/LandingPage';
@@ -10,15 +10,18 @@ import FilterPanel from './components/dashboard/FilterPanel';
 import RankingTable from './components/dashboard/RankingTable';
 import ScatterContent from './components/dashboard/ScatterContent';
 import PlayerModal from './components/modals/PlayerModal';
-
+import { HeadToHeadContent } from './components/dashboard/HeadToHeadContent';
+import { PlayerSearchTile } from './components/dashboard/PlayerSearchTile';
+import { VersusDashboard } from './components/dashboard/VersusDashboard';
 function App() {
   // --- NOUVEAUX ÉTATS DE SÉCURITÉ ---
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
   const [view, setView] = useState('LANDING'); 
-  const [dashboardView, setDashboardView] = useState('TABLE'); // 'TABLE' or 'SCATTER'
+  const [dashboardView, setDashboardView] = useState('TABLE'); // 'TABLE', 'SCATTER' or 'VERSUS'
   const [players, setPlayers] = useState([]);
+  const [selectedPlayersToCompare, setSelectedPlayersToCompare] = useState([]);
 
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -224,6 +227,13 @@ function App() {
                     >
                         Scatter Plot
                     </button>
+                    <button 
+                        onClick={() => setDashboardView('VERSUS')}
+                        disabled={selectedPlayersToCompare.length !== 2}
+                        className={`px-6 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'VERSUS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : (selectedPlayersToCompare.length === 2 ? 'text-sky-400 hover:text-sky-300 border border-sky-500/30' : 'text-white/20 cursor-not-allowed')}`}
+                    >
+                        Comparer ({selectedPlayersToCompare.length}/2)
+                    </button>
                 </div>
 
                 <div className="relative w-full md:w-[400px]">
@@ -261,7 +271,11 @@ function App() {
                         totalPages={Math.ceil(totalPlayers / pageSize)}
                         setCurrentPage={setCurrentPage} handlePlayerClick={handlePlayerClick}
                         selectedSortBy={pendingFilters.sortBy}
+                        selectedPlayersToCompare={selectedPlayersToCompare}
+                        setSelectedPlayersToCompare={setSelectedPlayersToCompare}
                     />
+                ) : dashboardView === 'VERSUS' ? (
+                    <HeadToHeadContent selectedPlayersToCompare={selectedPlayersToCompare} />
                 ) : (
                     <ScatterContent 
                         players={players} 
@@ -306,20 +320,12 @@ function App() {
              </div>
           </div>
         ) : view === 'MATCHUP' ? (
-          <div className="p-8 max-w-[1200px] mx-auto min-h-screen">
-             <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
-                <ArrowLeft size={14} /> Intelligence Hub
-             </button>
-             <h1 className="text-5xl font-black mb-12 uppercase tracking-tighter">Match-up <span className="text-highlight">Simulator</span></h1>
-             <div className="grid grid-cols-2 gap-8 h-96">
-                <div className="glass-panel border-dashed flex flex-col items-center justify-center">
-                   <Users className="text-white/20 mb-4" size={48} /><p className="text-[rgb(var(--text-muted))]">Player 1 Selection</p>
-                </div>
-                <div className="glass-panel border-dashed flex flex-col items-center justify-center">
-                   <Users className="text-white/20 mb-4" size={48} /><p className="text-[rgb(var(--text-muted))]">Player 2 Selection</p>
-                </div>
-             </div>
-          </div>
+          <VersusDashboard 
+              metricsList={metricsList}
+              selectedPlayersToCompare={selectedPlayersToCompare}
+              setSelectedPlayersToCompare={setSelectedPlayersToCompare}
+              onClose={() => setView('EXPLORATION')}
+          />
         ) : null}
       </AnimatePresence>
 

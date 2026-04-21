@@ -14,8 +14,24 @@ const RankBadge = ({ rank }) => {
 
 const RankingTable = ({ 
   players, loading, error, currentPage, pageSize, totalPlayers, totalPages,
-  setCurrentPage, handlePlayerClick, selectedSortBy
+  setCurrentPage, handlePlayerClick, selectedSortBy,
+  selectedPlayersToCompare = [], setSelectedPlayersToCompare
 }) => {
+  const handleToggleCompare = (e, player) => {
+    e.stopPropagation();
+    setSelectedPlayersToCompare(prev => {
+      const isSelected = prev.find(p => (p.id || p.unique_id) === (player.id || player.unique_id));
+      if (isSelected) {
+        return prev.filter(p => (p.id || p.unique_id) !== (player.id || player.unique_id));
+      } else {
+        if (prev.length >= 2) {
+          // Replace the oldest
+          return [prev[1], player];
+        }
+        return [...prev, player];
+      }
+    });
+  };
   if (loading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center">
@@ -41,6 +57,7 @@ const RankingTable = ({
       <table className="ranking-table">
         <thead>
           <tr className="bg-white/5">
+            <th className="text-center p-6 bg-transparent w-16">Vs</th>
             <th className="text-center p-6 bg-transparent">Rank</th>
             <th className="p-6">Player</th>
             <th className="p-6">Team</th>
@@ -75,8 +92,19 @@ const RankingTable = ({
                 key={player.unique_id || globalIndex} 
                 onClick={() => handlePlayerClick(player)} 
                 style={{ cursor: 'pointer' }}
-                className="hover:bg-white/5 transition-all duration-200 group"
+                className={`transition-all duration-200 group ${selectedPlayersToCompare.some(p => (p.id || p.unique_id) === (player.id || player.unique_id)) ? 'bg-sky-500/10' : 'hover:bg-white/5'}`}
               >
+                <td className="text-center p-4">
+                  <div className="flex justify-center items-center">
+                    <input 
+                      type="checkbox"
+                      className="w-5 h-5 rounded border-white/20 bg-white/5 text-sky-500 focus:ring-sky-500 focus:ring-offset-slate-900 cursor-pointer accent-sky-500"
+                      checked={selectedPlayersToCompare.some(p => (p.id || p.unique_id) === (player.id || player.unique_id))}
+                      onChange={(e) => handleToggleCompare(e, player)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </td>
                 <td className="text-center p-4">
                   <div className="flex justify-center items-center">
                     <RankBadge rank={rank} />
