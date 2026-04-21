@@ -20,10 +20,9 @@ const AccordionSection = ({ id, title, children, icon, isOpen, onToggle }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
-            initial={{ height: 0, opacity: 0 }} 
-            animate={{ height: 'auto', opacity: 1 }} 
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
+            initial={{ height: 0, opacity: 0, overflow: "hidden" }} 
+            animate={{ height: 'auto', opacity: 1, transitionEnd: { overflow: "visible" } }} 
+            exit={{ height: 0, opacity: 0, overflow: "hidden" }}
           >
             <div className="pb-6 pt-2 h-full">
               {children}

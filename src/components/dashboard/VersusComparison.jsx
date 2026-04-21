@@ -156,6 +156,9 @@ const ComparisonTable = ({ players, metrics, availableMetrics }) => {
                             >
                                 <div className="flex flex-col items-center gap-1">
                                     <span className="truncate w-full">{p.full_name || p.name}</span>
+                                    <span className="text-[10px] text-slate-500 dark:text-slate-400 font-normal">
+                                        {p.competition || 'N/A'} - {p.season || 'N/A'}
+                                    </span>
                                     {sortConfig.key === (p.id || p.unique_id) && <span className="text-xs text-sky-500">{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>}
                                 </div>
                             </th>
@@ -223,6 +226,13 @@ export const VersusComparison = ({
     onResetMetrics,
     availableMetrics
 }) => {
+    const activeMetrics = useMemo(() => {
+        if (metricDisplayMode === 'standard') {
+            return selectedMetrics.map(m => m.replace(/_norm$|_pct$/, ''));
+        }
+        return selectedMetrics;
+    }, [selectedMetrics, metricDisplayMode]);
+
     return (
         <div className="flex-shrink-0 pt-8 mt-8 border-t border-slate-200 dark:border-white/10">
             <div className="flex flex-col xl:flex-row gap-8 items-start">
@@ -259,14 +269,14 @@ export const VersusComparison = ({
                             </div>
                             <p className="font-medium text-lg">Sélectionnez au moins 2 joueurs pour comparer.</p>
                         </div>
-                    ) : selectedMetrics.length > 0 ? (
+                    ) : activeMetrics.length > 0 ? (
                         <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-6 border border-slate-100 dark:border-white/5 shadow-xl">
                             {selectedPlayers.length === 2 ? (
                                 <div className="max-h-[75vh] overflow-y-auto styled-scrollbar pr-2">
-                                    <FaceToFaceComparison player1={selectedPlayers[0]} player2={selectedPlayers[1]} metrics={selectedMetrics} availableMetrics={availableMetrics} />
+                                    <FaceToFaceComparison player1={selectedPlayers[0]} player2={selectedPlayers[1]} metrics={activeMetrics} availableMetrics={availableMetrics} />
                                 </div>
                             ) : (
-                                <ComparisonTable players={selectedPlayers} metrics={selectedMetrics} availableMetrics={availableMetrics} />
+                                <ComparisonTable players={selectedPlayers} metrics={activeMetrics} availableMetrics={availableMetrics} />
                             )}
                         </div>
                     ) : (

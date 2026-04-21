@@ -52,7 +52,9 @@ const FilterPanel = ({
            placeholder="Search metric (ex: duel)..."
            className="react-select-container"
            classNamePrefix="react-select"
+           menuPortalTarget={document.body}
            styles={{
+             menuPortal: (base) => ({ ...base, zIndex: 9999 }),
              control: (base) => ({
                ...base,
                background: 'rgba(14, 165, 233, 0.05)',

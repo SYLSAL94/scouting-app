@@ -13,6 +13,7 @@ import PlayerModal from './components/modals/PlayerModal';
 import { HeadToHeadContent } from './components/dashboard/HeadToHeadContent';
 import { PlayerSearchTile } from './components/dashboard/PlayerSearchTile';
 import { VersusDashboard } from './components/dashboard/VersusDashboard';
+import { RadarDashboard } from './components/dashboard/RadarDashboard';
 function App() {
   // --- NOUVEAUX ÉTATS DE SÉCURITÉ ---
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -80,7 +81,7 @@ function App() {
     setLoading(true);
     
     // Détermination de la limite dynamique (Mass-Fetching Asymétrique)
-    const currentLimit = dashboardView === 'SCATTER' ? 1000 : pageSize;
+    const currentLimit = dashboardView === 'SCATTER' ? 200 : pageSize;
     
     let url = `https://api-scouting.theanalyst.cloud/api/players?limit=${currentLimit}&page=${currentPage}`;
 
@@ -263,7 +264,15 @@ function App() {
                 handleApplyFilters={handleApplyFilters}
                 hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
               />
-              <main className="ranking-content-panel flex-1">
+              <main className="ranking-content-panel flex-1 flex flex-col gap-4">
+                {dashboardView === 'SCATTER' && totalPlayers > 200 && (
+                  <div className="bg-amber-500/10 border border-amber-500/30 backdrop-blur-md text-amber-500 rounded-2xl p-4 flex items-center gap-3 shadow-lg mb-2">
+                    <Activity className="shrink-0" size={24} />
+                    <p className="text-sm font-medium">
+                      ⚠️ Volume de données important : L'affichage est limité aux 200 premiers joueurs (<span className="font-bold">{totalPlayers - 200} joueurs masqués</span>) pour garantir la lisibilité du graphique. Utilisez les filtres latéraux pour affiner votre analyse.
+                    </p>
+                  </div>
+                )}
                 {dashboardView === 'TABLE' ? (
                     <RankingTable 
                         players={players} loading={loading} error={error} 
@@ -287,16 +296,40 @@ function App() {
             </div>
           </motion.div>
         ) : view === 'RADAR' ? (
-          <div className="p-8 max-w-[1200px] mx-auto min-h-screen">
+          <div className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
                 <ArrowLeft size={14} /> Intelligence Hub
              </button>
-             <h1 className="text-5xl font-black mb-12 uppercase tracking-tighter">Radar <span className="text-highlight">Profiling</span></h1>
-             <div className="glass-panel p-20 text-center">
-                <Activity className="text-sky-400 mx-auto mb-6" size={64} />
-                <h3 className="text-2xl font-bold mb-4">Radar Visualization Engine</h3>
-                <p className="text-[rgb(var(--text-muted))] mb-8 max-w-md mx-auto">Select a player to generate a tactical profile.</p>
-                <button onClick={() => setView('DASHBOARD')} className="btn btn-primary">Go to Rankings</button>
+             <div className="flex justify-between items-end mb-8">
+                 <h1 className="text-5xl font-black uppercase tracking-tighter">Radar <span className="text-highlight">Profiling</span></h1>
+             </div>
+             
+             <div className="flex gap-10">
+                <div className="w-[350px] shrink-0">
+                  <FilterPanel 
+                    openSection={openSection} 
+                    setOpenSection={setOpenSection}
+                    pendingFilters={pendingFilters}
+                    setPendingFilters={setPendingFilters}
+                    competitionsList={competitionsList}
+                    positionsList={positionsList}
+                    teamsList={teamsList}
+                    seasonsList={seasonsList}
+                    metricsList={metricsList}
+                    handleResetFilters={handleResetFilters} 
+                    handleApplyFilters={handleApplyFilters}
+                    hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
+                  />
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <RadarDashboard 
+                    players={players} 
+                    metricsList={metricsList}
+                    activeFilters={activeFilters}
+                    initialSelectedPlayer={selectedPlayer || (selectedPlayersToCompare.length > 0 ? selectedPlayersToCompare[0] : null)}
+                  />
+                </div>
              </div>
           </div>
         ) : view === 'SCATTER' ? (
@@ -322,6 +355,7 @@ function App() {
         ) : view === 'MATCHUP' ? (
           <VersusDashboard 
               metricsList={metricsList}
+              activeFilters={activeFilters}
               selectedPlayersToCompare={selectedPlayersToCompare}
               setSelectedPlayersToCompare={setSelectedPlayersToCompare}
               onClose={() => setView('EXPLORATION')}

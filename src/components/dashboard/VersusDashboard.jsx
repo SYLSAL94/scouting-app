@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Users } from 'lucide-react';
+import React from 'react';
+import { ArrowLeft } from 'lucide-react';
 import { VersusPlayerGrid } from './VersusPlayerGrid';
 import { VersusComparison } from './VersusComparison';
+import { useMetricSelection } from '../../hooks/useMetricSelection';
 
 const MAX_PLAYERS = 5;
 
@@ -9,19 +10,23 @@ export const VersusDashboard = ({
     metricsList, 
     selectedPlayersToCompare = [], 
     setSelectedPlayersToCompare,     
-    onClose 
+    onClose,
+    activeFilters = {}
 }) => {
-    const [selectedMetrics, setSelectedMetrics] = useState([]);
-    const [selectedTemplateLabels, setSelectedTemplateLabels] = useState(new Set());
-    const [metricDisplayMode, setMetricDisplayMode] = useState('percentile'); 
-    const [customTemplates, setCustomTemplates] = useState([]);
-
-    useEffect(() => {
-        const saved = localStorage.getItem('wyscout_custom_templates');
-        if (saved) {
-            try { setCustomTemplates(JSON.parse(saved)); } catch (e) {}
-        }
-    }, []);
+    const {
+        selectedMetrics,
+        selectedTemplateLabels,
+        setSelectedTemplateLabels,
+        metricDisplayMode,
+        setMetricDisplayMode,
+        customTemplates,
+        handleMetricToggle,
+        handleTemplateToggle,
+        handleResetMetrics,
+        saveCustomTemplate,
+        deleteCustomTemplate,
+        applyCustomTemplate
+    } = useMetricSelection();
 
     const handleAddPlayer = (p) => {
         if (!p) return;
@@ -37,52 +42,6 @@ export const VersusDashboard = ({
     const handleRemovePlayer = (id) => {
         if (!id) return;
         setSelectedPlayersToCompare(prev => prev.filter(p => (p.id || p.unique_id) !== id));
-    };
-
-    const handleMetricToggle = (metricId) => {
-        setSelectedMetrics(prev => {
-            if (prev.includes(metricId)) return prev.filter(m => m !== metricId);
-            return [...prev, metricId];
-        });
-        
-        // Reset tactical labels if manual selection is used
-        setSelectedTemplateLabels(new Set());
-    };
-
-    const handleTemplateToggle = (templateKey, metrics) => {
-        const nextLabels = new Set();
-        if (selectedTemplateLabels.has(templateKey)) {
-            // Uncheck: clear selection
-            setSelectedMetrics([]);
-        } else {
-            // Overwrite selection with tactical sub-variables
-            nextLabels.add(templateKey);
-            setSelectedMetrics(metrics);
-        }
-        setSelectedTemplateLabels(nextLabels);
-    };
-
-    const handleResetMetrics = () => {
-        setSelectedMetrics([]);
-        setSelectedTemplateLabels(new Set());
-    };
-
-    const saveCustomTemplate = (name) => {
-        const newTemplate = { id: Date.now().toString(), name, metrics: selectedMetrics };
-        const next = [...customTemplates, newTemplate];
-        setCustomTemplates(next);
-        localStorage.setItem('wyscout_custom_templates', JSON.stringify(next));
-    };
-
-    const deleteCustomTemplate = (id) => {
-        const next = customTemplates.filter(t => t.id !== id);
-        setCustomTemplates(next);
-        localStorage.setItem('wyscout_custom_templates', JSON.stringify(next));
-    };
-
-    const applyCustomTemplate = (template) => {
-        setSelectedMetrics(template.metrics || []);
-        setSelectedTemplateLabels(new Set());
     };
 
     return (
@@ -107,6 +66,7 @@ export const VersusDashboard = ({
                 onAddPlayer={handleAddPlayer}
                 onRemovePlayer={handleRemovePlayer}
                 MAX_PLAYERS={MAX_PLAYERS}
+                activeFilters={activeFilters}
             />
 
             <VersusComparison 

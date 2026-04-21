@@ -34,7 +34,7 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [] }) => {
       
       // Inject each player's value
       selectedPlayersToCompare.forEach(p => {
-        const name = p.full_name || p.name || 'Inconnu';
+        const name = `${p.full_name || p.name || 'Inconnu'} (${p.competition || 'N/A'} - ${p.season || 'N/A'})`;
         dataPoint[name] = Number(p[key]) || 0;
       });
       return dataPoint;
@@ -92,7 +92,7 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [] }) => {
               />
               <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} iconType="circle" />
               {selectedPlayersToCompare.map((p, i) => {
-                const name = p.full_name || p.name || 'Inconnu';
+                const name = `${p.full_name || p.name || 'Inconnu'} (${p.competition || 'N/A'} - ${p.season || 'N/A'})`;
                 return (
                   <Radar
                     key={p.id || i}
@@ -138,7 +138,7 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [] }) => {
               />
               <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} iconType="circle" />
               {selectedPlayersToCompare.map((p, i) => {
-                const name = p.full_name || p.name || 'Inconnu';
+                const name = `${p.full_name || p.name || 'Inconnu'} (${p.competition || 'N/A'} - ${p.season || 'N/A'})`;
                 return (
                   <Bar 
                     key={p.id || i}

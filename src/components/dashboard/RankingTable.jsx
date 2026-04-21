@@ -60,6 +60,8 @@ const RankingTable = ({
             <th className="text-center p-6 bg-transparent w-16">Vs</th>
             <th className="text-center p-6 bg-transparent">Rank</th>
             <th className="p-6">Player</th>
+            <th className="text-center p-6">Saison</th>
+            <th className="p-6">Compétition</th>
             <th className="p-6">Team</th>
             <th className="p-6">Position</th>
             <th className="text-center p-6">Age</th>
@@ -118,6 +120,8 @@ const RankingTable = ({
                     <span className="font-bold group-hover:text-sky-400 transition-colors">{player.name || player.full_name || 'Nom inconnu'}</span>
                   </div>
                 </td>
+                <td className="text-center text-[rgb(var(--text-muted))]">{player.season || '—'}</td>
+                <td className="text-[rgb(var(--text-muted))]">{player.competition || '—'}</td>
                 <td className="text-[rgb(var(--text-muted))]">{player.last_club_name || 'Équipe inconnue'}</td>
                 <td><span className="px-2 py-0.5 rounded bg-white/5 text-xs border border-white/5">{player.position_category || 'Non renseigné'}</span></td>
                 <td className="text-center">{player.age || '—'}</td>

@@ -4,7 +4,7 @@ import { Search, X as IconX, PlusCircle, Trophy } from 'lucide-react';
 const displayNameOf = (p) =>
     String(p?.name || p?.full_name || p?.Joueur || p?.player_name || 'Inconnu');
 
-const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds }) => {
+const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds, activeFilters = {} }) => {
     const [query, setQuery] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -23,7 +23,26 @@ const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds }) => {
         }
         const delayDebounceFn = setTimeout(() => {
             setIsSearching(true);
-            fetch(`https://api-scouting.theanalyst.cloud/api/players?search=${encodeURIComponent(query)}&limit=15`)
+            
+            let url = `https://api-scouting.theanalyst.cloud/api/players?search=${encodeURIComponent(query)}&limit=15`;
+            
+            if (activeFilters.competitions?.length > 0) {
+                url += `&competitions=${encodeURIComponent(activeFilters.competitions.join(','))}`;
+            }
+            if (activeFilters.positions?.length > 0) {
+                url += `&positions=${encodeURIComponent(activeFilters.positions.join(','))}`;
+            }
+            if (activeFilters.teams?.length > 0) {
+                url += `&teams=${encodeURIComponent(activeFilters.teams.join(','))}`;
+            }
+            if (activeFilters.seasons?.length > 0) {
+                url += `&seasons=${encodeURIComponent(activeFilters.seasons.join(','))}`;
+            }
+            if (activeFilters.minAge) url += `&min_age=${activeFilters.minAge}`;
+            if (activeFilters.maxAge) url += `&max_age=${activeFilters.maxAge}`;
+            if (activeFilters.playtime?.min > 0) url += `&min_playtime=${activeFilters.playtime.min}`;
+
+            fetch(url)
                 .then(res => res.json())
                 .then(data => {
                     const filtered = (data.items || []).filter(p => !excludePlayerIds.includes(p.id));
@@ -37,7 +56,7 @@ const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds }) => {
         }, 400);
 
         return () => clearTimeout(delayDebounceFn);
-    }, [query, excludePlayerIds]);
+    }, [query, excludePlayerIds, activeFilters]);
 
     const handleSelect = (player) => {
         onPlayerSelect(player);
@@ -104,7 +123,7 @@ const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds }) => {
                                 >
                                     <div className="flex flex-col min-w-0">
                                         <span className={`text-sm font-semibold truncate ${Math.max(0, highlightedIndex) === index ? 'text-sky-700 dark:text-sky-300' : 'text-slate-700 dark:text-slate-200'}`}>
-                                            {displayNameOf(opt)}
+                                            {displayNameOf(opt)} ({opt.competition || 'N/A'} - {opt.season || 'N/A'})
                                         </span>
                                         <span className="text-xs text-slate-500 dark:text-slate-500 truncate">
                                             {opt.last_club_name} • {opt.position_category}
@@ -197,8 +216,9 @@ const PlayerCard = ({ player, onClear, rank, score, points }) => {
                     <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight mb-1">
                         {dn}
                     </h3>
-                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2">
-                        {player.last_club_name}
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 flex flex-col items-center justify-center gap-0.5">
+                        <span>{player.last_club_name}</span>
+                        <span className="text-xs font-semibold text-sky-500">{player.competition || 'N/A'} - {player.season || 'N/A'}</span>
                     </p>
                 </div>
 
@@ -221,7 +241,8 @@ export const VersusPlayerGrid = ({
     selectedPlayers,
     onAddPlayer,
     onRemovePlayer,
-    MAX_PLAYERS
+    MAX_PLAYERS,
+    activeFilters = {}
 }) => {
     const showAddButton = selectedPlayers.length < MAX_PLAYERS;
 
@@ -255,6 +276,7 @@ export const VersusPlayerGrid = ({
                             onPlayerSelect={onAddPlayer}
                             placeholder={`Ajouter (${selectedPlayers.length}/${MAX_PLAYERS})`}
                             excludePlayerIds={selectedPlayers.map(p => p.id || p.unique_id)}
+                            activeFilters={activeFilters}
                         />
                     </div>
                 )}

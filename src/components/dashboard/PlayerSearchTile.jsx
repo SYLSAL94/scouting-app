@@ -1,22 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { Search, X, Users } from 'lucide-react';
 
-export const PlayerSearchTile = ({ onSelectPlayer, label = "Player Selection" }) => {
+export const PlayerSearchTile = ({ onSelectPlayer, label = "Player Selection", activeFilters = {} }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
     if (searchTerm.trim().length < 3) {
       setResults([]);
+      setTotalCount(0);
       return;
     }
     const delayDebounceFn = setTimeout(() => {
       setIsSearching(true);
-      fetch(`https://api-scouting.theanalyst.cloud/api/players?search=${encodeURIComponent(searchTerm)}&limit=10`)
+      
+      // Construire l'URL avec les filtres actifs
+      let url = `https://api-scouting.theanalyst.cloud/api/players?search=${encodeURIComponent(searchTerm)}&limit=10`;
+      
+      if (activeFilters.competitions?.length > 0) {
+        url += `&competitions=${encodeURIComponent(activeFilters.competitions.join(','))}`;
+      }
+      if (activeFilters.positions?.length > 0) {
+        url += `&positions=${encodeURIComponent(activeFilters.positions.join(','))}`;
+      }
+      if (activeFilters.teams?.length > 0) {
+        url += `&teams=${encodeURIComponent(activeFilters.teams.join(','))}`;
+      }
+      if (activeFilters.seasons?.length > 0) {
+        url += `&seasons=${encodeURIComponent(activeFilters.seasons.join(','))}`;
+      }
+      if (activeFilters.minAge) url += `&min_age=${activeFilters.minAge}`;
+      if (activeFilters.maxAge) url += `&max_age=${activeFilters.maxAge}`;
+      if (activeFilters.playtime?.min > 0) url += `&min_playtime=${activeFilters.playtime.min}`;
+      if (activeFilters.sortBy) url += `&sort_by=${activeFilters.sortBy}`;
+
+      fetch(url)
         .then(res => res.json())
         .then(data => {
           setResults(data.items || []);
+          setTotalCount(data.total || 0);
           setIsSearching(false);
         })
         .catch(err => {
@@ -26,7 +50,7 @@ export const PlayerSearchTile = ({ onSelectPlayer, label = "Player Selection" })
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, activeFilters]);
 
   return (
     <div className="glass-panel border-dashed border-white/20 p-6 flex flex-col relative h-[25rem] group transition-all duration-300 hover:border-sky-500/40">
@@ -35,7 +59,11 @@ export const PlayerSearchTile = ({ onSelectPlayer, label = "Player Selection" })
       <div className="flex flex-col items-center mb-6">
          <Users className="text-white/30 mb-3 group-hover:text-sky-400/80 transition-colors" size={36} />
          <h3 className="text-[rgb(var(--text-muted))] uppercase tracking-widest text-sm font-black">{label}</h3>
-         <p className="text-xs text-white/40 mt-1">Recherche live dans la base PostgreSQL...</p>
+         <p className="text-xs text-white/40 mt-1">
+            {searchTerm.length >= 3 && !isSearching 
+              ? `${totalCount} joueur(s) correspondant(s) trouvé(s)` 
+              : "Recherche live dans la base PostgreSQL..."}
+         </p>
       </div>
 
       <div className="relative w-full z-10 flex-1 flex flex-col min-h-0">
@@ -49,7 +77,7 @@ export const PlayerSearchTile = ({ onSelectPlayer, label = "Player Selection" })
                   onChange={(e) => setSearchTerm(e.target.value)}
               />
               {searchTerm && (
-                  <button onClick={() => setSearchTerm('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white bg-white/5 rounded-full p-1">
+                  <button onClick={() => { setSearchTerm(''); setTotalCount(0); }} className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white bg-white/5 rounded-full p-1">
                       <X size={16} />
                   </button>
               )}
@@ -72,13 +100,16 @@ export const PlayerSearchTile = ({ onSelectPlayer, label = "Player Selection" })
                                   onSelectPlayer(p);
                                   setSearchTerm('');
                                   setResults([]);
+                                  setTotalCount(0);
                               }}
                           >
                               <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-800 flex-shrink-0 border border-white/10">
                                   {p.image ? <img src={p.image} alt={p.name} className="w-full h-full object-cover" /> : null}
                               </div>
                               <div className="flex flex-col">
-                                  <span className="font-bold text-sm text-slate-100">{p.full_name || p.name}</span>
+                                  <span className="font-bold text-sm text-slate-100">
+                                      {p.full_name || p.name} ({p.competition || 'N/A'} - {p.season || 'N/A'})
+                                  </span>
                                   <span className="text-xs text-sky-300 font-medium opacity-80">{p.last_club_name} • {p.position_category} • {p.age} ans</span>
                               </div>
                           </div>
