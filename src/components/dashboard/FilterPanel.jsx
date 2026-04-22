@@ -1,14 +1,93 @@
-import React from 'react';
-import { Users, Globe, BarChart2, Calendar, Activity, Zap } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, Globe, BarChart2, Calendar, Activity, Zap, Save, ChevronDown, Check } from 'lucide-react';
 import AccordionSection from './AccordionSection';
 import MultiSelectWithChips from '../ui/MultiSelectWithChips';
 import DualRangeSlider from '../ui/DualRangeSlider';
 
+const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved }) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const [profileName, setProfileName] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleSave = async () => {
+    if (!profileName.trim()) return;
+    setIsSaving(true);
+    try {
+      const response = await fetch('https://api-scouting.theanalyst.cloud/api/profiles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile_name: profileName,
+          filter_config: pendingFilters
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        onProfileSaved({ id: data.id, profile_name: profileName, filter_config: pendingFilters });
+        setProfileName('');
+        setIsSaving(false);
+        setShowConfirm(true);
+        setTimeout(() => setShowConfirm(false), 2000);
+      }
+    } catch (err) {
+      console.error("Save profile error:", err);
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="mb-8 p-4 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-md">
+      <div className="flex items-center justify-between mb-4">
+        <label className="text-[10px] font-black uppercase tracking-widest text-sky-400">Analyse Presets</label>
+        {showConfirm && <span className="text-[10px] text-emerald-400 font-bold flex items-center gap-1"><Check size={10} /> Saved</span>}
+      </div>
+      
+      <div className="space-y-3">
+        {/* Dropdown de chargement */}
+        <div className="relative group">
+          <select 
+            className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white appearance-none outline-none focus:border-sky-500/50 transition-all cursor-pointer"
+            onChange={(e) => {
+              const profile = profiles.find(p => p.id === parseInt(e.target.value));
+              if (profile) loadProfile(profile.filter_config);
+            }}
+            defaultValue=""
+          >
+            <option value="" disabled>Load analysis profile...</option>
+            {profiles.map(p => (
+              <option key={p.id} value={p.id}>{p.profile_name}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none group-hover:text-sky-400 transition-colors" size={14} />
+        </div>
+
+        {/* Zone de sauvegarde */}
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            placeholder="Name this analysis..." 
+            className="flex-1 bg-white/5 border border-white/5 rounded-xl px-3 py-2 text-[11px] text-white outline-none focus:bg-white/10 transition-all"
+            value={profileName}
+            onChange={(e) => setProfileName(e.target.value)}
+          />
+          <button 
+            onClick={handleSave}
+            disabled={!profileName.trim() || isSaving}
+            className="p-2 bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl hover:bg-sky-500 hover:text-white transition-all disabled:opacity-30"
+          >
+            <Save size={16} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const FilterPanel = ({ 
   openSection, setOpenSection, 
   pendingFilters, setPendingFilters,
   competitionsList, positionsList, teamsList, seasonsList, metricsList,
+  profiles, loadProfile, onProfileSaved,
   handleResetFilters, handleApplyFilters, hasChanges
 }) => {
 
@@ -18,17 +97,25 @@ const FilterPanel = ({
 
   return (
     <aside className="sidebar-filters w-80 shrink-0 h-fit sticky top-8">
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="text-xl font-bold flex items-center gap-2">Filters</h3>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
+           Filters
+        </h3>
         <button 
           onClick={handleResetFilters} 
-          className="text-[10px] uppercase tracking-widest text-sky-400 hover:text-white transition-colors"
+          className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-sky-400 transition-colors"
         >
           Reset all
         </button>
       </div>
 
-
+      {/* SÉLECTEUR DE PROFILS */}
+      <ProfileSelector 
+        profiles={profiles} 
+        loadProfile={loadProfile} 
+        pendingFilters={pendingFilters}
+        onProfileSaved={onProfileSaved}
+      />
 
       {/* SECTION 1: PÉRIODE */}
       <AccordionSection 

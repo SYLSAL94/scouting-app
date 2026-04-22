@@ -38,6 +38,7 @@ function App() {
   const [teamsList, setTeamsList] = useState([]);
   const [seasonsList, setSeasonsList] = useState([]);
   const [metricsList, setMetricsList] = useState([]);
+  const [profiles, setProfiles] = useState([]); // Liste des presets sauvegardés
   
   const defaultFilters = {
     search: '',
@@ -73,6 +74,11 @@ function App() {
       .then(res => res.json()).then(data => setSeasonsList(data));
     fetch('https://api-scouting.theanalyst.cloud/api/meta/metrics')
       .then(res => res.json()).then(data => setMetricsList(data));
+    
+    // Fetch des profils d'analyse (Presets)
+    fetch('https://api-scouting.theanalyst.cloud/api/profiles')
+      .then(res => res.json()).then(data => setProfiles(data))
+      .catch(err => console.error("Error fetching profiles:", err));
   }, []);
 
   const fetchPlayers = useCallback(() => {
@@ -122,6 +128,13 @@ function App() {
     setPendingFilters(defaultFilters);
     setActiveFilters(defaultFilters);
     setCurrentPage(1);
+  };
+
+  // Hydratation intelligente sans fetch réseau (Bouclier Anti-Spam)
+  const loadProfile = (config) => {
+    setPendingFilters(config);
+    // Note: on ne touche PAS à activeFilters ici. 
+    // L'utilisateur doit cliquer sur "Apply Analysis" pour valider.
   };
 
   const handlePlayerClick = (playerData) => {
@@ -236,6 +249,9 @@ function App() {
                   teamsList={teamsList}
                   seasonsList={seasonsList}
                   metricsList={metricsList}
+                  profiles={profiles}
+                  loadProfile={loadProfile}
+                  onProfileSaved={(newProfile) => setProfiles(prev => [newProfile, ...prev])}
                   handleResetFilters={handleResetFilters} 
                   handleApplyFilters={handleApplyFilters}
                   hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
