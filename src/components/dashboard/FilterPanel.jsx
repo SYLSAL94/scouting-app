@@ -48,13 +48,13 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
           <select 
             className="w-full bg-slate-900/50 border border-white/5 rounded-xl px-4 py-2.5 text-xs text-white appearance-none outline-none focus:border-sky-500/50 transition-all cursor-pointer"
             onChange={(e) => {
-              const profile = profiles.find(p => p.id === parseInt(e.target.value));
+              const profile = (profiles || []).find(p => p.id === parseInt(e.target.value));
               if (profile) loadProfile(profile.filter_config);
             }}
             defaultValue=""
           >
             <option value="" disabled>Load analysis profile...</option>
-            {profiles.map(p => (
+            {(profiles || []).map(p => (
               <option key={p.id} value={p.id}>{p.profile_name}</option>
             ))}
           </select>
