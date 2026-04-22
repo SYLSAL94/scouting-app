@@ -210,6 +210,8 @@ const ComparisonTable = ({ players, metrics, availableMetrics }) => {
     );
 };
 
+import { HeadToHeadContent } from './HeadToHeadContent';
+
 export const VersusComparison = ({
     selectedPlayers,
     selectedMetrics,
@@ -272,9 +274,10 @@ export const VersusComparison = ({
                     ) : activeMetrics.length > 0 ? (
                         <div className="bg-white dark:bg-slate-900/50 rounded-3xl p-6 border border-slate-100 dark:border-white/5 shadow-xl">
                             {selectedPlayers.length === 2 ? (
-                                <div className="max-h-[75vh] overflow-y-auto styled-scrollbar pr-2">
-                                    <FaceToFaceComparison player1={selectedPlayers[0]} player2={selectedPlayers[1]} metrics={activeMetrics} availableMetrics={availableMetrics} />
-                                </div>
+                                <HeadToHeadContent 
+                                    selectedPlayersToCompare={selectedPlayers} 
+                                    selectedMetrics={activeMetrics} 
+                                />
                             ) : (
                                 <ComparisonTable players={selectedPlayers} metrics={activeMetrics} availableMetrics={availableMetrics} />
                             )}

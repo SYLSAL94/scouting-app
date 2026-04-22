@@ -25,7 +25,10 @@ export default function PlayerSlot({ slot, player, onClick }) {
         return { borderColor: color, '--rating-color': color };
     }, []);
 
-    const rating = player?.displayRating ?? player?.note_ponderee;
+    // Extraction robuste de la note (priorité au displayRating, puis pondérée, puis globale)
+    const rawRating = player?.displayRating ?? player?.note_ponderee ?? player?.note_globale;
+    const rating = (rawRating !== undefined && rawRating !== null) ? Number(rawRating) : null;
+    
     const ratingStyle = getRatingStyle(rating);
     const [imgError, setImgError] = useState(false);
 
@@ -74,9 +77,15 @@ export default function PlayerSlot({ slot, player, onClick }) {
                                 )}
                             </div>
 
-                            {typeof rating === 'number' && (
-                                <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center border-2 bg-slate-900/80 backdrop-blur-sm" style={ratingStyle}>
-                                    <span className="text-white font-bold text-xs">{rating.toFixed(1)}</span>
+                            {rating !== null && (
+                                <div 
+                                    className="absolute -bottom-3 -right-3 w-10 h-10 rounded-full flex items-center justify-center border-2 bg-slate-900 shadow-[0_0_15px_rgba(0,0,0,0.5)] z-20" 
+                                    style={{ 
+                                        borderColor: ratingStyle.borderColor, 
+                                        boxShadow: `0 0 15px ${ratingStyle['--rating-color']}44` 
+                                    }}
+                                >
+                                    <span className="text-white font-black text-[13px] tracking-tighter">{rating.toFixed(1)}</span>
                                 </div>
                             )}
                         </div>

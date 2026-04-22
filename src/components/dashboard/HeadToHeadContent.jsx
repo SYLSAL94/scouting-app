@@ -7,39 +7,38 @@ import { Activity } from 'lucide-react';
 
 const COLORS = ['#0ea5e9', '#f59e0b', '#10b981', '#f43f5e', '#8b5cf6'];
 
-export const HeadToHeadContent = ({ selectedPlayersToCompare = [] }) => {
-  // 1. Identify comparative metrics natively provided by the API (no local math)
-  // We prioritize columns like Indice_, _pct, _norm
+export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetrics = [] }) => {
+  // 1. Identify comparative metrics (from props or auto-discovery)
   const chartData = useMemo(() => {
     if (selectedPlayersToCompare.length === 0) return [];
 
-    const firstPlayer = selectedPlayersToCompare[0];
-    
-    // Auto-discover top 8 relevant pre-calculated metrics from the first player
-    const metricKeys = Object.keys(firstPlayer).filter(key => 
-      key.toLowerCase().startsWith('indice_') || 
-      key.toLowerCase().endsWith('_pct') ||
-      key.toLowerCase().endsWith('_norm')
-    ).slice(0, 8); // Cap to 8 metrics so the radar remains legible
+    const metricKeys = selectedMetrics.length > 0 
+      ? selectedMetrics 
+      : Object.keys(selectedPlayersToCompare[0]).filter(key => 
+          key.toLowerCase().startsWith('indice_') || 
+          key.toLowerCase().endsWith('_pct') ||
+          key.toLowerCase().endsWith('_norm')
+        ).slice(0, 8);
 
     return metricKeys.map(key => {
-      // Clean label for display: "indice_frappe" -> "FRAPPE"
+      // Clean label for display: "offensive_volume_avg_norm" -> "OFFENSIVE VOLUME"
       const cleanMetric = key
-        .replace(/indice_|_pct|_norm/gi, '')
+        .replace(/_avg_norm|_norm|_pct|indice_/gi, '')
         .replace(/_/g, ' ')
         .toUpperCase()
         .trim();
 
       const dataPoint = { metric: cleanMetric };
       
-      // Inject each player's value
+      // Inject each player's value multiplied by 100
       selectedPlayersToCompare.forEach(p => {
-        const name = `${p.full_name || p.name || 'Inconnu'} (${p.competition || 'N/A'} - ${p.season || 'N/A'})`;
-        dataPoint[name] = Number(p[key]) || 0;
+        const name = `${p.full_name || p.name || 'Inconnu'}`;
+        // On multiplie par 100 pour l'échelle 0-100 stricte demandée
+        dataPoint[name] = (Number(p[key]) || 0) * 100;
       });
       return dataPoint;
     });
-  }, [selectedPlayersToCompare]);
+  }, [selectedPlayersToCompare, selectedMetrics]);
 
   // Handle Empty State gracefully
   if (selectedPlayersToCompare.length < 2) {
@@ -80,7 +79,7 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [] }) => {
                 dataKey="metric" 
                 tick={{ fill: '#64748b', fontSize: 10, fontWeight: 'bold' }} 
               />
-              <PolarRadiusAxis angle={30} domain={[0, 'auto']} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 10 }} />
               <Tooltip 
                 contentStyle={{ 
                   backgroundColor: 'rgba(15, 23, 42, 0.95)', 
@@ -92,7 +91,7 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [] }) => {
               />
               <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} iconType="circle" />
               {selectedPlayersToCompare.map((p, i) => {
-                const name = `${p.full_name || p.name || 'Inconnu'} (${p.competition || 'N/A'} - ${p.season || 'N/A'})`;
+                const name = `${p.full_name || p.name || 'Inconnu'}`;
                 return (
                   <Radar
                     key={p.id || i}
@@ -118,7 +117,7 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [] }) => {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 30, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700/50" />
-              <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
+              <XAxis type="number" domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
               <YAxis 
                 dataKey="metric" 
                 type="category" 
@@ -138,7 +137,7 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [] }) => {
               />
               <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} iconType="circle" />
               {selectedPlayersToCompare.map((p, i) => {
-                const name = `${p.full_name || p.name || 'Inconnu'} (${p.competition || 'N/A'} - ${p.season || 'N/A'})`;
+                const name = `${p.full_name || p.name || 'Inconnu'}`;
                 return (
                   <Bar 
                     key={p.id || i}

@@ -34,12 +34,19 @@ const RankingTable = ({
   const handleToggleCompare = (e, player) => {
     e.stopPropagation();
     setSelectedPlayersToCompare(prev => {
-      const isSelected = prev.find(p => (p.id || p.unique_id) === (player.id || player.unique_id));
+      const isSelected = prev.find(p => 
+        p.id === player.id && 
+        p.competition === player.competition && 
+        p.season === player.season
+      );
       if (isSelected) {
-        return prev.filter(p => (p.id || p.unique_id) !== (player.id || player.unique_id));
+        return prev.filter(p => !(
+          p.id === player.id && 
+          p.competition === player.competition && 
+          p.season === player.season
+        ));
       } else {
         if (prev.length >= 2) {
-          // Replace the oldest
           return [prev[1], player];
         }
         return [...prev, player];
@@ -158,6 +165,9 @@ const RankingTable = ({
             const globalIndex = (currentPage - 1) * pageSize + index;
             const rank = globalIndex + 1;
             
+            // Clé composite unique pour identifier la ligne (Joueur + Contexte)
+            const rowKey = `${player.id}-${player.competition}-${player.season}`;
+            
             // Valeur dynamique basée sur la métrique avec formateur robuste
             const rawValue = player[selectedSortBy];
             let formattedValue = "-";
@@ -167,19 +177,25 @@ const RankingTable = ({
                 formattedValue = isNaN(num) ? rawValue : (num % 1 === 0 ? num : num.toFixed(2));
             }
 
+            const isSelectedForCompare = selectedPlayersToCompare.some(p => 
+                p.id === player.id && 
+                p.competition === player.competition && 
+                p.season === player.season
+            );
+
             return (
               <tr 
-                key={player.unique_id || globalIndex} 
+                key={rowKey} 
                 onClick={() => handlePlayerClick(player)} 
                 style={{ cursor: 'pointer' }}
-                className={`transition-all duration-200 group ${selectedPlayersToCompare.some(p => (p.id || p.unique_id) === (player.id || player.unique_id)) ? 'bg-sky-500/10' : 'hover:bg-white/5'}`}
+                className={`transition-all duration-200 group ${isSelectedForCompare ? 'bg-sky-500/10' : 'hover:bg-white/5'}`}
               >
                 <td className="text-center p-4">
                   <div className="flex justify-center items-center">
                     <input 
                       type="checkbox"
                       className="w-5 h-5 rounded border-white/20 bg-white/5 text-sky-500 focus:ring-sky-500 focus:ring-offset-slate-900 cursor-pointer accent-sky-500"
-                      checked={selectedPlayersToCompare.some(p => (p.id || p.unique_id) === (player.id || player.unique_id))}
+                      checked={isSelectedForCompare}
                       onChange={(e) => handleToggleCompare(e, player)}
                       onClick={(e) => e.stopPropagation()}
                     />

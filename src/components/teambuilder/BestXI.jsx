@@ -11,9 +11,8 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
     const [bestXI, setBestXI] = useState([]);
     const [benchPlayers, setBenchPlayers] = useState([]);
 
-    useEffect(() => {
+    const generateXI = () => {
         setLoading(true);
-        
         fetch('https://api-scouting.theanalyst.cloud/api/teambuilder/auto-generate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -33,7 +32,13 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
             console.error("Error generating Best XI:", err);
             setLoading(false);
         });
-    }, [formationKey, useWeightedNote, activeFilters]);
+    };
+
+    // On ne lance plus rien au montage. Le useEffect ne sert plus qu'à réinitialiser si les filtres changent trop radicalement (optionnel)
+    useEffect(() => {
+        // Optionnel: on peut vider le XI précédent si on veut forcer une nouvelle génération
+        // setBestXI([]);
+    }, [activeFilters]);
 
     const formationLayout = useMemo(() => formations[formationKey] || [], [formationKey]);
 
@@ -51,6 +56,17 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
                     <div className="absolute inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
                         <Loader2 className="w-12 h-12 text-sky-500 animate-spin" />
                         <p className="text-sm font-black uppercase tracking-[0.2em] text-sky-400">Tactical Optimization...</p>
+                    </div>
+                )}
+                {!loading && bestXI.length === 0 && (
+                    <div className="absolute inset-0 z-40 bg-slate-950/40 backdrop-blur-[2px] flex flex-col items-center justify-center p-12 text-center">
+                        <div className="w-20 h-20 bg-sky-500/10 border border-sky-500/20 rounded-full flex items-center justify-center mb-6 shadow-2xl">
+                             <Loader2 className="w-10 h-10 text-sky-500 opacity-20" />
+                        </div>
+                        <h4 className="text-2xl font-black text-white uppercase tracking-tight mb-3">Prêt pour l'Optimisation</h4>
+                        <p className="max-w-xs text-slate-400 text-sm font-medium">
+                            Configurez votre formation et cliquez sur le bouton à droite pour générer le meilleur XI basé sur vos données.
+                        </p>
                     </div>
                 )}
                 <Field
@@ -95,6 +111,14 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
                                 ))}
                             </select>
                         </div>
+
+                        <button
+                            onClick={generateXI}
+                            disabled={loading}
+                            className="w-full py-6 bg-sky-500 hover:bg-sky-400 disabled:bg-slate-800 disabled:opacity-50 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-2xl shadow-sky-500/20 transition-all active:scale-95 flex items-center justify-center gap-3"
+                        >
+                            {loading ? <Loader2 className="animate-spin" /> : "Lancer l'Optimisation"}
+                        </button>
                     </div>
                 </div>
 

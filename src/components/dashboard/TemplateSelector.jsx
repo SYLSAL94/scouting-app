@@ -1,6 +1,4 @@
-import React, { useMemo, useState } from 'react';
-import { Check, LayoutTemplate, Plus, Trash2, Save } from 'lucide-react';
-import { SearchableMultiSelect } from './SearchableMultiSelect';
+import React from 'react';
 
 const TEMPLATE_MAPPING = {
   "Volume Offensif": ["xg_shot_avg_norm", "offensive_duels_avg_norm", "shots_avg_norm", "head_shots_avg_norm", "penalties_taken_norm"],
@@ -28,39 +26,12 @@ const TEMPLATE_MAPPING = {
   "xG Subit Différentiel (Gardien)": ["prevented_goals_avg_norm", "xg_save_avg_norm", "clean_sheets_norm", "save_with_reflex_percent_norm", "easy_conceded_goal_avg_norm"]
 };
 
-/**
- * Modèles Tactiques basés sur le dictionnaire Data Science.
- * Remplace la détection automatique des indices par les sous-variables.
- */
 export const TemplateSelector = ({
     onTemplateToggle,
     selectedTemplateLabels,
     cat,
-    // Custom Templates props
-    customTemplates = [],
-    saveCustomTemplate,
-    deleteCustomTemplate,
-    applyCustomTemplate
 }) => {
-    const [newTemplateName, setNewTemplateName] = useState('');
-
-    const templateOptions = useMemo(() => {
-        return Object.keys(TEMPLATE_MAPPING).map(key => ({
-            value: key,
-            label: `${key} (${TEMPLATE_MAPPING[key].length} vars)`
-        }));
-    }, []);
-
-    const handleSave = () => {
-        if (newTemplateName.trim()) {
-            saveCustomTemplate && saveCustomTemplate(newTemplateName.trim());
-            setNewTemplateName('');
-        }
-    };
-
-    const selectedTemplateArray = Array.from(selectedTemplateLabels);
-
-    const handleTemplateSelectToggle = (templateKey) => {
+    const handleTemplateClick = (templateKey) => {
         onTemplateToggle(templateKey, TEMPLATE_MAPPING[templateKey]);
     };
 
@@ -70,70 +41,27 @@ export const TemplateSelector = ({
 
     return (
         <div className="space-y-4">
-            {/* Tactical Models */}
-            <div>
-                <SearchableMultiSelect
-                    label="Modèles Tactiques (DS)"
-                    placeholder="Sélectionner des modèles..."
-                    options={templateOptions}
-                    selectedValues={selectedTemplateArray}
-                    onToggle={handleTemplateSelectToggle}
-                />
-            </div>
-
-            {/* Custom Templates */}
-            {saveCustomTemplate && (
-                <div className="pt-4 border-t border-slate-200 dark:border-white/5">
-                    <label className="flex items-center justify-between text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                        <span className="flex items-center gap-2">
-                            <Save size={14} />
-                            Templates Perso
-                        </span>
-                    </label>
-
-                    {customTemplates.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-3">
-                            {customTemplates.map(template => (
-                                <div
-                                    key={template.id}
-                                    className="group flex items-center gap-2 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:shadow-md transition-all cursor-pointer"
-                                    onClick={() => applyCustomTemplate(template)}
-                                >
-                                    <span>{template.name}</span>
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            deleteCustomTemplate(template.id);
-                                        }}
-                                        className="p-1 rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-500/30 text-emerald-500 dark:text-emerald-400/80 hover:text-red-500 transition-colors"
-                                        title="Supprimer"
-                                    >
-                                        <Trash2 size={12} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    <div className="flex gap-2">
-                        <input
-                            type="text"
-                            value={newTemplateName}
-                            onChange={(e) => setNewTemplateName(e.target.value)}
-                            placeholder="Nom..."
-                            className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
-                            onKeyDown={(e) => e.key === 'Enter' && handleSave()}
-                        />
+            <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block">
+                Modèles Tactiques (DS)
+            </label>
+            <div className="flex flex-wrap gap-2">
+                {Object.keys(TEMPLATE_MAPPING).map(key => {
+                    const isActive = selectedTemplateLabels.has(key);
+                    return (
                         <button
-                            onClick={handleSave}
-                            disabled={!newTemplateName.trim()}
-                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-white bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                            key={key}
+                            onClick={() => handleTemplateClick(key)}
+                            className={`px-3 py-2 text-[10px] font-black uppercase tracking-tighter rounded-xl border transition-all duration-300 ${
+                                isActive 
+                                ? 'bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-500/20 scale-105' 
+                                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-sky-500/50 hover:bg-sky-500/5'
+                            }`}
                         >
-                            <Plus size={14} />
+                            {key}
                         </button>
-                    </div>
-                </div>
-            )}
+                    );
+                })}
+            </div>
         </div>
     );
 };

@@ -9,20 +9,21 @@ import LoginScreen from './components/layout/LoginScreen';
 import FilterPanel from './components/dashboard/FilterPanel';
 import RankingTable from './components/dashboard/RankingTable';
 import ScatterContent from './components/dashboard/ScatterContent';
-import PlayerModal from './components/modals/PlayerModal';
+import PlayerDashboard from './components/playerCard/PlayerDashboard';
 import { HeadToHeadContent } from './components/dashboard/HeadToHeadContent';
 import { PlayerSearchTile } from './components/dashboard/PlayerSearchTile';
 import { VersusDashboard } from './components/dashboard/VersusDashboard';
 import { RadarDashboard } from './components/dashboard/RadarDashboard';
 import TeamBuilderDashboard from './components/dashboard/TeamBuilderDashboard';
 import LabDashboard from './components/dashboard/LabDashboard';
+
 function App() {
-  // --- NOUVEAUX ÉTATS DE SÉCURITÉ ---
+  // --- ÉTATS DE SÉCURITÉ ---
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
   const [view, setView] = useState('LANDING'); 
-  const [dashboardView, setDashboardView] = useState('TABLE'); // 'TABLE', 'SCATTER' or 'VERSUS'
+  const [dashboardView, setDashboardView] = useState('TABLE'); 
   const [players, setPlayers] = useState([]);
   const [selectedPlayersToCompare, setSelectedPlayersToCompare] = useState([]);
 
@@ -37,7 +38,6 @@ function App() {
   const [seasonsList, setSeasonsList] = useState([]);
   const [metricsList, setMetricsList] = useState([]);
   
-  // États des Filtres Actifs
   const defaultFilters = {
     search: '',
     competitions: [],
@@ -57,15 +57,10 @@ function App() {
 
   const [activeFilters, setActiveFilters] = useState(defaultFilters);
   const [pendingFilters, setPendingFilters] = useState(defaultFilters);
-
-  // État de l'accordéon local
   const [openSection, setOpenSection] = useState('ligues');
-
-  // Pagination Server-side
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 20;
 
-  // 1. Chargement des métadonnées
   useEffect(() => {
     fetch('https://api-scouting.theanalyst.cloud/api/meta/competitions')
       .then(res => res.json()).then(data => setCompetitionsList(data));
@@ -81,41 +76,20 @@ function App() {
 
   const fetchPlayers = useCallback(() => {
     setLoading(true);
-    
-    // Détermination de la limite dynamique (Mass-Fetching Asymétrique)
     const currentLimit = dashboardView === 'SCATTER' ? 200 : pageSize;
-    
     let url = `https://api-scouting.theanalyst.cloud/api/players?limit=${currentLimit}&page=${currentPage}`;
 
     if (activeFilters.search) url += `&search=${encodeURIComponent(activeFilters.search)}`;
-    
-    if (activeFilters.competitions.length > 0) {
-      url += `&competitions=${encodeURIComponent(activeFilters.competitions.join(','))}`;
-    }
-    
-    if (activeFilters.positions.length > 0) {
-      url += `&positions=${encodeURIComponent(activeFilters.positions.join(','))}`;
-    }
-
-    if (activeFilters.teams.length > 0) {
-      url += `&teams=${encodeURIComponent(activeFilters.teams.join(','))}`;
-    }
-
-    if (activeFilters.seasons.length > 0) {
-      url += `&seasons=${encodeURIComponent(activeFilters.seasons.join(','))}`;
-    }
+    if (activeFilters.competitions.length > 0) url += `&competitions=${encodeURIComponent(activeFilters.competitions.join(','))}`;
+    if (activeFilters.positions.length > 0) url += `&positions=${encodeURIComponent(activeFilters.positions.join(','))}`;
+    if (activeFilters.teams.length > 0) url += `&teams=${encodeURIComponent(activeFilters.teams.join(','))}`;
+    if (activeFilters.seasons.length > 0) url += `&seasons=${encodeURIComponent(activeFilters.seasons.join(','))}`;
 
     url += `&min_age=${activeFilters.minAge}&max_age=${activeFilters.maxAge}`;
     url += `&min_height=${activeFilters.height.min}&max_height=${activeFilters.height.max}`;
     url += `&min_weight=${activeFilters.weight.min}&max_weight=${activeFilters.weight.max}`;
-    
-    if (activeFilters.playtime.min > 0) {
-      url += `&min_playtime=${activeFilters.playtime.min}`;
-    }
-    
+    if (activeFilters.playtime.min > 0) url += `&min_playtime=${activeFilters.playtime.min}`;
     url += `&sort_by=${activeFilters.sortBy}`;
-
-    console.log("🌐 Appel de l'API vers :", url);
 
     fetch(url)
       .then(res => {
@@ -123,10 +97,6 @@ function App() {
         return res.json();
       })
       .then(data => {
-        console.log("🚨 RÉPONSE API BRUTE :", data);
-        if (!data.items || data.items.length === 0) {
-          console.warn("⚠️ Attention : Le tableau 'items' est vide ou non reconnu dans la réponse.");
-        }
         setPlayers(data.items || []);
         setTotalPlayers(data.total || 0);
         setLoading(false);
@@ -152,33 +122,10 @@ function App() {
     setCurrentPage(1);
   };
 
-  const handlePlayerClick = async (playerData) => {
-    // Gestion robuste : est-ce un objet joueur ou juste un ID ?
-    const player = typeof playerData === 'object' ? playerData : { id: playerData };
-    const playerId = player.id || player.unique_id;
-
-    console.log("🎯 Clic joueur :", { id: playerId, player });
-
-    // 1. Ouverture immédiate (UX)
-    setSelectedPlayer(player);
-    
-    if (!playerId) {
-      console.warn("⚠️ Impossible de trouver un ID pour ce joueur.");
-      return;
-    }
-
-    // 2. Enrichissement API
-    try {
-      const response = await fetch(`https://api-scouting.theanalyst.cloud/api/players/${playerId}`);
-      if (!response.ok) throw new Error(`Erreur API : ${response.status}`);
-      const data = await response.json();
-      setSelectedPlayer(Array.isArray(data) ? data[0] : data);
-    } catch (err) { 
-      console.error("❌ Échec de l'enrichissement :", err);
-    }
+  const handlePlayerClick = (playerData) => {
+    setSelectedPlayer(playerData);
   };
 
-  // --- LE BOUCLIER (Placé après tous les hooks) ---
   if (!isAuthenticated) {
     return (
       <LoginScreen 
@@ -189,6 +136,7 @@ function App() {
       />
     );
   }
+
   return (
     <div className="min-h-screen text-[rgb(var(--text-main))] font-sans relative">
       <AnimatePresence mode="wait">
@@ -220,7 +168,6 @@ function App() {
                 </h1>
               </div>
               <div className="flex items-center gap-6">
-                {/* View Selector Toggle */}
                 <div className="flex gap-1 bg-white/5 p-1 rounded-xl border border-white/5 h-fit">
                     <button 
                         onClick={() => setDashboardView('TABLE')}
@@ -271,14 +218,6 @@ function App() {
                 hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
               />
               <main className="ranking-content-panel flex-1 flex flex-col gap-4">
-                {dashboardView === 'SCATTER' && totalPlayers > 200 && (
-                  <div className="bg-amber-500/10 border border-amber-500/30 backdrop-blur-md text-amber-500 rounded-2xl p-4 flex items-center gap-3 shadow-lg mb-2">
-                    <Activity className="shrink-0" size={24} />
-                    <p className="text-sm font-medium">
-                      ⚠️ Volume de données important : L'affichage est limité aux 200 premiers joueurs (<span className="font-bold">{totalPlayers - 200} joueurs masqués</span>) pour garantir la lisibilité du graphique. Utilisez les filtres latéraux pour affiner votre analyse.
-                    </p>
-                  </div>
-                )}
                 {dashboardView === 'TABLE' ? (
                     <RankingTable 
                         players={players} loading={loading} error={error} 
@@ -342,26 +281,6 @@ function App() {
                 </div>
              </div>
           </div>
-        ) : view === 'SCATTER' ? (
-          <div className="p-8 max-w-[1400px] mx-auto min-h-screen">
-             <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
-                <ArrowLeft size={14} /> Intelligence Hub
-             </button>
-             <h1 className="text-5xl font-black mb-12 uppercase tracking-tighter">Scatter <span className="text-highlight">Analysis</span></h1>
-             <div className="flex gap-8 h-[600px]">
-                <aside className="w-72 glass-panel p-6">
-                   <h3 className="text-sm font-bold uppercase tracking-widest mb-6">Chart Controls</h3>
-                   <div className="filter-group"><label className="filter-label">X-Axis</label><select className="filter-select"><option>Age</option></select></div>
-                   <div className="filter-group"><label className="filter-label">Y-Axis</label><select className="filter-select"><option>Impact</option></select></div>
-                   <button onClick={() => setView('DASHBOARD')} className="btn btn-primary w-full mt-auto">Sync with Rankings</button>
-                </aside>
-                <div className="flex-1 glass-panel flex flex-col items-center justify-center border-dashed">
-                   <BarChart2 className="text-sky-400/20 mb-8" size={120} />
-                   <h2 className="text-3xl font-black mb-2">Visualizing Correlation</h2>
-                   <p className="text-[rgb(var(--text-muted))] max-w-sm text-center">Engine initialized. Correlate metrics to find outliers.</p>
-                </div>
-             </div>
-          </div>
         ) : view === 'MATCHUP' ? (
           <VersusDashboard 
               metricsList={metricsList}
@@ -373,7 +292,7 @@ function App() {
         ) : view === 'TEAMBUILDER' ? (
           <div className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
-                <ArrowLeft size={14} /> Intelligence Hub
+                <ArrowLeft size={14} /> Back
              </button>
              <div className="flex justify-between items-end mb-8">
                  <h1 className="text-5xl font-black uppercase tracking-tighter">Tactical <span className="text-highlight">Team Builder</span></h1>
@@ -406,7 +325,7 @@ function App() {
         ) : view === 'LAB' ? (
           <div className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
-                <ArrowLeft size={14} /> Intelligence Hub
+                <ArrowLeft size={14} /> Back
              </button>
              <div className="flex justify-between items-end mb-8">
                  <h1 className="text-5xl font-black uppercase tracking-tighter">Joueur : <span className="text-highlight">Laboratoire</span></h1>
@@ -445,7 +364,14 @@ function App() {
       </footer>
 
       <AnimatePresence>
-        {selectedPlayer && <PlayerModal player={selectedPlayer} onClose={() => setSelectedPlayer(null)} />}
+        {selectedPlayer && (
+            <PlayerDashboard 
+                playerId={selectedPlayer.id} 
+                rowContext={selectedPlayer}
+                onClose={() => setSelectedPlayer(null)} 
+                activeFilters={activeFilters}
+            />
+        )}
       </AnimatePresence>
     </div>
   );
