@@ -99,7 +99,7 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
             <PathCard 
               icon={<Shield />} title="Squad Mapping" 
               desc="Analyze your team composition against target league averages." 
-              onClick={() => {}} 
+              onClick={() => onSelectPath('TEAMBUILDER')} 
             />
           </motion.div>
         )}
