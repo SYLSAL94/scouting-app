@@ -144,7 +144,8 @@ const RankingTable = ({
             <th className="text-center p-6 border-b border-white/10">Age</th>
             <th className="text-center p-6 border-b border-white/10">Mins</th>
             <th className="text-right p-6 border-b border-white/10">
-              {selectedSortBy === 'note_ponderee' ? 'Impact Score' : 
+              {selectedSortBy === 'custom_score' ? 'Score Lab' :
+               selectedSortBy === 'note_ponderee' ? 'Impact Score' : 
                selectedSortBy === 'goals' ? 'Goals' :
                selectedSortBy === 'assists' ? 'Assists' :
                selectedSortBy === 'expected_goals' ? 'xG' :

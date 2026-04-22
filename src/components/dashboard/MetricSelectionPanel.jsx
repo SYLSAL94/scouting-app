@@ -26,7 +26,8 @@ export const MetricSelectionPanel = ({
     deleteCustomTemplate,
     applyCustomTemplate,
     onResetMetrics,
-    selectedPlayersToCompare = [] // AJOUTÉ POUR AUTO-DISCOVERY
+    selectedPlayersToCompare = [],
+    hideModeSelector = false
 }) => {
     const { theme } = useTheme();
 
@@ -68,18 +69,20 @@ export const MetricSelectionPanel = ({
                     saveCustomTemplate={saveCustomTemplate}
                     deleteCustomTemplate={deleteCustomTemplate}
                     applyCustomTemplate={applyCustomTemplate}
-                    selectedPlayersToCompare={selectedPlayersToCompare} // PASSÉ AU TEMPLATE SELECTOR
+                    selectedPlayersToCompare={selectedPlayersToCompare} 
                 />
 
-                <div className="space-y-2">
-                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                        Type de données
-                    </label>
-                    <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-white/5">
-                        {renderModeButton('percentile', 'Percentiles', Percent)}
-                        {renderModeButton('standard', 'Valeurs Brutes', Hash)}
+                {!hideModeSelector && (
+                    <div className="space-y-2">
+                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            Type de données
+                        </label>
+                        <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-white/5">
+                            {renderModeButton('percentile', 'Percentiles', Percent)}
+                            {renderModeButton('standard', 'Valeurs Brutes', Hash)}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <SearchableMultiSelect
                     label={`Sélection Manuelle (min: ${MIN_METRICS})`}

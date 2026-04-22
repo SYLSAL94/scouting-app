@@ -15,6 +15,7 @@ import { PlayerSearchTile } from './components/dashboard/PlayerSearchTile';
 import { VersusDashboard } from './components/dashboard/VersusDashboard';
 import { RadarDashboard } from './components/dashboard/RadarDashboard';
 import TeamBuilderDashboard from './components/dashboard/TeamBuilderDashboard';
+import LabDashboard from './components/dashboard/LabDashboard';
 function App() {
   // --- NOUVEAUX ÉTATS DE SÉCURITÉ ---
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -199,6 +200,7 @@ function App() {
                if (p === 'SCATTER') { setView('DASHBOARD'); setDashboardView('SCATTER'); }
                else if (p === 'DASHBOARD') { setView('DASHBOARD'); setDashboardView('TABLE'); }
                else if (p === 'TEAMBUILDER') { setView('TEAMBUILDER'); }
+               else if (p === 'LAB') { setView('LAB'); }
                else setView(p);
             }} 
             onBack={() => setView('LANDING')} 
@@ -397,6 +399,40 @@ function App() {
                 
                 <TeamBuilderDashboard 
                   activeFilters={activeFilters} 
+                  onPlayerClick={handlePlayerClick}
+                />
+             </div>
+          </div>
+        ) : view === 'LAB' ? (
+          <div className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
+             <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
+                <ArrowLeft size={14} /> Intelligence Hub
+             </button>
+             <div className="flex justify-between items-end mb-8">
+                 <h1 className="text-5xl font-black uppercase tracking-tighter">Joueur : <span className="text-highlight">Laboratoire</span></h1>
+             </div>
+             
+             <div className="flex gap-10 flex-1 min-h-0">
+                <div className="w-[300px] shrink-0">
+                  <FilterPanel 
+                    openSection={openSection} 
+                    setOpenSection={setOpenSection}
+                    pendingFilters={pendingFilters}
+                    setPendingFilters={setPendingFilters}
+                    competitionsList={competitionsList}
+                    positionsList={positionsList}
+                    teamsList={teamsList}
+                    seasonsList={seasonsList}
+                    metricsList={metricsList}
+                    handleResetFilters={handleResetFilters} 
+                    handleApplyFilters={handleApplyFilters}
+                    hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
+                  />
+                </div>
+                
+                <LabDashboard 
+                  activeFilters={activeFilters} 
+                  metricsList={metricsList}
                   onPlayerClick={handlePlayerClick}
                 />
              </div>

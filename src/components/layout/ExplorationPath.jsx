@@ -110,9 +110,9 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
             className="path-grid"
           >
             <PathCard 
-              icon={<Zap />} title="Similarity Search" 
-              desc="Find 'Clone' profiles in other leagues using AI-driven affinity scoring." 
-              onClick={() => {}} 
+              icon={<Zap />} title="Lab : Expérimentation" 
+              desc="Créez vos propres scores pondérés pour dénicher des pépites hors-radar." 
+              onClick={() => onSelectPath('LAB')} 
             />
           </motion.div>
         )}
