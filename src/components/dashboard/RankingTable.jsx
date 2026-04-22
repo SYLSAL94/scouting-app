@@ -1,5 +1,18 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Trophy, Medal } from 'lucide-react';
+import Select from 'react-select';
+import { WindowedMenuList } from 'react-windowed-select';
+
+// Helper pour trouver l'option actuelle
+const findSelectedOption = (value, options = []) => {
+  if (!options) return null;
+  for (const group of options) {
+    if (!group.options) continue;
+    const found = group.options.find(opt => opt.value === value);
+    if (found) return found;
+  }
+  return null;
+};
 
 const RankBadge = ({ rank }) => {
   if (rank === 1) return <Trophy className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />;
@@ -15,7 +28,8 @@ const RankBadge = ({ rank }) => {
 const RankingTable = ({ 
   players, loading, error, currentPage, pageSize, totalPlayers, totalPages,
   setCurrentPage, handlePlayerClick, selectedSortBy,
-  selectedPlayersToCompare = [], setSelectedPlayersToCompare
+  selectedPlayersToCompare = [], setSelectedPlayersToCompare,
+  metricsList, onSortChange
 }) => {
   const handleToggleCompare = (e, player) => {
     e.stopPropagation();
@@ -53,20 +67,83 @@ const RankingTable = ({
   }
 
   return (
-    <div className="ranking-table-container backdrop-blur-md bg-white/5 shadow-2xl border border-white/10 rounded-2xl overflow-hidden">
+    <div className="flex flex-col gap-4 flex-1 min-h-0">
+      <div className="flex justify-end items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-md shrink-0">
+        <span className="text-[10px] uppercase tracking-widest font-black text-sky-400/80">Trier par :</span>
+        <div className="w-[300px]">
+          <Select 
+            components={{ MenuList: WindowedMenuList }}
+            options={metricsList} 
+            value={findSelectedOption(selectedSortBy, metricsList)}
+            onChange={(selectedOption) => onSortChange(selectedOption.value)}
+            isSearchable={true}
+            placeholder="Rechercher une métrique..."
+            className="react-select-container"
+            classNamePrefix="react-select"
+            menuPortalTarget={document.body}
+            styles={{
+              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              control: (base) => ({
+                ...base,
+                background: 'rgba(11, 15, 25, 0.6)',
+                borderColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: '12px',
+                color: 'white',
+                minHeight: '40px',
+                fontSize: '12px'
+              }),
+              menu: (base) => ({
+                ...base,
+                background: '#0f172a',
+                border: '1px solid rgba(14, 165, 233, 0.2)',
+                borderRadius: '12px',
+                zIndex: 100
+              }),
+              option: (base, state) => ({
+                ...base,
+                background: state.isFocused ? 'rgba(14, 165, 233, 0.2)' : 'transparent',
+                color: state.isSelected ? '#38bdf8' : 'white',
+                cursor: 'pointer',
+                fontSize: '12px'
+              }),
+              singleValue: (base) => ({
+                ...base,
+                color: 'white'
+              }),
+              input: (base) => ({
+                ...base,
+                color: 'white'
+              }),
+              placeholder: (base) => ({
+                ...base,
+                color: 'rgba(255,255,255,0.3)'
+              }),
+              groupHeading: (base) => ({
+                 ...base,
+                 color: '#38bdf8',
+                 fontWeight: 'bold',
+                 fontSize: '10px',
+                 textTransform: 'uppercase'
+              })
+            }}
+          />
+        </div>
+      </div>
+
+      <div className="ranking-table-container flex-1 overflow-y-auto backdrop-blur-md bg-white/5 shadow-2xl border border-white/10 rounded-2xl styled-scrollbar">
       <table className="ranking-table">
         <thead>
-          <tr className="bg-white/5">
-            <th className="text-center p-6 bg-transparent w-16">Vs</th>
-            <th className="text-center p-6 bg-transparent">Rank</th>
-            <th className="p-6">Player</th>
-            <th className="text-center p-6">Saison</th>
-            <th className="p-6">Compétition</th>
-            <th className="p-6">Team</th>
-            <th className="p-6">Position</th>
-            <th className="text-center p-6">Age</th>
-            <th className="text-center p-6">Mins</th>
-            <th className="text-right p-6">
+          <tr className="bg-slate-900/90 backdrop-blur-md sticky top-0 z-20 shadow-sm">
+            <th className="text-center p-6 w-16 border-b border-white/10">Vs</th>
+            <th className="text-center p-6 border-b border-white/10">Rank</th>
+            <th className="p-6 border-b border-white/10">Player</th>
+            <th className="text-center p-6 border-b border-white/10">Saison</th>
+            <th className="p-6 border-b border-white/10">Compétition</th>
+            <th className="p-6 border-b border-white/10">Team</th>
+            <th className="p-6 border-b border-white/10">Position</th>
+            <th className="text-center p-6 border-b border-white/10">Age</th>
+            <th className="text-center p-6 border-b border-white/10">Mins</th>
+            <th className="text-right p-6 border-b border-white/10">
               {selectedSortBy === 'note_ponderee' ? 'Impact Score' : 
                selectedSortBy === 'goals' ? 'Goals' :
                selectedSortBy === 'assists' ? 'Assists' :
@@ -157,6 +234,7 @@ const RankingTable = ({
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };

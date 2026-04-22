@@ -3,20 +3,7 @@ import { Users, Globe, BarChart2, Calendar, Activity, Zap } from 'lucide-react';
 import AccordionSection from './AccordionSection';
 import MultiSelectWithChips from '../ui/MultiSelectWithChips';
 import DualRangeSlider from '../ui/DualRangeSlider';
-import Select from 'react-select';
-import { WindowedMenuList } from 'react-windowed-select';
 
-
-// Helper pour trouver l'option actuelle dans un tableau groupé pour react-select
-const findSelectedOption = (value, options = []) => {
-  if (!options) return null;
-  for (const group of options) {
-    if (!group.options) continue;
-    const found = group.options.find(opt => opt.value === value);
-    if (found) return found;
-  }
-  return null;
-};
 
 const FilterPanel = ({ 
   openSection, setOpenSection, 
@@ -41,65 +28,7 @@ const FilterPanel = ({
         </button>
       </div>
 
-      <div className="filter-group mb-8">
-         <label className="filter-label">Ranking Metric</label>
-         <Select 
-           components={{ MenuList: WindowedMenuList }}
-           options={metricsList} 
-           value={findSelectedOption(pendingFilters.sortBy, metricsList)}
-           onChange={(selectedOption) => updateFilters('sortBy', selectedOption.value)}
-           isSearchable={true}
-           placeholder="Search metric (ex: duel)..."
-           className="react-select-container"
-           classNamePrefix="react-select"
-           menuPortalTarget={document.body}
-           styles={{
-             menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-             control: (base) => ({
-               ...base,
-               background: 'rgba(14, 165, 233, 0.05)',
-               borderColor: 'rgba(14, 165, 233, 0.3)',
-               borderRadius: '12px',
-               color: 'white',
-               minHeight: '45px',
-               cursor: 'pointer'
-             }),
-             menu: (base) => ({
-               ...base,
-               background: '#0f172a',
-               border: '1px solid rgba(14, 165, 233, 0.2)',
-               borderRadius: '12px',
-               zIndex: 50
-             }),
-             option: (base, state) => ({
-               ...base,
-               background: state.isFocused ? 'rgba(14, 165, 233, 0.2)' : 'transparent',
-               color: state.isSelected ? '#38bdf8' : 'white',
-               cursor: 'pointer',
-               fontSize: '13px'
-             }),
-             singleValue: (base) => ({
-               ...base,
-               color: 'white'
-             }),
-             input: (base) => ({
-               ...base,
-               color: 'white'
-             }),
-             placeholder: (base) => ({
-               ...base,
-               color: 'rgba(255,255,255,0.3)'
-             }),
-             groupHeading: (base) => ({
-                ...base,
-                color: '#38bdf8',
-                fontWeight: 'bold',
-                fontSize: '11px',
-                textTransform: 'uppercase'
-             })
-           }}
-         />
-      </div>
+
 
       {/* SECTION 1: PÉRIODE */}
       <AccordionSection 

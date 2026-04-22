@@ -104,6 +104,8 @@ function App() {
     }
 
     url += `&min_age=${activeFilters.minAge}&max_age=${activeFilters.maxAge}`;
+    url += `&min_height=${activeFilters.height.min}&max_height=${activeFilters.height.max}`;
+    url += `&min_weight=${activeFilters.weight.min}&max_weight=${activeFilters.weight.max}`;
     
     if (activeFilters.playtime.min > 0) {
       url += `&min_playtime=${activeFilters.playtime.min}`;
@@ -282,6 +284,10 @@ function App() {
                         selectedSortBy={pendingFilters.sortBy}
                         selectedPlayersToCompare={selectedPlayersToCompare}
                         setSelectedPlayersToCompare={setSelectedPlayersToCompare}
+                        metricsList={metricsList}
+                        onSortChange={(val) => {
+                          setPendingFilters(prev => ({ ...prev, sortBy: val }));
+                        }}
                     />
                 ) : dashboardView === 'VERSUS' ? (
                     <HeadToHeadContent selectedPlayersToCompare={selectedPlayersToCompare} />

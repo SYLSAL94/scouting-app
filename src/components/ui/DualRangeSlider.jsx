@@ -39,18 +39,18 @@ const DualRangeSlider = ({ label, min, max, currentMin, currentMax, onChange, st
           }}
         />
 
-        {/* Real Range Inputs (Invisible but interactive) */}
+        {/* Real Range Inputs */}
         <input 
           type="range" min={min} max={max} step={step} value={currentMin} 
           onChange={handleMinChange}
-          className="absolute w-full appearance-none bg-transparent pointer-events-auto z-30 cursor-pointer accent-sky-400"
-          style={{ WebkitAppearance: 'none' }}
+          className="range-input-custom absolute w-full appearance-none bg-transparent cursor-pointer"
+          style={{ WebkitAppearance: 'none', zIndex: currentMin > max / 2 ? 5 : 4 }}
         />
         <input 
           type="range" min={min} max={max} step={step} value={currentMax} 
           onChange={handleMaxChange}
-          className="absolute w-full appearance-none bg-transparent pointer-events-auto z-40 cursor-pointer accent-violet-400"
-          style={{ WebkitAppearance: 'none' }}
+          className="range-input-custom absolute w-full appearance-none bg-transparent cursor-pointer"
+          style={{ WebkitAppearance: 'none', zIndex: 4 }}
         />
       </div>
       
@@ -60,16 +60,22 @@ const DualRangeSlider = ({ label, min, max, currentMin, currentMax, onChange, st
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        input[type=range]::-webkit-slider-thumb {
+        .range-input-custom {
+          pointer-events: none;
+        }
+        .range-input-custom::-webkit-slider-thumb {
+          pointer-events: auto;
           -webkit-appearance: none;
-          height: 16px;
-          width: 16px;
+          height: 18px;
+          width: 18px;
           border-radius: 50%;
           background: white;
           border: 3px solid #38bdf8;
           cursor: pointer;
-          margin-top: -6px;
+          margin-top: -7px;
           box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+          position: relative;
+          z-index: 10;
         }
         input[type=range]:last-of-type::-webkit-slider-thumb {
           border-color: #818cf8;

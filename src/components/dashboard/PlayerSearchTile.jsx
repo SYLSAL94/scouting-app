@@ -33,6 +33,10 @@ export const PlayerSearchTile = ({ onSelectPlayer, label = "Player Selection", a
       }
       if (activeFilters.minAge) url += `&min_age=${activeFilters.minAge}`;
       if (activeFilters.maxAge) url += `&max_age=${activeFilters.maxAge}`;
+      if (activeFilters.height?.min) url += `&min_height=${activeFilters.height.min}`;
+      if (activeFilters.height?.max) url += `&max_height=${activeFilters.height.max}`;
+      if (activeFilters.weight?.min) url += `&min_weight=${activeFilters.weight.min}`;
+      if (activeFilters.weight?.max) url += `&max_weight=${activeFilters.weight.max}`;
       if (activeFilters.playtime?.min > 0) url += `&min_playtime=${activeFilters.playtime.min}`;
       if (activeFilters.sortBy) url += `&sort_by=${activeFilters.sortBy}`;
 
