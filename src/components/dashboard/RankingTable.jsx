@@ -243,7 +243,7 @@ const RankingTable = ({
             <ChevronLeft size={14} /> Previous
           </button>
           <span className="text-xs font-bold text-white bg-white/10 px-3 py-1 rounded-md">
-            Page {currentPage} / {totalPages}
+            Page {currentPage} {" / "} {totalPages}
           </span>
           <button 
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
@@ -254,7 +254,6 @@ const RankingTable = ({
           </button>
         </div>
       </div>
-    </div>
     </div>
   );
 };
