@@ -22,39 +22,61 @@ export default function TeammatesWidget({ playerId }) {
     }, [playerId]);
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-lg backdrop-blur-md h-full flex flex-col">
-            <h3 className="text-lg font-bold mb-1 text-white">Effectif</h3>
-            <p className="text-xs text-slate-400 mb-5">Coéquipiers partageant la même saison et le même club.</p>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 shadow-lg backdrop-blur-md h-full flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between mb-4">
+                <div>
+                    <h3 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
+                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Effectif
+                    </h3>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter mt-1">Saison & Club Actuel</p>
+                </div>
+                <div className="px-2 py-1 bg-slate-800 rounded text-[10px] font-black text-slate-400 border border-slate-700">
+                    {teammates.length} JOUEURS
+                </div>
+            </div>
             
-            <div className="flex-1 overflow-y-auto pr-1">
+            <div className="flex-1 overflow-y-auto pr-2 styled-scrollbar space-y-1.5">
                 {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {[1, 2, 3, 4, 5, 6].map(i => (
-                            <div key={i} className="h-14 bg-slate-800/50 rounded-lg animate-pulse border border-slate-700/50" />
-                        ))}
-                    </div>
+                    Array(8).fill(0).map((_, i) => (
+                        <div key={i} className="h-10 bg-slate-800/30 rounded-lg animate-pulse" />
+                    ))
                 ) : teammates.length === 0 ? (
-                    <div className="text-slate-500 text-sm text-center py-8">Aucun coéquipier trouvé.</div>
+                    <div className="text-slate-500 text-[11px] font-medium text-center py-10 italic">Aucun coéquipier identifié.</div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {teammates.map((p, i) => (
-                            <div key={p.unique_id || `${p.id}-${i}`} className="bg-slate-800/40 hover:bg-slate-700/60 p-2.5 rounded-xl border border-slate-700/50 hover:border-emerald-500/30 transition-all flex items-center gap-3 cursor-pointer group">
-                                <div className="w-10 h-10 bg-gradient-to-br from-slate-700 to-slate-800 border border-slate-600 rounded-full flex items-center justify-center font-black text-xs text-slate-300 shadow-inner group-hover:from-emerald-600 group-hover:to-teal-700 group-hover:text-white transition-all">
+                    teammates.map((p, i) => {
+                        const score = Number(p.note_ponderee || 0);
+                        const scoreColor = score >= 80 ? 'bg-emerald-500' : score >= 70 ? 'bg-sky-500' : score >= 60 ? 'bg-amber-500' : 'bg-slate-600';
+                        
+                        return (
+                            <div 
+                                key={p.unique_id || `${p.id}-${i}`} 
+                                className="group flex items-center gap-3 p-2 bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-sky-500/30 rounded-xl transition-all duration-300 cursor-pointer"
+                            >
+                                {/* Position Badge */}
+                                <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center text-[9px] font-black text-slate-400 group-hover:text-sky-400 group-hover:border-sky-500/50 transition-colors">
                                     {p.position_category?.slice(0,2).toUpperCase() || 'PL'}
                                 </div>
-                                <div className="min-w-0 flex-1">
-                                    <div className="font-bold text-sm text-slate-200 truncate group-hover:text-emerald-400 transition-colors">
-                                        {p.name || p.full_name}
+
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center justify-between gap-2 mb-1">
+                                        <div className="font-bold text-xs text-slate-200 truncate group-hover:text-white transition-colors">
+                                            {p.name || p.full_name}
+                                        </div>
+                                        <div className={`text-[10px] font-black ${score >= 70 ? 'text-sky-400' : 'text-slate-400'}`}>
+                                            {score.toFixed(1)}
+                                        </div>
                                     </div>
-                                    <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-                                        <span className="font-bold text-emerald-500/80">{Number(p.note_ponderee || 0).toFixed(1)}</span>
-                                        <span className="opacity-50">•</span>
-                                        <span className="truncate">{p.primary_position || 'N/A'}</span>
+                                    {/* Mini Gauge */}
+                                    <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                                        <div 
+                                            className={`h-full ${scoreColor} transition-all duration-700 ease-out`} 
+                                            style={{ width: `${score}%` }} 
+                                        />
                                     </div>
                                 </div>
                             </div>
-                        ))}
-                    </div>
+                        );
+                    })
                 )}
             </div>
         </div>

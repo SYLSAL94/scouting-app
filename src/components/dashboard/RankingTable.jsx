@@ -137,8 +137,9 @@ const RankingTable = ({
         </div>
       </div>
 
-      <div className="ranking-table-container flex-1 overflow-y-auto backdrop-blur-md bg-white/5 shadow-2xl border border-white/10 rounded-2xl styled-scrollbar">
-      <table className="ranking-table">
+      <div className="ranking-table-container flex-1 overflow-hidden backdrop-blur-md bg-white/5 shadow-2xl border border-white/10 rounded-2xl flex flex-col">
+        <div className="flex-1 overflow-auto styled-scrollbar">
+          <table className="ranking-table w-full">
         <thead>
           <tr className="bg-slate-900/90 backdrop-blur-md sticky top-0 z-20 shadow-sm">
             <th className="text-center p-6 w-16 border-b border-white/10">Vs</th>
@@ -226,8 +227,10 @@ const RankingTable = ({
           })}
         </tbody>
       </table>
+        </div>
+      </div>
 
-      <div className="p-4 border-t border-white/5 flex items-center justify-between sticky bottom-0 bg-[rgba(11,15,25,0.95)] backdrop-blur">
+      <div className="p-4 border-t border-white/5 flex items-center justify-between sticky bottom-0 bg-[rgba(11,15,25,0.95)] backdrop-blur shrink-0">
         <div className="text-xs text-[rgb(var(--text-muted))] lowercase">
           Showing <span className="text-white font-bold">{(currentPage - 1) * pageSize + 1}</span> - <span className="text-white font-bold">{Math.min(currentPage * pageSize, totalPlayers)}</span> of <span className="text-sky-400 font-bold">{totalPlayers}</span> results
         </div>

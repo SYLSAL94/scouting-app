@@ -45,7 +45,7 @@ const PlayerRadar = ({ player }) => {
                 <span className="text-[10px] uppercase font-black tracking-widest text-sky-400/70">Dynamic Tactical Mapping</span>
             </div>
 
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minHeight={300} minWidth={0} key={`${player.id}-${player.note_ponderee}`}>
                 <RadarChart cx="50%" cy="55%" outerRadius="65%" data={radarData}>
                     <PolarGrid stroke="rgba(255,255,255,0.2)" />
                     <PolarAngleAxis dataKey="subject" tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 10, fontWeight: 700 }} />

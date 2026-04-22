@@ -25,5 +25,7 @@ dist-ssr
 .env
 .env.local
 api_scouting.py
-
+init_wyscout_db.py
 Exemple"node_modules/" 
+workerConfig.js
+bck

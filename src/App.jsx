@@ -31,6 +31,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [showFilters, setShowFilters] = useState(false); // État pour le drawer mobile
 
   const [competitionsList, setCompetitionsList] = useState([]);
   const [positionsList, setPositionsList] = useState([]);
@@ -114,6 +115,7 @@ function App() {
   const handleApplyFilters = () => {
     setActiveFilters(pendingFilters);
     setCurrentPage(1);
+    setShowFilters(false); // Fermer le drawer après application
   };
 
   const handleResetFilters = () => {
@@ -156,7 +158,7 @@ function App() {
         ) : view === 'DASHBOARD' ? (
           <motion.div 
             key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="p-8 max-w-[1700px] mx-auto min-h-screen flex flex-col"
+            className="p-4 md:p-8 max-w-[1700px] mx-auto min-h-screen flex flex-col"
           >
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
               <div>
@@ -193,31 +195,54 @@ function App() {
                 <div className="relative w-full md:w-[400px]">
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-sky-400/50" size={20} />
                     <input 
-                        type="text" placeholder="Search by name, team or role..." 
+                        type="text" placeholder="Search..." 
                         className="search-input w-full pl-14 pr-6 py-4 text-lg"
                         value={pendingFilters.search} 
                         onChange={(e) => setPendingFilters({...pendingFilters, search: e.target.value})}
                     />
                 </div>
+                
+                {/* Bouton Filtres Mobile */}
+                <button 
+                  onClick={() => setShowFilters(true)}
+                  className="md:hidden flex items-center gap-2 px-6 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white font-black uppercase tracking-widest text-xs"
+                >
+                  <Activity size={16} className="text-sky-400" /> Filtres
+                </button>
               </div>
             </div>
 
-            <div className="dashboard-layout gap-10">
-              <FilterPanel 
-                openSection={openSection} 
-                setOpenSection={setOpenSection}
-                pendingFilters={pendingFilters}
-                setPendingFilters={setPendingFilters}
-                competitionsList={competitionsList}
-                positionsList={positionsList}
-                teamsList={teamsList}
-                seasonsList={seasonsList}
-                metricsList={metricsList}
-                handleResetFilters={handleResetFilters} 
-                handleApplyFilters={handleApplyFilters}
-                hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
-              />
-              <main className="ranking-content-panel flex-1 flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row gap-6 md:gap-10">
+              {/* FilterPanel: Sidebar sur Desktop, Drawer sur Mobile */}
+              <div className={`
+                fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-xl p-6 md:relative md:inset-auto md:z-0 md:bg-transparent md:backdrop-blur-none md:p-0
+                transition-transform duration-300 transform
+                ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+                md:w-[350px] shrink-0
+              `}>
+                <div className="flex justify-between items-center mb-6 md:hidden">
+                  <h3 className="text-xl font-black uppercase tracking-tighter">Filtres Avancés</h3>
+                  <button onClick={() => setShowFilters(false)} className="p-2 bg-white/5 rounded-lg">
+                    <X size={20} />
+                  </button>
+                </div>
+                <FilterPanel 
+                  openSection={openSection} 
+                  setOpenSection={setOpenSection}
+                  pendingFilters={pendingFilters}
+                  setPendingFilters={setPendingFilters}
+                  competitionsList={competitionsList}
+                  positionsList={positionsList}
+                  teamsList={teamsList}
+                  seasonsList={seasonsList}
+                  metricsList={metricsList}
+                  handleResetFilters={handleResetFilters} 
+                  handleApplyFilters={handleApplyFilters}
+                  hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
+                />
+              </div>
+
+              <main className="ranking-content-panel flex-1 flex flex-col gap-4 min-w-0">
                 {dashboardView === 'TABLE' ? (
                     <RankingTable 
                         players={players} loading={loading} error={error} 

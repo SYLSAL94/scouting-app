@@ -13,7 +13,14 @@ load_dotenv()
 # =================================================================
 # CONFIGURATION GÉNÉRALE & LOGGING
 # =================================================================
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, 
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("enrichment_errors.log"),
+        logging.StreamHandler()
+    ]
+)
 logger = logging.getLogger(__name__)
 
 pwd = os.getenv('POSTGRES_PWD')
@@ -70,6 +77,8 @@ INDICES_CONFIG = {
         'Indice_Aerial_duel': { 'aerial_duels_won': 0.70, 'aerial_duels_avg': 0.30 },
         'Indice_Pass': { 'pass_to_penalty_area_avg': 0.30, 'passes_to_final_third_avg': 0.25, 'pass_to_zone_fourteen_avg': 0.15, 'progressive_pass_avg': 0.13, 'passes_avg': 0.10, 'buildup_pass_avg': 0.07 },
         'Indice_Acc_pass': { 'accurate_pass_to_penalty_area_percent': 0.35, 'accurate_passes_to_final_third_percent': 0.25, 'successful_progressive_pass_percent': 0.20, 'successful_forward_passes_percent': 0.13, 'accurate_passes_percent': 0.07 },
+        'Indice_Type_pass': { 'vertical_passes_avg': 0.20, 'through_passes_avg': 0.15, 'diagonal_to_flank_avg': 0.13, 'crosses_avg': 0.12, 'long_passes_avg': 0.10, 'short_medium_pass_avg': 0.08, 'average_pass_length': 0.07, 'average_long_pass_length': 0.06, 'corners_taken_avg': 0.05, 'free_kicks_taken_avg': 0.04 },
+        'Indice_Acc_type_pass': { 'successful_vertical_passes_percent': 0.35, 'successful_through_passes_percent': 0.25, 'accurate_crosses_percent': 0.20, 'successful_long_passes_percent': 0.13, 'accurate_short_medium_pass_percent': 0.07 },
         'Indice_Covering_Interception': { 'possession_adjusted_interceptions': 0.50, 'interceptions_avg': 0.30, 'covering_depth_avg': 0.20 },
         'Indice_Discipline': { 'red_cards_avg': -0.40, 'dangerous_foul_avg': -0.25, 'yellow_cards_avg': -0.20, 'fouls_avg': -0.15 },
     }
@@ -90,7 +99,7 @@ NOTES_PONDEREE_CONFIG = {
 }
 
 # =================================================================
-# 4. CONFIGURATION DES PROFILS FIXES (Normalisation Min-Max par poste)
+# 4. CONFIGURATION DES PROFILS FIXES (Poids des métriques par poste)
 # =================================================================
 PROFILE_WEIGHTS = {
     'Gardien': {
@@ -160,14 +169,17 @@ PROFILE_WEIGHTS = {
 }
 
 # =================================================================
-# UTILS & CALCULS
+# 4. UTILITAIRES
 # =================================================================
 
 def calculate_season_age(row):
+    """Calcule l'âge du joueur au début de la saison spécifiée."""
     try:
         if pd.isna(row['birth_day']): return None
         birth = pd.to_datetime(row['birth_day'])
         season_str = str(row['season'])
+        # Si format '2023/2024' -> Janvier de l'année de début
+        # Si format '2023' -> Juin de l'année
         year = int(season_str.split('/')[0]) if '/' in season_str else int(season_str)
         ref_date = datetime(year, 1, 1) if '/' in season_str else datetime(year, 6, 1)
         return round((ref_date - birth).days / 365.25, 1)
@@ -175,13 +187,14 @@ def calculate_season_age(row):
         return None
 
 def normalize_metrics(df, metrics_list, min_minutes=400):
-    logger.info('Normalisation par compétition, saison et poste (min_minutes=400)...')
+    """Normalisation par compétition, saison et poste (min_minutes=400)."""
     valid_mask = df['minutes_on_field'] >= min_minutes
     for m in metrics_list:
         if m in df.columns:
             valid_df = df[valid_mask]
+            if valid_df.empty: continue
             group_stats = valid_df.groupby(['competition', 'season', 'position_category'])[m].agg(['min', 'max']).reset_index()
-            df = df.merge(group_stats, on=['competition', 'season', 'position_category'], how='left')
+            df = df.merge(group_stats, on=['competition', 'season', 'position_category'], how='left', suffixes=('', '_stat'))
             diff = df['max'] - df['min']
             df[f'{m}_norm'] = np.where(diff > 0, (df[m] - df['min']) / diff, 0)
             df[f'{m}_norm'] = df[f'{m}_norm'].clip(0, 1)
@@ -189,126 +202,162 @@ def normalize_metrics(df, metrics_list, min_minutes=400):
     return df
 
 # =================================================================
-# MAIN ENRICHMENT PROCESS
+# 5. FONCTION DE CALCUL D'UN BATCH
+# =================================================================
+
+def process_batch(df, all_metric_keys, all_profile_metrics):
+    """Applique tous les calculs analytiques sur un dataframe (batch)."""
+    if df.empty:
+        return df
+
+    # 1. Mapping Positions
+    df['position_category'] = df['primary_position'].map(POS_MAPPING).fillna('Autres')
+
+    # 2. Âge et Playtime
+    df['season_age'] = df.apply(calculate_season_age, axis=1)
+    df['season_age_years'] = np.floor(df['season_age'].astype(float).fillna(0)).astype(int)
+    df['max_mins_comp'] = df.groupby(['season', 'competition'])['minutes_on_field'].transform('max')
+    df['playtime_percent'] = (df['minutes_on_field'] / df['max_mins_comp'] * 100).fillna(0)
+
+    # 3. Pré-calcul des Percentiles
+    from scipy import stats
+    df['percentile_eligible'] = df['minutes_on_field'] >= (df['max_mins_comp'] * 0.30)
+
+    for m in all_metric_keys:
+        if m in df.columns:
+            df[f'{m}_pct'] = 0.0
+            for cat in df['position_category'].unique():
+                cat_mask = (df['position_category'] == cat)
+                eligible_mask = df['percentile_eligible']
+                full_mask = cat_mask & eligible_mask
+                if full_mask.any():
+                    dist = df.loc[full_mask, m].values
+                    # Application du percentile basé sur la distribution des éligibles du groupe
+                    df.loc[cat_mask, f'{m}_pct'] = df.loc[cat_mask, m].apply(
+                        lambda x: stats.percentileofscore(dist, x, kind='mean')
+                    )
+
+    # 4. Calcul des INDICES
+    for p_type, configs in INDICES_CONFIG.items():
+        mask = (df['position_category'] == 'Gardien') if p_type == 'goalkeeper' else (df['position_category'] != 'Gardien')
+        for idx_name, weights in configs.items():
+            df.loc[mask, idx_name] = 0.0
+            for m, w in weights.items():
+                pct_col = f'{m}_pct'
+                if pct_col in df.columns:
+                    if w < 0:
+                        df.loc[mask, idx_name] += (100 - df.loc[mask, pct_col]) * abs(w)
+                    else:
+                        df.loc[mask, idx_name] += df.loc[mask, pct_col] * w
+            total_weight = sum(abs(v) for v in weights.values())
+            if total_weight > 0:
+                df.loc[mask, idx_name] /= total_weight
+
+    # 5. Notes (Globale & Pondérée)
+    indice_cols = [c for c in df.columns if c.startswith('Indice_')]
+    df['note_globale'] = df[indice_cols].mean(axis=1).fillna(0)
+    
+    df['note_ponderee'] = df['note_globale']
+    for cat, weights in NOTES_PONDEREE_CONFIG.items():
+        mask = df['position_category'] == cat
+        if mask.any():
+            w_sum = 0.0
+            w_total = 0.0
+            for idx_name, w in weights.items():
+                if idx_name in df.columns:
+                    w_sum += df.loc[mask, idx_name] * w
+                    w_total += w
+            if w_total > 0:
+                df.loc[mask, 'note_ponderee'] = w_sum / w_total
+
+    # 6. Calcul des PROFILS (Normalisation Min-Max localisée)
+    df = normalize_metrics(df, list(all_profile_metrics))
+
+    for cat, profiles in PROFILE_WEIGHTS.items():
+        mask = df['position_category'] == cat
+        if not mask.any(): continue
+        for prof_name, weights in profiles.items():
+            prof_col = f'profile_affinity_{prof_name.lower().replace(" ", "_").replace("-", "_")}'
+            df.loc[mask, prof_col] = 0.0
+            for m, w in weights.items():
+                norm_col = f'{m}_norm'
+                if norm_col in df.columns:
+                    df.loc[mask, prof_col] += df.loc[mask, norm_col] * w
+            if mask.any():
+                df.loc[mask, prof_col] = df.loc[mask, prof_col].rank(pct=True) * 100
+
+    # Nettoyage
+    df = df.replace({np.nan: None})
+    cols_to_drop = [c for c in df.columns if c in ['max_mins_comp', 'percentile_eligible'] or c.endswith('_norm')]
+    return df.drop(columns=cols_to_drop)
+
+# =================================================================
+# 5. MAIN ENRICHMENT PROCESS (BATCH MODE)
 # =================================================================
 
 def run_enrichment():
-    logger.info("Connexion à la base de données...")
+    logger.info("Démarrage du Batch Enrichment Processing...")
     engine = create_engine(DB_URL)
     
+    # Pré-collecte des métriques
+    all_metric_keys = set()
+    for idx_cat in INDICES_CONFIG.values():
+        for idx_def in idx_cat.values():
+            all_metric_keys.update(idx_def.keys())
+    
+    all_profile_metrics = set()
+    for p_cat in PROFILE_WEIGHTS.values():
+        for p_def in p_cat.values():
+            all_profile_metrics.update(p_def.keys())
+
     try:
-        # 1. Chargement
-        df = pd.read_sql(f"SELECT * FROM {SOURCE_TABLE}", engine)
-        logger.info(f"Chargé {len(df)} joueurs.")
+        with engine.connect() as conn:
+            # 1. Découverte des contextes bruts
+            logger.info("Analyse des contextes (Compétitions / Saisons) disponibles dans la source...")
+            all_contexts = conn.execute(text(f"SELECT DISTINCT competition, season FROM {SOURCE_TABLE}")).fetchall()
+            all_contexts_set = set((r[0], r[1]) for r in all_contexts)
+            
+            # 2. Découverte des contextes déjà enrichis (Resume Logic)
+            logger.info(f"Vérification de l'état d'avancement dans {TARGET_TABLE}...")
+            try:
+                done_contexts = conn.execute(text(f"SELECT DISTINCT competition, season FROM {TARGET_TABLE}")).fetchall()
+                done_contexts_set = set((r[0], r[1]) for r in done_contexts)
+            except Exception:
+                # Si la table n'existe pas encore
+                done_contexts_set = set()
+            
+            # 3. Calcul du delta (ce qui reste à traiter)
+            to_process = sorted(list(all_contexts_set - done_contexts_set))
+            logger.info(f"Contextes totaux: {len(all_contexts_set)} | Déjà faits: {len(done_contexts_set)} | À traiter: {len(to_process)}")
 
-        # 2. Mapping Positions
-        df['position_category'] = df['primary_position'].map(POS_MAPPING).fillna('Autres')
+        # 4. Boucle itérative par contexte (Résilience individuelle)
+        for i, (comp, season) in enumerate(to_process):
+            try:
+                logger.info(f"[{i+1}/{len(to_process)}] Traitement : {comp} - {season}...")
+                
+                # Chargement sélectif
+                sql = text(f"SELECT * FROM {SOURCE_TABLE} WHERE competition = :comp AND season = :season")
+                df_batch = pd.read_sql(sql, engine, params={"comp": comp, "season": season})
+                
+                if df_batch.empty:
+                    continue
 
-        # 3. Âge et Playtime
-        df['season_age'] = df.apply(calculate_season_age, axis=1)
-        df['season_age_years'] = np.floor(df['season_age'].astype(float).fillna(0)).astype(int)
-        df['max_mins_comp'] = df.groupby(['season', 'competition'])['minutes_on_field'].transform('max')
-        df['playtime_percent'] = (df['minutes_on_field'] / df['max_mins_comp'] * 100).fillna(0)
+                # Calculs analytiques
+                df_enriched = process_batch(df_batch, all_metric_keys, all_profile_metrics)
 
-        # 4. Pré-calcul des Percentiles
-        all_metric_keys = set()
-        for idx_cat in INDICES_CONFIG.values():
-            for idx_def in idx_cat.values():
-                all_metric_keys.update(idx_def.keys())
-        
-        # Filtre de minutes pour le calcul des percentiles (Parité avec worker.js : > 30% du max minutes de la comp)
-        df['percentile_eligible'] = df['minutes_on_field'] >= (df['max_mins_comp'] * 0.30)
+                # Injection (append uniquement pour préserver l'idempotence)
+                df_enriched.to_sql('players_enriched', engine, schema='wyscout_data', if_exists='append', index=False)
+                logger.info(f"   -> Succès : {len(df_enriched)} joueurs injectés.")
+            
+            except Exception as batch_error:
+                logger.error(f"!!! ÉCHEC sur le batch {comp} - {season} : {batch_error}")
+                # On continue la boucle pour ne pas bloquer les autres saisons
+                continue
 
-        for m in all_metric_keys:
-            if m in df.columns:
-                # On calcule les percentiles sur les éligibles uniquement, groupé par poste
-                # Mais on les applique à tout le monde
-                eligible_mask = df['percentile_eligible']
-                # rank(pct=True) sur le sous-ensemble éligible
-                # Note: Pandas ne supporte pas directement groupby + transform avec un masque externe facilement
-                # On va calculer le rank pour chaque groupe et l'appliquer
-                df[f'{m}_pct'] = 0.0
-                for cat in df['position_category'].unique():
-                    cat_mask = (df['position_category'] == cat)
-                    full_mask = cat_mask & eligible_mask
-                    if full_mask.any():
-                        subset_vals = df.loc[full_mask, m]
-                        # Fonction de percentile basée sur le subset éligible
-                        # On ré-applique à tout le groupe cat
-                        # rank method 'average' pour parité avec workers.js
-                        ranks = subset_vals.rank(pct=True, method='average') * 100
-                        # Pour appliquer aux non-éligibles, on utilise la distribution
-                        from scipy import stats
-                        dist = subset_vals.values
-                        df.loc[cat_mask, f'{m}_pct'] = df.loc[cat_mask, m].apply(lambda x: stats.percentileofscore(dist, x, kind='mean'))
-
-        # 5. Calcul des INDICES
-        for p_type, configs in INDICES_CONFIG.items():
-            mask = (df['position_category'] == 'Gardien') if p_type == 'goalkeeper' else (df['position_category'] != 'Gardien')
-            for idx_name, weights in configs.items():
-                df.loc[mask, idx_name] = 0.0
-                for m, w in weights.items():
-                    pct_col = f'{m}_pct'
-                    if pct_col in df.columns:
-                        # Inversion pour pondérations négatives (Parité worker.js : (100-val)*|w| if w < 0)
-                        if w < 0:
-                            df.loc[mask, idx_name] += (100 - df.loc[mask, pct_col]) * abs(w)
-                        else:
-                            df.loc[mask, idx_name] += df.loc[mask, pct_col] * w
-                # Normalisation par la somme des poids absolus pour rester sur 100
-                total_weight = sum(abs(v) for v in weights.values())
-                if total_weight > 0:
-                    df.loc[mask, idx_name] /= total_weight
-
-        # 6. Notes (Globale & Pondérée)
-        indice_cols = [c for c in df.columns if c.startswith('Indice_')]
-        df['note_globale'] = df[indice_cols].mean(axis=1).fillna(0)
-        
-        # Note pondérée via NOTES_PONDEREE_CONFIG
-        df['note_ponderee'] = df['note_globale']
-        for cat, weights in NOTES_PONDEREE_CONFIG.items():
-            mask = df['position_category'] == cat
-            if mask.any():
-                w_sum = 0.0
-                w_total = 0.0
-                for idx_name, w in weights.items():
-                    if idx_name in df.columns:
-                        w_sum += df.loc[mask, idx_name] * w
-                        w_total += w
-                if w_total > 0:
-                    df.loc[mask, 'note_ponderee'] = w_sum / w_total
-
-        # 7. Calcul des PROFILS (Normalisation Min-Max)
-        all_profile_metrics = set()
-        for p_cat in PROFILE_WEIGHTS.values():
-            for p_def in p_cat.values():
-                all_profile_metrics.update(p_def.keys())
-        
-        df = normalize_metrics(df, list(all_profile_metrics))
-
-        for cat, profiles in PROFILE_WEIGHTS.items():
-            mask = df['position_category'] == cat
-            if not mask.any(): continue
-            for prof_name, weights in profiles.items():
-                prof_col = f'profile_affinity_{prof_name.lower().replace(" ", "_").replace("-", "_")}'
-                df.loc[mask, prof_col] = 0.0
-                for m, w in weights.items():
-                    norm_col = f'{m}_norm'
-                    if norm_col in df.columns:
-                        df.loc[mask, prof_col] += df.loc[mask, norm_col] * w
-                # Ranking percentile au sein du profil pour le groupe
-                if mask.any():
-                    df.loc[mask, prof_col] = df.loc[mask, prof_col].rank(pct=True) * 100
-
-        # 8 & 9. Nettoyage & Sauvegarde (Utilisation de None pour préserver les types numériques en NULL SQL)
-        df = df.replace({np.nan: None})
-        cols_to_drop = [c for c in df.columns if c == 'max_mins_comp' or c == 'percentile_eligible']
-        df = df.drop(columns=cols_to_drop)
-        df.to_sql('players_enriched', engine, schema='wyscout_data', if_exists='replace', index=False)
-        logger.info(f"Terminé avec succès. Table {TARGET_TABLE} mise à jour.")
+        logger.info("Cycle d'enrichissement terminé.")
 
     except Exception as e:
-        logger.error(f"Erreur durant l'enrichissement : {e}")
+        logger.error(f"ERREUR FATALE durant l'initialisation du batch processing : {e}")
         import traceback
         logger.error(traceback.format_exc())
 

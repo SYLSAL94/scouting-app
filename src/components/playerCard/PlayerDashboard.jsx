@@ -55,7 +55,21 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                 return res.json();
             })
             .then(data => {
-                setPlayerData(data);
+                console.log("🚨 DEBUG PAYLOAD API :", data);
+                
+                // Désarchivage multi-niveaux (items, recordToDisplay ou root)
+                let cleanData = null;
+                if (data && data.recordToDisplay) {
+                    cleanData = data.recordToDisplay;
+                } else if (data && data.items && Array.isArray(data.items)) {
+                    cleanData = data.items[0];
+                } else if (Array.isArray(data)) {
+                    cleanData = data[0];
+                } else {
+                    cleanData = data;
+                }
+
+                setPlayerData(cleanData || null);
                 setLoading(false);
             })
             .catch(err => {
@@ -75,8 +89,8 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     if (!playerId) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-hidden">
-            <div className="w-full h-full max-w-7xl max-h-full bg-slate-900 border border-slate-700 shadow-2xl rounded-2xl flex flex-col relative overflow-hidden">
+        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-md flex items-center justify-center md:p-6 overflow-hidden">
+            <div className="w-full h-full md:max-w-7xl md:max-h-[90vh] bg-slate-900 border-t border-slate-700 md:border md:rounded-2xl flex flex-col relative overflow-hidden">
                 
                 {/* Header Actions */}
                 <div className="absolute top-4 right-4 z-20 flex gap-3">
@@ -128,17 +142,17 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                         <div className="space-y-8">
                             
                             {/* En-tête du joueur - PREMIUM LAYOUT */}
-                            <div className="flex flex-col md:flex-row items-center gap-8 p-8 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl shadow-inner relative overflow-hidden">
+                            <div className="flex flex-col md:flex-row items-center gap-6 p-4 md:p-8 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl shadow-inner relative overflow-hidden">
                                 {playerData.image ? (
                                     <img src={playerData.image} alt={playerData.name} className="w-28 h-28 rounded-full object-cover border-4 border-slate-700 shadow-2xl bg-slate-800 relative z-10" />
                                 ) : (
                                     <div className="w-28 h-28 rounded-full bg-slate-800 border-4 border-slate-700 flex items-center justify-center text-4xl font-black text-slate-600 relative z-10">
-                                        {playerData.name?.charAt(0) || '?'}
+                                        {playerData?.name ? String(playerData.name).charAt(0) : '?'}
                                     </div>
                                 )}
                                 
                                 <div className="text-center md:text-left flex-1 min-w-0 relative z-10">
-                                    <h2 className="text-5xl font-black text-white tracking-tighter leading-tight">{playerData.name || playerData.full_name}</h2>
+                                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">{playerData.name || playerData.full_name}</h2>
                                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-2 text-xs font-bold uppercase tracking-widest text-slate-400">
                                         <span className="px-3 py-1 bg-sky-500 text-white rounded-md shadow-lg shadow-sky-500/20">{playerData.position_category}</span>
                                         <span className="opacity-30 text-lg">•</span>
@@ -150,12 +164,12 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                     </div>
                                     <div className="flex gap-4 mt-6 justify-center md:justify-start">
                                         <div className="px-4 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-[11px] font-black text-slate-300 shadow-sm">{playerData.age} ANS</div>
-                                        <div className="px-4 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-[11px] font-black text-slate-300 shadow-sm">{playerData.foot?.toUpperCase() || 'DROIT'}</div>
+                                        <div className="px-4 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-[11px] font-black text-slate-300 shadow-sm">PIED {playerData?.foot ? String(playerData.foot).toUpperCase() : 'DROIT'}</div>
                                     </div>
                                 </div>
 
                                 {/* Classement & Stats - Haut Droite */}
-                                <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
+                                <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 relative z-10">
                                     {/* Classement Spécifique */}
                                     <div className="text-right">
                                         <div className="flex items-center justify-end gap-2 mb-1">
@@ -170,16 +184,16 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                     </div>
 
                                     {/* Score Tiles */}
-                                    <div className="flex gap-4">
-                                        <div className="bg-slate-800/80 border border-white/5 rounded-2xl p-5 text-center min-w-[130px] shadow-2xl backdrop-blur-md">
-                                            <div className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-1.5">Note Globale</div>
-                                            <div className="text-5xl font-black text-white leading-none tracking-tighter">
+                                    <div className="flex gap-3 md:gap-4">
+                                        <div className="bg-slate-800/80 border border-white/5 rounded-2xl p-3 md:p-5 text-center min-w-[80px] md:min-w-[130px] shadow-2xl backdrop-blur-md">
+                                            <div className="text-[8px] md:text-[10px] font-black uppercase text-slate-500 tracking-widest mb-1">Note Globale</div>
+                                            <div className="text-3xl md:text-5xl font-black text-white leading-none tracking-tighter">
                                                 {Math.round(playerData.note_globale || 64)}
                                             </div>
                                         </div>
-                                        <div className="bg-sky-500 border border-sky-400 rounded-2xl p-5 text-center min-w-[130px] shadow-2xl shadow-sky-500/20">
-                                            <div className="text-[10px] font-black uppercase text-white/80 tracking-widest mb-1.5">Note Pondérée</div>
-                                            <div className="text-5xl font-black text-white leading-none tracking-tighter">
+                                        <div className="bg-sky-500 border border-sky-400 rounded-2xl p-3 md:p-5 text-center min-w-[80px] md:min-w-[130px] shadow-2xl shadow-sky-500/20">
+                                            <div className="text-[8px] md:text-[10px] font-black uppercase text-white/80 tracking-widest mb-1">Note Pondérée</div>
+                                            <div className="text-3xl md:text-5xl font-black text-white leading-none tracking-tighter">
                                                 {Math.round(playerData.note_ponderee || 75)}
                                             </div>
                                         </div>
@@ -188,33 +202,43 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                             </div>
 
                             {/* Grille principale - Triple Colonne */}
-                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8 items-start">
                                 
                                 {/* Colonne GAUCHE : Details & Gauges (4/12) */}
-                                <div className="lg:col-span-4 space-y-8">
+                                <div className="lg:col-span-4 space-y-6 md:space-y-8">
                                     <DetailsPanelWidget player={playerData} />
                                     <PositionDistributionWidget player={playerData} />
                                     <PerformancePanelWidget player={playerData} />
                                 </div>
 
                                 {/* Colonne MILIEU : Radar, Recalcul, Similar (4/12) */}
-                                <div className="lg:col-span-4 space-y-8">
+                                <div className="lg:col-span-4 space-y-6 md:space-y-8">
                                     <div className="space-y-4">
-                                        <h3 className="text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2 px-2">
+                                        <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2 px-2">
                                             <span className="w-2 h-2 bg-sky-400 rounded-full"></span> Analyse Comparative
                                         </h3>
                                         <RecalculationPanelWidget 
                                             playerId={playerId}
                                             onRecalculated={(newData) => {
                                                 if (newData && newData.recordToDisplay) {
-                                                    setPlayerData(newData.recordToDisplay);
+                                                    // Fusion des données pour préserver les métadonnées initiales (nom, photo)
+                                                    setPlayerData(prev => ({
+                                                        ...prev,
+                                                        ...newData.recordToDisplay
+                                                    }));
+                                                    // Mise à jour du classement dans le header
+                                                    setRankingData({
+                                                        rank: newData.rank,
+                                                        total: newData.populationCount,
+                                                        is_recalculated: true
+                                                    });
                                                 }
                                             }}
                                         />
                                     </div>
                                     
                                     <div className="space-y-4">
-                                        <h3 className="text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2 px-2">
+                                        <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2 px-2">
                                             <span className="w-2 h-2 bg-sky-400 rounded-full"></span> Tactical Radar
                                         </h3>
                                         <PlayerRadar player={playerData} />
@@ -224,8 +248,8 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                 </div>
 
                                 {/* Colonne DROITE : Table & Teammates (4/12) */}
-                                <div className="lg:col-span-4 space-y-8 h-full flex flex-col">
-                                    <div className="flex-1 min-h-[500px]">
+                                <div className="lg:col-span-4 space-y-6 md:space-y-8 h-full flex flex-col">
+                                    <div className="flex-1 md:min-h-[500px]">
                                         <DataPanelWidget player={playerData} />
                                     </div>
                                     <TeammatesWidget playerId={playerId} />
