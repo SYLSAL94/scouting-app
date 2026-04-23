@@ -13,10 +13,11 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
     const [editingSlot, setEditingSlot] = useState(null);
     const [presets, setPresets] = useState([]);
     const [presetName, setPresetName] = useState('');
+    const [activeTab, setActiveTab] = useState('field'); // 'field' | 'config'
 
     const formationLayout = useMemo(() => formations[formationKey] || [], [formationKey]);
     
-    // Slots de banc (7 remplaçants fixes pour simplifier)
+    // Slots de banc (5 remplaçants fixes pour simplifier)
     const benchLayout = useMemo(() => [
         { id: 'B1', displayRole: 'R1', positionNeeded: ['GK', 'CB', 'LB', 'RB', 'DMF', 'CM', 'AMF', 'RW', 'LW', 'CF'], style: {} },
         { id: 'B2', displayRole: 'R2', positionNeeded: ['GK', 'CB', 'LB', 'RB', 'DMF', 'CM', 'AMF', 'RW', 'LW', 'CF'], style: {} },
@@ -70,8 +71,25 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
     };
 
     return (
-        <div className="h-full flex flex-col xl:flex-row gap-8">
-            <div className="flex-1 min-h-[600px] relative rounded-3xl overflow-hidden border border-white/5 bg-slate-900/50 shadow-2xl">
+        <div className="h-full flex flex-col xl:flex-row gap-6 md:gap-8">
+            {/* Navigation Mobile */}
+            <div className="xl:hidden flex bg-slate-900/80 backdrop-blur-xl p-1 rounded-2xl border border-white/5 mb-4 shadow-xl">
+                <button 
+                    onClick={() => setActiveTab('field')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'field' ? 'bg-emerald-500 text-white shadow-lg' : 'text-slate-500'}`}
+                >
+                    ⚽ Terrain
+                </button>
+                <button 
+                    onClick={() => setActiveTab('config')}
+                    className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'config' ? 'bg-emerald-500 text-white shadow-lg' : 'text-slate-500'}`}
+                >
+                    ⚙️ Gestion
+                </button>
+            </div>
+
+            {/* Zone Terrain */}
+            <div className={`${activeTab === 'field' ? 'block' : 'hidden'} xl:block flex-1 min-h-[500px] md:min-h-[600px] relative rounded-3xl overflow-hidden border border-white/5 bg-slate-900/50 shadow-2xl`}>
                 <Field
                     formationLayout={formationLayout}
                     formation={formation}
@@ -79,10 +97,11 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
                 />
             </div>
 
-            <div className="xl:w-[400px] flex-shrink-0 flex flex-col gap-6">
+            {/* Zone Contrôles */}
+            <div className={`${activeTab === 'config' ? 'block' : 'hidden'} xl:block xl:w-[400px] flex-shrink-0 flex flex-col gap-6`}>
                 {/* Controls */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 space-y-6">
-                    <h3 className="text-3xl font-black text-white uppercase tracking-tighter">
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl">
+                    <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter">
                         Mon <span className="text-emerald-400">XI</span>
                     </h3>
                     
@@ -92,7 +111,7 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
                             setFormationKey(e.target.value);
                             setFormation({});
                         }}
-                        className="block w-full px-6 py-4 text-xs font-black uppercase tracking-widest border border-white/10 focus:outline-none focus:border-emerald-500/50 rounded-xl bg-slate-900/50 text-white appearance-none cursor-pointer"
+                        className="block w-full px-5 py-4 text-[10px] md:text-xs font-black uppercase tracking-widest border border-white/10 focus:outline-none focus:border-emerald-500/50 rounded-xl bg-slate-900/50 text-white appearance-none cursor-pointer shadow-inner"
                     >
                         {Object.keys(formations).map(name => <option key={name} value={name}>Formation : {name}</option>)}
                     </select>
@@ -100,7 +119,7 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
                     <div className="space-y-4">
                         <div className="px-2">
                             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4">Remplaçants</h4>
-                            <div className="grid grid-cols-5 gap-2">
+                            <div className="grid grid-cols-5 gap-2 md:gap-3">
                                 {benchLayout.map(slot => (
                                     <div 
                                         key={slot.id}
@@ -116,15 +135,10 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
                                                 <img src={bench[slot.id].image} alt="" className="w-full h-full object-contain p-1" />
                                                 <button 
                                                     onClick={(e) => handleClearSlot(e, slot.id)}
-                                                    className="absolute -top-1 -right-1 bg-red-500 rounded-full p-0.5 opacity-0 group-hover/bench:opacity-100 transition-opacity"
+                                                    className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 shadow-lg"
                                                 >
-                                                    <Trash2 size={10} />
+                                                    <Trash2 size={12} className="text-white" />
                                                 </button>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-sm font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-md border border-emerald-400/20">
-                                                        {Number(bench[slot.id].note_ponderee || 0).toFixed(1)}
-                                                    </span>
-                                                </div>
                                             </div>
                                         ) : (
                                             <span className="text-[10px] font-bold text-white/20">{slot.displayRole}</span>
@@ -137,7 +151,7 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
                 </div>
 
                 {/* Presets */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 space-y-6">
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl">
                     <div className="flex items-center gap-2">
                         <FolderOpen size={16} className="text-sky-400" />
                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Sauvegardes</h4>
@@ -146,8 +160,8 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
                     <div className="flex gap-2">
                         <input 
                             type="text" 
-                            placeholder="Nom de l'équipe..."
-                            className="flex-1 bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-sky-500/50"
+                            placeholder="Nom..."
+                            className="flex-1 bg-slate-900/50 border border-white/5 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-sky-500/50 text-white"
                             value={presetName}
                             onChange={e => setPresetName(e.target.value)}
                         />
@@ -155,11 +169,11 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
                             onClick={handleSave}
                             className="p-3 bg-sky-500 hover:bg-sky-400 rounded-xl transition-colors shadow-lg shadow-sky-500/20"
                         >
-                            <Save size={18} />
+                            <Save size={18} className="text-white" />
                         </button>
                     </div>
 
-                    <div className="space-y-2 max-h-40 overflow-y-auto custom-scrollbar">
+                    <div className="space-y-2 max-h-40 overflow-y-auto styled-scrollbar">
                         {presets.map((p, i) => (
                             <div 
                                 key={i}
@@ -177,7 +191,7 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
                                         setPresets(updated);
                                         localStorage.setItem('monxi_presets', JSON.stringify(updated));
                                     }}
-                                    className="p-2 text-slate-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all"
+                                    className="p-2 text-slate-500 hover:text-red-400 md:opacity-0 group-hover:opacity-100 transition-all"
                                 >
                                     <Trash2 size={14} />
                                 </button>

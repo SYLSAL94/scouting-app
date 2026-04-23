@@ -62,7 +62,7 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
         </div>
 
         {/* Zone de sauvegarde */}
-        <div className="flex gap-2">
+        <div className="flex items-stretch gap-2">
           <input 
             type="text" 
             placeholder="Name this analysis..." 
@@ -73,7 +73,7 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
           <button 
             onClick={handleSave}
             disabled={!profileName.trim() || isSaving}
-            className="p-2 bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl hover:bg-sky-500 hover:text-white transition-all disabled:opacity-30"
+            className="px-4 bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl hover:bg-sky-500 hover:text-white transition-all disabled:opacity-30"
           >
             <Save size={16} />
           </button>
@@ -96,7 +96,7 @@ const FilterPanel = ({
   };
 
   return (
-    <aside className="sidebar-filters w-80 shrink-0 h-fit sticky top-8">
+    <aside className="sidebar-filters w-full lg:w-80 shrink-0 h-fit lg:sticky lg:top-8">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
            Filters

@@ -26,6 +26,7 @@ export const RadarDashboard = ({
     // 1. Entities State
     const [selectedEntities, setSelectedEntities] = useState(initialSelectedPlayer ? [initialSelectedPlayer] : []);
     const [compareWithMedian, setCompareWithMedian] = useState(false);
+    const [activeTab, setActiveTab] = useState('CHART'); // 'CHART' or 'CONFIG'
 
     // 2. Metrics State (Shared via hook)
     const {
@@ -87,9 +88,26 @@ export const RadarDashboard = ({
     };
 
     return (
-        <div className="flex flex-col lg:flex-row h-full min-h-[800px] gap-6">
-            {/* LEFT PANEL: Control Panel */}
-            <div className="w-full lg:w-[450px] flex flex-col h-full bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden flex-shrink-0">
+        <div className="flex flex-col gap-6 h-full min-h-0 xl:min-h-[800px]">
+            {/* Mobile Tab Bar */}
+            <div className="flex xl:hidden bg-white/5 p-1 rounded-xl border border-white/5 mb-2">
+                <button 
+                    onClick={() => setActiveTab('CHART')}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'CHART' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
+                >
+                    Visualisation
+                </button>
+                <button 
+                    onClick={() => setActiveTab('CONFIG')}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'CONFIG' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
+                >
+                    Configuration
+                </button>
+            </div>
+
+            <div className="flex flex-col xl:flex-row gap-6 h-full">
+                {/* LEFT PANEL: Control Panel */}
+                <div className={`w-full xl:w-[450px] flex flex-col h-full bg-slate-900/50 rounded-2xl border border-white/10 overflow-hidden flex-shrink-0 ${activeTab === 'CONFIG' ? 'flex' : 'hidden xl:flex'}`}>
                 <div className="p-5 flex-shrink-0 border-b border-white/10 bg-slate-900/80">
                     <div className="flex items-center">
                         <div className="mr-4 p-2.5 rounded-xl bg-sky-500/20">
@@ -176,8 +194,8 @@ export const RadarDashboard = ({
                 </div>
             </div>
 
-            {/* RIGHT PANEL: Visualization */}
-            <div className="flex-1 glass-panel flex flex-col p-6 min-h-[600px]">
+                {/* RIGHT PANEL: Visualization */}
+                <div className={`flex-1 glass-panel flex flex-col p-4 md:p-6 min-h-[500px] md:min-h-[600px] ${activeTab === 'CHART' ? 'flex' : 'hidden lg:flex'}`}>
                  {appliedConfig ? (
                      <RadarChartVisualization
                         selectedEntityIds={appliedConfig.entityIds}
@@ -196,6 +214,7 @@ export const RadarDashboard = ({
                         </p>
                     </div>
                  )}
+            </div>
             </div>
         </div>
     );

@@ -30,6 +30,7 @@ function App() {
   const [totalPlayers, setTotalPlayers] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('RESULTS'); // 'CONFIG' | 'RESULTS'
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [showFilters, setShowFilters] = useState(false); // État pour le drawer mobile
 
@@ -178,88 +179,85 @@ function App() {
                 <button onClick={() => setView('EXPLORATION')} className="btn-back" style={{ marginBottom: '8px' }}>
                   <ArrowLeft size={14} /> Back to paths
                 </button>
-                <h1 className="text-5xl font-black tracking-tighter uppercase leading-none">
+                <h1 className="text-2xl md:text-3xl xl:text-5xl font-black tracking-tighter uppercase leading-none">
                   Player <span className="text-highlight">Rankings</span>
                 </h1>
               </div>
-              <div className="flex items-center gap-6">
-                <div className="flex gap-1 bg-white/5 p-1 rounded-xl border border-white/5 h-fit">
-                    <button 
-                        onClick={() => setDashboardView('TABLE')}
-                        className={`px-6 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'TABLE' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}
-                    >
-                        Table Analysis
-                    </button>
-                    <button 
-                        onClick={() => setDashboardView('SCATTER')}
-                        className={`px-6 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'SCATTER' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}
-                    >
-                        Scatter Plot
-                    </button>
-                    <button 
-                        onClick={() => setDashboardView('VERSUS')}
-                        disabled={selectedPlayersToCompare.length !== 2}
-                        className={`px-6 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'VERSUS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : (selectedPlayersToCompare.length === 2 ? 'text-sky-400 hover:text-sky-300 border border-sky-500/30' : 'text-white/20 cursor-not-allowed')}`}
-                    >
-                        Comparer ({selectedPlayersToCompare.length}/2)
-                    </button>
-                </div>
-
-                <div className="relative w-full md:w-[400px]">
+              <div className="flex flex-col gap-4 w-full">
+                {/* Search Bar - Full width */}
+                <div className="relative w-full">
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-sky-400/50" size={20} />
                     <input 
-                        type="text" placeholder="Search..." 
-                        className="search-input w-full pl-14 pr-6 py-4 text-lg"
+                        type="text" placeholder="Rechercher un joueur..." 
+                        className="search-input w-full pl-14 pr-6 py-4 text-base md:text-lg"
                         value={pendingFilters.search} 
                         onChange={(e) => setPendingFilters({...pendingFilters, search: e.target.value})}
                     />
                 </div>
-                
-                {/* Bouton Filtres Mobile */}
-                <button 
-                  onClick={() => setShowFilters(true)}
-                  className="md:hidden flex items-center gap-2 px-6 py-4 bg-slate-800 border border-slate-700 rounded-xl text-white font-black uppercase tracking-widest text-xs"
-                >
-                  <Activity size={16} className="text-sky-400" /> Filtres
-                </button>
+
+                {/* Tabs Selector */}
+                <div className="flex flex-wrap xl:flex-nowrap items-center gap-2 xl:gap-6">
+                  <div className="flex w-full xl:w-auto gap-1 bg-white/5 p-1 rounded-xl border border-white/5 h-fit">
+                      <button 
+                          onClick={() => setDashboardView('TABLE')}
+                          className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'TABLE' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}
+                      >
+                          Tableau
+                      </button>
+                      <button 
+                          onClick={() => setDashboardView('SCATTER')}
+                          className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'SCATTER' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}
+                      >
+                          Analyse
+                      </button>
+                      <button 
+                          onClick={() => setDashboardView('VERSUS')}
+                          disabled={selectedPlayersToCompare.length !== 2}
+                          className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'VERSUS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : (selectedPlayersToCompare.length === 2 ? 'text-sky-400 hover:text-sky-300 border border-sky-500/30' : 'text-white/20 cursor-not-allowed')}`}
+                      >
+                          Versus ({selectedPlayersToCompare.length}/2)
+                      </button>
+                      <button 
+                          onClick={() => setDashboardView('FILTERS')}
+                          className={`xl:hidden flex-1 px-4 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'FILTERS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white bg-sky-500/10'}`}
+                      >
+                          Filtres
+                      </button>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-6 md:gap-10">
-              {/* FilterPanel: Sidebar sur Desktop, Drawer sur Mobile */}
-              <div className={`
-                fixed inset-0 z-50 bg-slate-900/95 backdrop-blur-xl p-6 md:relative md:inset-auto md:z-0 md:bg-transparent md:backdrop-blur-none md:p-0
-                transition-transform duration-300 transform
-                ${showFilters ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-                md:w-[350px] shrink-0
-              `}>
-                <div className="flex justify-between items-center mb-6 md:hidden">
-                  <h3 className="text-xl font-black uppercase tracking-tighter">Filtres Avancés</h3>
-                  <button onClick={() => setShowFilters(false)} className="p-2 bg-white/5 rounded-lg">
-                    <X size={20} />
-                  </button>
+              <div className="flex flex-col xl:flex-row gap-6 xl:gap-10">
+                {/* FilterPanel: Sidebar sur Desktop, Onglet sur Mobile */}
+                <div className={`
+                  ${dashboardView === 'FILTERS' ? 'block' : 'hidden'}
+                  xl:block xl:w-[350px] shrink-0
+                `}>
+                  <FilterPanel 
+                    openSection={openSection} 
+                    setOpenSection={setOpenSection}
+                    pendingFilters={pendingFilters}
+                    setPendingFilters={setPendingFilters}
+                    competitionsList={competitionsList}
+                    positionsList={positionsList}
+                    teamsList={teamsList}
+                    seasonsList={seasonsList}
+                    metricsList={metricsList}
+                    profiles={profiles}
+                    loadProfile={loadProfile}
+                    onProfileSaved={(newProfile) => setProfiles(prev => [newProfile, ...prev])}
+                    handleResetFilters={handleResetFilters} 
+                    handleApplyFilters={() => {
+                        handleApplyFilters();
+                        if (window.innerWidth < 1280) setDashboardView('TABLE');
+                    }}
+                    hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
+                  />
                 </div>
-                <FilterPanel 
-                  openSection={openSection} 
-                  setOpenSection={setOpenSection}
-                  pendingFilters={pendingFilters}
-                  setPendingFilters={setPendingFilters}
-                  competitionsList={competitionsList}
-                  positionsList={positionsList}
-                  teamsList={teamsList}
-                  seasonsList={seasonsList}
-                  metricsList={metricsList}
-                  profiles={profiles}
-                  loadProfile={loadProfile}
-                  onProfileSaved={(newProfile) => setProfiles(prev => [newProfile, ...prev])}
-                  handleResetFilters={handleResetFilters} 
-                  handleApplyFilters={handleApplyFilters}
-                  hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
-                />
-              </div>
 
-              <main className="ranking-content-panel flex-1 flex flex-col gap-4 min-w-0">
-                {dashboardView === 'TABLE' ? (
+                <main className={`ranking-content-panel flex-1 flex flex-col gap-4 min-w-0 ${dashboardView === 'FILTERS' ? 'hidden xl:flex' : 'flex'}`}>
+                  {dashboardView === 'TABLE' ? (
                     <RankingTable 
                         players={players} loading={loading} error={error} 
                         currentPage={currentPage} pageSize={pageSize} totalPlayers={totalPlayers} 
@@ -291,11 +289,30 @@ function App() {
                 <ArrowLeft size={14} /> Intelligence Hub
              </button>
              <div className="flex justify-between items-end mb-8">
-                 <h1 className="text-5xl font-black uppercase tracking-tighter">Radar <span className="text-highlight">Profiling</span></h1>
+                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Radar <span className="text-highlight">Profiling</span></h1>
              </div>
-             
-             <div className="flex gap-10">
-                <div className="w-[350px] shrink-0">
+
+             {/* Mobile Tab Bar for Radar */}
+              <div className="flex xl:hidden bg-white/5 p-1 rounded-xl border border-white/5 mb-6">
+                <button 
+                    onClick={() => setDashboardView('RADAR')}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${dashboardView !== 'FILTERS' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
+                >
+                    Radar
+                </button>
+                <button 
+                    onClick={() => setDashboardView('FILTERS')}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${dashboardView === 'FILTERS' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
+                >
+                    Filtres
+                </button>
+              </div>
+              
+              <div className="flex flex-col xl:flex-row gap-6 xl:gap-10">
+                <div className={`
+                  ${dashboardView === 'FILTERS' ? 'block' : 'hidden'}
+                  xl:block xl:w-[350px] shrink-0
+                `}>
                   <FilterPanel 
                     openSection={openSection} 
                     setOpenSection={setOpenSection}
@@ -307,12 +324,15 @@ function App() {
                     seasonsList={seasonsList}
                     metricsList={metricsList}
                     handleResetFilters={handleResetFilters} 
-                    handleApplyFilters={handleApplyFilters}
+                    handleApplyFilters={() => {
+                        handleApplyFilters();
+                        if (window.innerWidth < 1280) setDashboardView('RADAR');
+                    }}
                     hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
                   />
                 </div>
                 
-                <div className="flex-1 min-w-0">
+                <div className={`flex-1 min-w-0 ${dashboardView === 'FILTERS' ? 'hidden xl:block' : 'block'}`}>
                   <RadarDashboard 
                     players={players} 
                     metricsList={metricsList}
@@ -331,16 +351,17 @@ function App() {
               onClose={() => setView('EXPLORATION')}
           />
         ) : view === 'TEAMBUILDER' ? (
-          <div className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
+          <div className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
                 <ArrowLeft size={14} /> Back
              </button>
              <div className="flex justify-between items-end mb-8">
-                 <h1 className="text-5xl font-black uppercase tracking-tighter">Tactical <span className="text-highlight">Team Builder</span></h1>
+                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Tactical <span className="text-highlight">Team Builder</span></h1>
              </div>
              
              <div className="flex gap-10 flex-1 min-h-0">
-                <div className="w-[350px] shrink-0">
+                {/* Sidebar Filtres : Cachée sur mobile car intégrée aux onglets du dashboard */}
+                <div className="hidden lg:block w-[350px] shrink-0">
                   <FilterPanel 
                     openSection={openSection} 
                     setOpenSection={setOpenSection}
@@ -360,6 +381,14 @@ function App() {
                 <TeamBuilderDashboard 
                   activeFilters={activeFilters} 
                   onPlayerClick={handlePlayerClick}
+                  // Props de filtrage pour l'onglet mobile
+                  filterProps={{
+                    openSection, setOpenSection,
+                    pendingFilters, setPendingFilters,
+                    competitionsList, positionsList, teamsList, seasonsList, metricsList,
+                    handleResetFilters, handleApplyFilters,
+                    hasChanges: JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)
+                  }}
                 />
              </div>
           </div>
@@ -369,11 +398,30 @@ function App() {
                 <ArrowLeft size={14} /> Back
              </button>
              <div className="flex justify-between items-end mb-8">
-                 <h1 className="text-5xl font-black uppercase tracking-tighter">Joueur : <span className="text-highlight">Laboratoire</span></h1>
+                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Joueur : <span className="text-highlight">Laboratoire</span></h1>
              </div>
              
-             <div className="flex gap-10 flex-1 min-h-0">
-                <div className="w-[300px] shrink-0">
+             {/* Mobile Tab Bar for Lab */}
+             <div className="flex xl:hidden bg-white/5 p-1 rounded-xl border border-white/5 mb-6">
+                <button 
+                    onClick={() => setDashboardView('LAB')}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${dashboardView !== 'FILTERS' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
+                >
+                    Laboratoire
+                </button>
+                <button 
+                    onClick={() => setDashboardView('FILTERS')}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${dashboardView === 'FILTERS' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
+                >
+                    Filtres
+                </button>
+              </div>
+
+             <div className="flex flex-col xl:flex-row gap-6 xl:gap-10">
+                <div className={`
+                  ${dashboardView === 'FILTERS' ? 'block' : 'hidden'}
+                  xl:block xl:w-[300px] shrink-0
+                `}>
                   <FilterPanel 
                     openSection={openSection} 
                     setOpenSection={setOpenSection}
@@ -385,16 +433,23 @@ function App() {
                     seasonsList={seasonsList}
                     metricsList={metricsList}
                     handleResetFilters={handleResetFilters} 
-                    handleApplyFilters={handleApplyFilters}
+                    handleApplyFilters={() => {
+                        handleApplyFilters();
+                        if (window.innerWidth < 1280) setDashboardView('LAB');
+                    }}
                     hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
                   />
                 </div>
                 
-                <LabDashboard 
-                  activeFilters={activeFilters} 
-                  metricsList={metricsList}
-                  onPlayerClick={handlePlayerClick}
-                />
+                <div className={`flex-1 min-w-0 ${dashboardView === 'FILTERS' ? 'hidden xl:block' : 'block'}`}>
+                  <LabDashboard 
+                    activeFilters={activeFilters} 
+                    metricsList={metricsList}
+                    onPlayerClick={handlePlayerClick}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                  />
+                </div>
              </div>
           </div>
         ) : null}

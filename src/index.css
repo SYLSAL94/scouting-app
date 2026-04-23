@@ -688,4 +688,111 @@ h1, h2, h3 {
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* =================================================================
+   RESPONSIVE DESIGN (MOBILE OPTIMIZATIONS)
+   ================================================================= */
 
+@media (max-width: 768px) {
+  .exploration-container {
+    padding: 40px 16px;
+  }
+
+  .page-title {
+    font-size: 2.5rem;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+
+  .path-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .path-card {
+    padding: 24px;
+    min-height: 200px;
+    border-radius: 24px;
+  }
+
+  .path-card-large {
+    min-height: 240px;
+  }
+
+  .path-card-title {
+    font-size: 1.8rem;
+  }
+
+  .path-card-desc {
+    font-size: 0.95rem;
+    max-width: 100%;
+  }
+
+  .path-card-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 20px;
+  }
+
+  .path-card-arrow {
+    top: 24px;
+    right: 24px;
+  }
+
+  .tabs-selector {
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+    white-space: nowrap;
+    padding: 4px;
+    margin-top: 24px;
+    margin-bottom: 32px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabs-selector::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    padding: 10px 20px;
+    font-size: 0.8rem;
+  }
+
+  /* Optimisation des modales sur mobile */
+  .relative.w-full.max-w-2xl {
+    max-width: 100% !important;
+    margin: 8px;
+    max-height: 95vh !important;
+  }
+
+  /* Masquage des badges encombrants sur petit écran */
+  .flex.items-center.gap-2.px-4.py-2.bg-sky-500\/10 {
+    display: none;
+  }
+
+  .dashboard-layout {
+    flex-direction: column;
+    height: auto;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .sidebar-filters {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+  }
+
+  .ranking-content-panel {
+    height: 600px;
+  }
+
+  /* Radar Dashboard Mobile */
+  .flex.flex-col.lg\:flex-row.h-full.min-h-\[800px\] {
+    min-height: auto !important;
+  }
+
+  .lg\:w-\[450px\] {
+    width: 100% !important;
+  }
+}

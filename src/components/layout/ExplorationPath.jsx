@@ -41,8 +41,7 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
       </div>
       
       <h1 className="page-title leading-tight">
-        Next-gen <br />
-        <span className="text-highlight">Exploration</span> Hub
+        Next-gen <span className="text-highlight">Exploration</span> Hub
       </h1>
       
       <div className="tabs-selector mb-12">

@@ -4,7 +4,7 @@ import LabWeightPanel from './LabWeightPanel';
 import RankingTable from './RankingTable';
 import { FlaskConical, Info, AlertTriangle } from 'lucide-react';
 
-export default function LabDashboard({ activeFilters, metricsList, onPlayerClick }) {
+export default function LabDashboard({ activeFilters, metricsList, onPlayerClick, activeTab, setActiveTab }) {
     const [labResults, setLabResults] = useState([]);
     const [totalPlayers, setTotalPlayers] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
@@ -55,18 +55,38 @@ export default function LabDashboard({ activeFilters, metricsList, onPlayerClick
     const totalPages = Math.ceil(totalPlayers / pageSize);
 
     return (
-        <div className="flex-1 flex gap-10 min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Control Panel */}
-            <div className="w-[400px] shrink-0">
-                <LabWeightPanel 
-                    metricsList={metricsList} 
-                    onCalculate={(w, s) => runCalculation(w, s, 1)}
-                    loading={loading}
-                />
+        <div className="flex flex-col gap-6 h-full min-h-0">
+            {/* Mobile Local Tabs */}
+            <div className="flex xl:hidden bg-white/5 p-1 rounded-xl border border-white/5 mb-2">
+                <button 
+                    onClick={() => setActiveTab('RESULTS')}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'RESULTS' ? 'bg-emerald-500 text-white' : 'text-white/40'}`}
+                >
+                    Résultats
+                </button>
+                <button 
+                    onClick={() => setActiveTab('CONFIG')}
+                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'CONFIG' ? 'bg-emerald-500 text-white' : 'text-white/40'}`}
+                >
+                    Paramètres
+                </button>
             </div>
 
-            {/* Results Area */}
-            <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex flex-col xl:flex-row gap-6 xl:gap-10 h-full min-h-0">
+                {/* Control Panel */}
+                <div className={`w-full xl:w-[400px] shrink-0 ${activeTab === 'CONFIG' ? 'block' : 'hidden xl:block'}`}>
+                    <LabWeightPanel 
+                        metricsList={metricsList} 
+                        onCalculate={(w, s) => {
+                            runCalculation(w, s, 1);
+                            if (window.innerWidth < 1280) setActiveTab('RESULTS');
+                        }}
+                        loading={loading}
+                    />
+                </div>
+
+                {/* Results Area */}
+                <div className={`flex-1 flex flex-col min-w-0 ${activeTab === 'RESULTS' ? 'flex' : 'hidden xl:flex'}`}>
                 <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 mb-6 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
@@ -117,5 +137,6 @@ export default function LabDashboard({ activeFilters, metricsList, onPlayerClick
                 )}
             </div>
         </div>
+    </div>
     );
 }

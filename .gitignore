@@ -32,3 +32,4 @@ bck
 init_wyscout_db.txt
 enrich_data.txt
 api_scouting.txt
+mon_hash.txt

@@ -75,65 +75,67 @@ const RankingTable = ({
 
   return (
     <div className="flex flex-col gap-4 flex-1 min-h-0">
-      <div className="flex justify-end items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-md shrink-0">
-        <span className="text-[10px] uppercase tracking-widest font-black text-sky-400/80">Trier par :</span>
-        <div className="w-[300px]">
-          <Select 
-            components={{ MenuList: WindowedMenuList }}
-            options={metricsList} 
-            value={findSelectedOption(selectedSortBy, metricsList)}
-            onChange={(selectedOption) => onSortChange(selectedOption.value)}
-            isSearchable={true}
-            placeholder="Rechercher une métrique..."
-            className="react-select-container"
-            classNamePrefix="react-select"
-            menuPortalTarget={document.body}
-            styles={{
-              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-              control: (base) => ({
-                ...base,
-                background: 'rgba(11, 15, 25, 0.6)',
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                borderRadius: '12px',
-                color: 'white',
-                minHeight: '40px',
-                fontSize: '12px'
-              }),
-              menu: (base) => ({
-                ...base,
-                background: '#0f172a',
-                border: '1px solid rgba(14, 165, 233, 0.2)',
-                borderRadius: '12px',
-                zIndex: 100
-              }),
-              option: (base, state) => ({
-                ...base,
-                background: state.isFocused ? 'rgba(14, 165, 233, 0.2)' : 'transparent',
-                color: state.isSelected ? '#38bdf8' : 'white',
-                cursor: 'pointer',
-                fontSize: '12px'
-              }),
-              singleValue: (base) => ({
-                ...base,
-                color: 'white'
-              }),
-              input: (base) => ({
-                ...base,
-                color: 'white'
-              }),
-              placeholder: (base) => ({
-                ...base,
-                color: 'rgba(255,255,255,0.3)'
-              }),
-              groupHeading: (base) => ({
-                 ...base,
-                 color: '#38bdf8',
-                 fontWeight: 'bold',
-                 fontSize: '10px',
-                 textTransform: 'uppercase'
-              })
-            }}
-          />
+      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-md shrink-0">
+        <div className="flex items-center gap-4 flex-1">
+          <span className="text-[10px] uppercase tracking-widest font-black text-sky-400/80 whitespace-nowrap">Trier par :</span>
+          <div className="flex-1 md:max-w-[300px]">
+            <Select 
+              components={{ MenuList: WindowedMenuList }}
+              options={metricsList} 
+              value={findSelectedOption(selectedSortBy, metricsList)}
+              onChange={(selectedOption) => onSortChange(selectedOption.value)}
+              isSearchable={true}
+              placeholder="Rechercher une métrique..."
+              className="react-select-container"
+              classNamePrefix="react-select"
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                control: (base) => ({
+                  ...base,
+                  background: 'rgba(11, 15, 25, 0.6)',
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '12px',
+                  color: 'white',
+                  minHeight: '40px',
+                  fontSize: '12px'
+                }),
+                menu: (base) => ({
+                  ...base,
+                  background: '#0f172a',
+                  border: '1px solid rgba(14, 165, 233, 0.2)',
+                  borderRadius: '12px',
+                  zIndex: 100
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  background: state.isFocused ? 'rgba(14, 165, 233, 0.2)' : 'transparent',
+                  color: state.isSelected ? '#38bdf8' : 'white',
+                  cursor: 'pointer',
+                  fontSize: '12px'
+                }),
+                singleValue: (base) => ({
+                  ...base,
+                  color: 'white'
+                }),
+                input: (base) => ({
+                  ...base,
+                  color: 'white'
+                }),
+                placeholder: (base) => ({
+                  ...base,
+                  color: 'rgba(255,255,255,0.3)'
+                }),
+                groupHeading: (base) => ({
+                   ...base,
+                   color: '#38bdf8',
+                   fontWeight: 'bold',
+                   fontSize: '10px',
+                   textTransform: 'uppercase'
+                })
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -145,12 +147,12 @@ const RankingTable = ({
             <th className="text-center p-6 w-16 border-b border-white/10">Vs</th>
             <th className="text-center p-6 border-b border-white/10">Rank</th>
             <th className="p-6 border-b border-white/10">Player</th>
-            <th className="text-center p-6 border-b border-white/10">Saison</th>
-            <th className="p-6 border-b border-white/10">Compétition</th>
-            <th className="p-6 border-b border-white/10">Team</th>
-            <th className="p-6 border-b border-white/10">Position</th>
+            <th className="hidden md:table-cell text-center p-6 border-b border-white/10">Saison</th>
+            <th className="hidden md:table-cell p-6 border-b border-white/10">Compétition</th>
+            <th className="hidden md:table-cell p-6 border-b border-white/10 text-center md:text-left">Team</th>
+            <th className="hidden md:table-cell p-6 border-b border-white/10">Position</th>
             <th className="text-center p-6 border-b border-white/10">Age</th>
-            <th className="text-center p-6 border-b border-white/10">Mins</th>
+            <th className="hidden md:table-cell text-center p-6 border-b border-white/10">Mins</th>
             <th className="text-right p-6 border-b border-white/10">
               {selectedSortBy === 'custom_score' ? 'Score Lab' :
                selectedSortBy === 'note_ponderee' ? 'Impact Score' : 
@@ -207,21 +209,24 @@ const RankingTable = ({
                     <RankBadge rank={rank} />
                   </div>
                 </td>
-                <td>
+                <td className="py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full overflow-hidden bg-white/5 border border-white/10 group-hover:border-sky-500/50 transition-colors">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden bg-white/5 border border-white/10 group-hover:border-sky-500/50 transition-colors">
                       {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> : null}
                     </div>
-                    <span className="font-bold group-hover:text-sky-400 transition-colors">{player.name || player.full_name || 'Nom inconnu'}</span>
+                    <div className="flex flex-col">
+                      <span className="font-bold group-hover:text-sky-400 transition-colors text-sm md:text-base">{player.name || player.full_name || 'Nom inconnu'}</span>
+                      <span className="md:hidden text-[10px] text-[rgb(var(--text-muted))] uppercase">{player.last_club_name}</span>
+                    </div>
                   </div>
                 </td>
-                <td className="text-center text-[rgb(var(--text-muted))]">{player.season || '—'}</td>
-                <td className="text-[rgb(var(--text-muted))]">{player.competition || '—'}</td>
-                <td className="text-[rgb(var(--text-muted))]">{player.last_club_name || 'Équipe inconnue'}</td>
-                <td><span className="px-2 py-0.5 rounded bg-white/5 text-xs border border-white/5">{player.position_category || 'Non renseigné'}</span></td>
-                <td className="text-center">{player.age || '—'}</td>
-                <td className="text-center text-[rgb(var(--text-muted))] text-xs font-mono">{player.minutes_on_field || 0}'</td>
-                <td className="text-right font-mono font-black text-sky-400 text-lg">{formattedValue}</td>
+                <td className="hidden md:table-cell text-center text-[rgb(var(--text-muted))]">{player.season || '—'}</td>
+                <td className="hidden md:table-cell text-[rgb(var(--text-muted))]">{player.competition || '—'}</td>
+                <td className="hidden md:table-cell text-[rgb(var(--text-muted))]">{player.last_club_name || 'Équipe inconnue'}</td>
+                <td className="hidden md:table-cell"><span className="px-2 py-0.5 rounded bg-white/5 text-xs border border-white/5">{player.position_category || 'Non renseigné'}</span></td>
+                <td className="text-center font-bold md:font-normal">{player.age || '—'}</td>
+                <td className="hidden md:table-cell text-center text-[rgb(var(--text-muted))] text-xs font-mono">{player.minutes_on_field || 0}'</td>
+                <td className="text-right font-mono font-black text-sky-400 text-base md:text-lg">{formattedValue}</td>
               </tr>
             );
           })}
