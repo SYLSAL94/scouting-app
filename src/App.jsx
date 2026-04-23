@@ -411,6 +411,10 @@ function App() {
                 rowContext={selectedPlayer}
                 onClose={() => setSelectedPlayer(null)} 
                 activeFilters={activeFilters}
+                onSwitchPlayer={(id) => {
+                    const newPlayer = players.find(p => p.id === id) || { id };
+                    setSelectedPlayer(newPlayer);
+                }}
             />
         )}
       </AnimatePresence>

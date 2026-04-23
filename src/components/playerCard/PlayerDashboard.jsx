@@ -8,18 +8,29 @@ import PositionDistributionWidget from './PositionDistributionWidget';
 import DataPanelWidget from './DataPanelWidget';
 import PlayerRadar from '../../PlayerRadar';
 
-const API_BASE_URL = 'https://api-scouting.theanalyst.cloud';
+import { API_BASE_URL } from '../../config';
 
-export default function PlayerDashboard({ playerId, onClose, activeFilters = {}, rowContext = null }) {
+export default function PlayerDashboard({ playerId, onClose, activeFilters = {}, rowContext = null, onSwitchPlayer = null }) {
     const [playerData, setPlayerData] = useState(null);
     const [rankingData, setRankingData] = useState(null);
     const [availableContexts, setAvailableContexts] = useState([]);
     const [selectedContext, setSelectedContext] = useState(rowContext);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isRankingModalOpen, setIsRankingModalOpen] = useState(false);
+    const [selectedPositionForRanking, setSelectedPositionForRanking] = useState(null);
     
     // Définition du contexte actif pour le rendu et les effets
     const contextToUse = selectedContext || rowContext;
+
+    // Reset du contexte lors du changement de joueur (Navigation)
+    useEffect(() => {
+        if (playerId) {
+            setSelectedContext(rowContext);
+            setPlayerData(null);
+            setRankingData(null);
+        }
+    }, [playerId, rowContext]);
 
     // Fetch initial des contextes disponibles
     useEffect(() => {
@@ -33,7 +44,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     useEffect(() => {
         if (!playerId) return;
         setLoading(true);
-        setError(null);
+        // On ne reset plus playerData ici car c'est fait dans le useEffect de Reset ci-dessus
         
         // Fetch 1: Profil complet avec propagation du contexte
         // Priorité : selectedContext (Switcher) > rowContext (Clic liste) > activeFilters (Sidebar)
@@ -79,8 +90,14 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                 setLoading(false);
             });
 
-        // Fetch 2: Classement dynamique
-        fetch(`${API_BASE_URL}/api/players/${playerId}/ranking`)
+        // Fetch 2: Classement dynamique (Contextualisé)
+        let rankingUrl = `${API_BASE_URL}/api/players/${playerId}/ranking?`;
+        const rankingParams = [];
+        if (finalCompetitions) rankingParams.push(`competition=${encodeURIComponent(finalCompetitions)}`);
+        if (finalSeasons) rankingParams.push(`season=${encodeURIComponent(finalSeasons)}`);
+        rankingUrl += rankingParams.join('&');
+
+        fetch(rankingUrl)
             .then(res => res.json())
             .then(data => setRankingData(data))
             .catch(err => console.error("Ranking fetch error:", err));
@@ -171,15 +188,18 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
 
                                 {/* Classement & Stats - Haut Droite */}
                                 <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 relative z-10">
-                                    {/* Classement Spécifique */}
-                                    <div className="text-right">
+                                    {/* Classement Spécifique - INTERACTIF */}
+                                    <div 
+                                        onClick={() => setIsRankingModalOpen(true)}
+                                        className="text-right cursor-pointer hover:bg-white/10 transition-all duration-300 rounded-xl p-3 border border-transparent hover:border-white/10 group"
+                                    >
                                         <div className="flex items-center justify-end gap-2 mb-1">
-                                            <div className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Classement</div>
+                                            <div className="text-[10px] font-black uppercase text-slate-500 tracking-widest group-hover:text-sky-400 transition-colors">Classement</div>
                                             {rankingData?.is_top_1 && (
                                                 <span className="px-2 py-0.5 bg-yellow-500 text-black text-[9px] font-black rounded shadow-lg shadow-yellow-500/20 uppercase">Top 1%</span>
                                             )}
                                         </div>
-                                        <div className="text-4xl font-black text-white flex items-baseline justify-end">
+                                        <div className="text-4xl font-black text-white flex items-baseline justify-end group-hover:scale-105 transition-transform origin-right">
                                             {rankingData?.rank || '-'}<span className="text-slate-600 text-xl ml-1">/ {rankingData?.total || '-'}</span>
                                         </div>
                                     </div>
@@ -205,10 +225,21 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                             {/* Grille principale - Triple Colonne */}
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8 items-start">
                                 
-                                {/* Colonne GAUCHE : Details & Gauges (4/12) */}
                                 <div className="lg:col-span-4 space-y-6 md:space-y-8">
-                                    <DetailsPanelWidget player={playerData} />
-                                    <PositionDistributionWidget player={playerData} />
+                                    <DetailsPanelWidget 
+                                        player={playerData} 
+                                        onSelectProfile={(role) => {
+                                            setSelectedPositionForRanking(role);
+                                            setIsRankingModalOpen(true);
+                                        }}
+                                    />
+                                    <PositionDistributionWidget 
+                                        player={playerData} 
+                                        onSelectPosition={(pos) => {
+                                            setSelectedPositionForRanking(pos);
+                                            setIsRankingModalOpen(true);
+                                        }}
+                                    />
                                     <PerformancePanelWidget player={playerData} />
                                 </div>
 
@@ -249,6 +280,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                         playerId={playerId} 
                                         competition={contextToUse?.competition}
                                         season={contextToUse?.season}
+                                        onSelectPlayer={onSwitchPlayer}
                                     />
                                 </div>
 
@@ -257,17 +289,189 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                     <div className="flex-1 md:min-h-[500px]">
                                         <DataPanelWidget player={playerData} />
                                     </div>
-                                    <TeammatesWidget 
-                                        playerId={playerId} 
-                                        competition={contextToUse?.competition}
-                                        season={contextToUse?.season}
-                                        team={contextToUse?.last_club_name}
-                                    />
+                                    {playerData && (
+                                        <TeammatesWidget 
+                                            playerId={playerId} 
+                                            team={playerData?.last_club_name}
+                                            competition={contextToUse?.competition}
+                                            season={contextToUse?.season}
+                                            onSelectPlayer={onSwitchPlayer}
+                                        />
+                                    )}
                                 </div>
                                 
                             </div>
                         </div>
                     ) : null}
+                </div>
+
+                {/* Modale de Classement Détaillé */}
+                <RankingModal 
+                    isOpen={isRankingModalOpen}
+                    onClose={() => {
+                        setIsRankingModalOpen(false);
+                        setSelectedPositionForRanking(null);
+                    }}
+                    playerId={playerId}
+                    playerName={playerData?.name || playerData?.full_name}
+                    competition={contextToUse?.competition}
+                    season={contextToUse?.season}
+                    position={selectedPositionForRanking}
+                    onSelectPlayer={(id) => {
+                        if (onSwitchPlayer) {
+                            onSwitchPlayer(id);
+                            setIsRankingModalOpen(false);
+                        } else {
+                            // Fallback si pas de switch prop : on simule un clic via les outils du parent
+                            console.warn("Switch player not implemented in parent");
+                            setIsRankingModalOpen(false);
+                        }
+                    }}
+                />
+            </div>
+        </div>
+    );
+}
+
+// Sous-composant Modale de Ranking - DESIGN PREMIUM
+function RankingModal({ isOpen, onClose, playerId, playerName, competition, season, position, onSelectPlayer }) {
+    const [rankingList, setRankingList] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (isOpen && playerId) {
+            setLoading(true);
+            
+            let url = `${API_BASE_URL}/api/players/${playerId}/ranking?`;
+            const params = [];
+            if (competition) params.push(`competition=${encodeURIComponent(competition)}`);
+            if (season) params.push(`season=${encodeURIComponent(season)}`);
+            if (position) params.push(`position=${encodeURIComponent(position)}`);
+            url += params.join('&');
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    setRankingList(data.items || data.full_ranking || []);
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error("Ranking Detail fetch error:", err);
+                    setLoading(false);
+                });
+        }
+    }, [isOpen, playerId]);
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="bg-slate-900 border border-slate-700/50 rounded-[2.5rem] w-full max-w-2xl max-h-[85vh] flex flex-col shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300 overflow-hidden">
+                
+                {/* Header stylisé */}
+                <div className="p-8 border-b border-slate-800/50 flex justify-between items-center bg-gradient-to-br from-slate-800 to-slate-900">
+                    <div>
+                        <h3 className="text-3xl font-black text-white tracking-tighter">Classement Élite</h3>
+                        <div className="flex items-center gap-2 mt-1">
+                            <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></div>
+                            <p className="text-sky-400 text-[11px] font-black uppercase tracking-widest">{playerName}</p>
+                        </div>
+                    </div>
+                    <button 
+                        onClick={onClose} 
+                        className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700 transition-all border border-slate-700/50"
+                    >
+                        ✕
+                    </button>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-4 styled-scrollbar bg-slate-900/50">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-20 gap-6">
+                            <div className="relative">
+                                <div className="w-16 h-16 border-4 border-sky-500/20 rounded-full"></div>
+                                <div className="w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                            </div>
+                            <div className="flex flex-col items-center gap-1">
+                                <p className="text-white font-black text-xs uppercase tracking-widest">Calcul du Ranking...</p>
+                                <p className="text-slate-500 text-[10px] font-bold">Analyse de la population {competition}</p>
+                            </div>
+                        </div>
+                    ) : rankingList.length > 0 ? (
+                        <div className="space-y-4">
+                            {rankingList.map((item, idx) => {
+                                const isTarget = item.id === playerId || item.player_id === playerId;
+                                return (
+                                    <div 
+                                        key={idx} 
+                                        onClick={() => !isTarget && onSelectPlayer(item.id || item.player_id)}
+                                        className={`group flex items-center justify-between p-4 rounded-3xl border transition-all duration-500 cursor-pointer ${
+                                            isTarget 
+                                                ? 'bg-sky-500/20 border-sky-500/50 shadow-[0_0_20px_-5px_rgba(14,165,233,0.3)] cursor-default' 
+                                                : 'bg-slate-800/30 border-slate-800/50 hover:bg-slate-800/60 hover:border-slate-700 hover:scale-[1.02] active:scale-95'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-5">
+                                            {/* Badge de Rang */}
+                                            <div className={`w-12 h-12 flex items-center justify-center rounded-2xl font-black text-lg shadow-lg ${
+                                                idx === 0 ? 'bg-gradient-to-br from-yellow-300 to-yellow-600 text-yellow-950 ring-4 ring-yellow-500/20' : 
+                                                idx === 1 ? 'bg-gradient-to-br from-slate-200 to-slate-400 text-slate-900 ring-4 ring-slate-400/20' : 
+                                                idx === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-700 text-orange-950 ring-4 ring-orange-600/20' : 
+                                                'bg-slate-800 text-slate-400 border border-slate-700'
+                                            }`}>
+                                                {idx + 1}
+                                            </div>
+
+                                            {/* Photo & Info */}
+                                            <div className="flex items-center gap-4">
+                                                <div className="relative">
+                                                    {item.image ? (
+                                                        <img src={item.image} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-slate-700 bg-slate-800" />
+                                                    ) : (
+                                                        <div className="w-14 h-14 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-xl font-black text-slate-600">
+                                                            {item.name ? item.name.charAt(0) : '?'}
+                                                        </div>
+                                                    )}
+                                                    {isTarget && <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-sky-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] text-white">✓</div>}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className={`text-base font-black tracking-tight leading-tight ${isTarget ? 'text-white' : 'text-slate-200 group-hover:text-white transition-colors'}`}>
+                                                        {item.name || item.player_name}
+                                                    </span>
+                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                                                        {item.team || item.current_team_name}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Score Section */}
+                                        <div className="text-right flex flex-col items-end">
+                                            <div className={`text-2xl font-black leading-none tracking-tighter ${isTarget ? 'text-sky-400' : 'text-white'}`}>
+                                                {Math.round(item.note_ponderee || item.score || 0)}
+                                                <span className="text-[10px] text-slate-500 ml-1 font-bold">PTS</span>
+                                            </div>
+                                            <div className={`text-[9px] font-black uppercase mt-1.5 px-2 py-0.5 rounded-md border ${
+                                                isTarget ? 'bg-sky-500/20 border-sky-500/30 text-sky-400' : 'bg-slate-800 border-slate-700 text-slate-500'
+                                            }`}>
+                                                {item.position_category || 'SCOUT'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center py-20 text-slate-500 italic">
+                            <p>Aucune donnée de classement disponible pour ce contexte.</p>
+                        </div>
+                    )}
+                </div>
+                
+                <div className="p-6 bg-slate-900 border-t border-slate-800/50">
+                    <p className="text-[10px] text-center text-slate-500 font-bold uppercase tracking-[0.2em] opacity-50">
+                        Classement Dynamique • {competition} • {season}
+                    </p>
                 </div>
             </div>
         </div>

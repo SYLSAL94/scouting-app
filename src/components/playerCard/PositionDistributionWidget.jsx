@@ -1,9 +1,9 @@
 import React from 'react';
 
-export default function PositionDistributionWidget({ player }) {
+export default function PositionDistributionWidget({ player, onSelectPosition }) {
     if (!player) return null;
 
-    // Extraction dynamique des postes joués (copie conforme de la logique legacy)
+    // Extraction dynamique des postes joués
     const positions = [
         { label: player.primary_position, value: player.primary_position_percent, color: 'bg-sky-500' },
         { label: player.secondary_position, value: player.secondary_position_percent, color: 'bg-emerald-500' },
@@ -17,14 +17,18 @@ export default function PositionDistributionWidget({ player }) {
             </h3>
             <div className="space-y-4">
                 {positions.map((pos) => (
-                    <div key={pos.label}>
-                        <div className="flex justify-between text-[10px] font-black uppercase text-slate-400 mb-1.5">
+                    <div 
+                        key={pos.label}
+                        onClick={() => onSelectPosition && onSelectPosition(pos.label)}
+                        className="group cursor-pointer"
+                    >
+                        <div className="flex justify-between text-[10px] font-black uppercase text-slate-400 mb-1.5 group-hover:text-sky-400 transition-colors">
                             <span>{pos.label}</span>
                             <span>{pos.value}%</span>
                         </div>
-                        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
+                        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50 group-hover:border-sky-500/30 transition-all">
                             <div 
-                                className={`h-full ${pos.color} rounded-full transition-all duration-1000`}
+                                className={`h-full ${pos.color} rounded-full transition-all duration-1000 group-hover:brightness-125`}
                                 style={{ width: `${pos.value}%` }}
                             ></div>
                         </div>

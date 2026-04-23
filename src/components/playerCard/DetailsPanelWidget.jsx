@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function DetailsPanelWidget({ player }) {
+export default function DetailsPanelWidget({ player, onSelectProfile }) {
     if (!player) return null;
 
     const infoItems = [
@@ -44,7 +44,15 @@ export default function DetailsPanelWidget({ player }) {
                 <div className="flex gap-2">
                     {affinityProfiles.length > 0 ? (
                         affinityProfiles.map((profile, i) => (
-                            <div key={profile.role} className={`flex-1 bg-slate-800/60 p-2 rounded-lg border ${i===0?'border-yellow-500/30':i===1?'border-slate-400/30':'border-orange-500/30'} text-center shadow-inner`}>
+                            <div 
+                                key={profile.role} 
+                                onClick={() => onSelectProfile && onSelectProfile(profile.role)}
+                                className={`flex-1 bg-slate-800/60 p-2 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 ${
+                                    i===0?'border-yellow-500/50 hover:bg-yellow-500/10':
+                                    i===1?'border-slate-400/50 hover:bg-slate-400/10':
+                                    'border-orange-500/50 hover:bg-orange-500/10'
+                                } text-center shadow-inner`}
+                            >
                                 <div className={`text-[8px] font-black uppercase ${i===0?'text-yellow-500':i===1?'text-slate-300':'text-orange-400'}`}>
                                     {i===0?'🥇 OR':i===1?'🥈 ARGENT':'🥉 BRONZE'}
                                 </div>

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config';
 
-const API_BASE_URL = 'https://api-scouting.theanalyst.cloud';
-
-export default function SimilarPlayersWidget({ playerId, competition, season }) {
+export default function SimilarPlayersWidget({ playerId, competition, season, onSelectPlayer }) {
     const [mode, setMode] = useState('similar'); // 'similar' or 'complementary'
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -136,7 +135,11 @@ export default function SimilarPlayersWidget({ playerId, competition, season }) 
                 ) : (
                     <ul className="space-y-3">
                         {players.map((p, i) => (
-                            <li key={p.unique_id || `${p.id}-${i}`} className="group bg-slate-800/30 hover:bg-slate-800/60 p-4 rounded-2xl border border-slate-700/30 hover:border-sky-500/30 transition-all flex justify-between items-center cursor-pointer shadow-sm">
+                                <li 
+                                    key={p.unique_id || `${p.id}-${i}`} 
+                                    onClick={() => onSelectPlayer && onSelectPlayer(p.id)}
+                                    className="group bg-slate-800/30 hover:bg-slate-800/60 p-4 rounded-2xl border border-slate-700/30 hover:border-sky-500/30 transition-all flex justify-between items-center cursor-pointer shadow-sm"
+                                >
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-[10px] font-black text-slate-500 group-hover:text-sky-400 transition-colors shadow-inner">
                                         {i + 1}

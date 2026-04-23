@@ -213,14 +213,14 @@ def process_batch(df, all_metric_keys, all_profile_metrics):
     
     # On opère sur une copie pour éviter les SettingWithCopy
     df_main = df.copy()
+    # 1. Nettoyage Numérique Absolu (Bouclier de typage)
     for col in df_main.columns:
         if col in text_cols:
             if col in ['secondary_position', 'third_position', 'positions']:
                 df_main[col] = df_main[col].replace({0: np.nan, '0': np.nan, 0.0: np.nan})
         else:
-            if df_main[col].dtype == object:
-                df_main[col] = df_main[col].astype(str).str.replace(',', '.', regex=False)
-            df_main[col] = pd.to_numeric(df_main[col], errors='coerce')
+            # On force le passage en string pour nettoyer toute virgule européenne résiduelle
+            df_main[col] = pd.to_numeric(df_main[col].astype(str).str.replace(',', '.', regex=False), errors='coerce')
 
     # Dictionnaire temporaire pour TOUTES les nouvelles colonnes
     new_results = {}
@@ -260,10 +260,17 @@ def process_batch(df, all_metric_keys, all_profile_metrics):
                     )
             new_results[f'{m}_pct'] = pct_series
 
-    # 5. Calcul des INDICES (en utilisant new_results pour les _pct)
-    indices_data = {}
+    # 5. Calcul des INDICES (Approche sécurisée .loc anti-écrasement)
+    all_indices_names = set()
+    for configs in INDICES_CONFIG.values():
+        all_indices_names.update(configs.keys())
+    
+    indices_data = {name: pd.Series(0.0, index=df_main.index) for name in all_indices_names}
+
     for p_type, configs in INDICES_CONFIG.items():
         mask = (pos_cat == 'Gardien') if p_type == 'goalkeeper' else (pos_cat != 'Gardien')
+        if not mask.any(): continue
+
         for idx_name, weights in configs.items():
             idx_series = pd.Series(0.0, index=df_main.index)
             for m, w in weights.items():
@@ -275,7 +282,9 @@ def process_batch(df, all_metric_keys, all_profile_metrics):
             total_weight = sum(abs(v) for v in weights.values())
             if total_weight > 0:
                 idx_series /= total_weight
-            indices_data[idx_name] = idx_series.where(mask, 0.0)
+            
+            # Injection sécurisée par masque pour préserver les calculs du groupe précédent
+            indices_data[idx_name].loc[mask] = idx_series.loc[mask]
     
     # On ajoute les indices au dictionnaire final
     new_results.update(indices_data)
@@ -364,14 +373,15 @@ def run_enrichment(mode):
             all_contexts_set = set((r[0], r[1]) for r in all_contexts)
             
             # 2. Découverte des contextes déjà enrichis (Resume Logic)
-            existing_ids = []
+            existing_keys = []
             done_contexts_set = set()
             
             if mode == "-2":
                 logger.info(f"Vérification de l'état d'avancement dans {TARGET_TABLE}...")
                 try:
-                    # Lecture des IDs existants pour le Smart Delta
-                    existing_ids = pd.read_sql(f"SELECT id FROM {TARGET_TABLE}", conn)['id'].tolist()
+                    # Lecture des Clés Composites existantes pour le Smart Delta
+                    existing_data = pd.read_sql(f"SELECT id, competition, season FROM {TARGET_TABLE}", conn)
+                    existing_keys = (existing_data['id'].astype(str) + '_' + existing_data['competition'].astype(str) + '_' + existing_data['season'].astype(str)).tolist()
                     
                     done_contexts = conn.execute(text(f"SELECT DISTINCT competition, season FROM {TARGET_TABLE}")).fetchall()
                     done_contexts_set = set((r[0], r[1]) for r in done_contexts)
@@ -400,11 +410,13 @@ def run_enrichment(mode):
                 if df_batch.empty:
                     continue
 
-                # Vérification Smart Delta : On vérifie si ce batch contient des nouveautés
-                if mode == "-2" and existing_ids:
-                    if df_batch[~df_batch['id'].isin(existing_ids)].empty:
+                # Vérification Smart Delta : On vérifie si ce batch contient des nouveautés (Clé Composite)
+                if mode == "-2" and existing_keys:
+                    df_batch['comp_key'] = df_batch['id'].astype(str) + '_' + df_batch['competition'].astype(str) + '_' + df_batch['season'].astype(str)
+                    if df_batch[~df_batch['comp_key'].isin(existing_keys)].empty:
                         logger.info(f"   -> Skip : Aucun nouveau joueur dans ce contexte.")
                         continue
+                    df_batch = df_batch.drop(columns=['comp_key'])
 
                 # Calculs analytiques (Sur le batch COMPLET pour la justesse statistique)
                 df_enriched = process_batch(df_batch, all_metric_keys, all_profile_metrics)
@@ -412,9 +424,11 @@ def run_enrichment(mode):
                 # Logique d'insertion intelligente
                 if_exists_action = 'append'
                 
-                if mode == "-2" and existing_ids:
-                    # Filtrage post-calcul pour ne pas insérer de doublons
-                    df_enriched = df_enriched[~df_enriched['id'].isin(existing_ids)]
+                if mode == "-2" and existing_keys:
+                    # Filtrage post-calcul via Clé Composite pour ne pas insérer de doublons
+                    df_enriched['comp_key'] = df_enriched['id'].astype(str) + '_' + df_enriched['competition'].astype(str) + '_' + df_enriched['season'].astype(str)
+                    df_enriched = df_enriched[~df_enriched['comp_key'].isin(existing_keys)]
+                    df_enriched = df_enriched.drop(columns=['comp_key'])
                 elif mode == "-1" and i == 0:
                     # Full Replace : on écrase la table sur le premier batch du cycle
                     if_exists_action = 'replace'

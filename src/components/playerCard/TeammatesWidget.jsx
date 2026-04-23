@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config';
 
-const API_BASE_URL = 'https://api-scouting.theanalyst.cloud';
-
-export default function TeammatesWidget({ playerId, competition, season, team }) {
+export default function TeammatesWidget({ playerId, competition, season, team, onSelectPlayer }) {
     const [teammates, setTeammates] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -58,6 +57,7 @@ export default function TeammatesWidget({ playerId, competition, season, team })
                         return (
                             <div 
                                 key={p.unique_id || `${p.id}-${i}`} 
+                                onClick={() => onSelectPlayer && onSelectPlayer(p.id)}
                                 className="group flex items-center gap-3 p-2 bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-sky-500/30 rounded-xl transition-all duration-300 cursor-pointer"
                             >
                                 {/* Position Badge */}

@@ -29,3 +29,6 @@ init_wyscout_db.py
 Exemple"node_modules/" 
 workerConfig.js
 bck
+init_wyscout_db.txt
+enrich_data.txt
+api_scouting.txt
