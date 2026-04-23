@@ -370,6 +370,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
 function RankingModal({ isOpen, onClose, playerId, playerName, competition, season, position, onSelectPlayer }) {
     const [rankingList, setRankingList] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('full'); // 'full' ou 'focus'
 
     useEffect(() => {
         if (isOpen && playerId) {
@@ -397,114 +398,125 @@ function RankingModal({ isOpen, onClose, playerId, playerName, competition, seas
 
     if (!isOpen) return null;
 
+    // Logique pour l'onglet 'Ma Position' (Joueur cible + voisins)
+    const targetIndex = rankingList.findIndex(p => (p.id === playerId || p.player_id === playerId));
+    const focusList = targetIndex !== -1 
+        ? rankingList.slice(Math.max(0, targetIndex - 2), Math.min(rankingList.length, targetIndex + 3))
+        : [];
+
+    const displayList = activeTab === 'focus' ? focusList : rankingList;
+
     return (
-        <div className="fixed inset-0 z-[200] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
-            <div className="bg-slate-900 border border-slate-700/50 rounded-[2.5rem] w-full max-w-2xl max-h-[85vh] flex flex-col shadow-[0_0_50px_-12px_rgba(0,0,0,0.5)] animate-in fade-in zoom-in duration-300 overflow-hidden">
+        <div className="fixed inset-0 z-[200] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-0 md:p-4">
+            <div className="bg-slate-900 border-0 md:border md:border-slate-700/50 rounded-none md:rounded-[2.5rem] w-full max-w-2xl h-full md:max-h-[85vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
                 
-                {/* Header stylisé */}
-                <div className="p-8 border-b border-slate-800/50 flex justify-between items-center bg-gradient-to-br from-slate-800 to-slate-900">
+                {/* Header Premium */}
+                <div className="p-6 md:p-8 border-b border-white/5 flex justify-between items-center bg-slate-900">
                     <div>
-                        <h3 className="text-3xl font-black text-white tracking-tighter">Classement Élite</h3>
+                        <h3 className="text-xl md:text-3xl font-black text-white tracking-tighter uppercase italic">{position || 'Classement'}</h3>
                         <div className="flex items-center gap-2 mt-1">
                             <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></div>
-                            <p className="text-sky-400 text-[11px] font-black uppercase tracking-widest">{playerName}</p>
+                            <p className="text-sky-400 text-[10px] font-black uppercase tracking-widest truncate max-w-[200px] md:max-w-none">{playerName}</p>
                         </div>
                     </div>
                     <button 
                         onClick={onClose} 
-                        className="w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-800/50 text-slate-400 hover:text-white hover:bg-slate-700 transition-all border border-slate-700/50"
+                        className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl md:rounded-2xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/5"
                     >
                         ✕
                     </button>
                 </div>
+
+                {/* Barre d'onglets Mobile */}
+                <div className="px-6 py-3 bg-slate-900 border-b border-white/5 flex gap-2">
+                    <button 
+                        onClick={() => setActiveTab('full')}
+                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'full' ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/5 text-slate-500'}`}
+                    >
+                        Leaderboard
+                    </button>
+                    <button 
+                        onClick={() => setActiveTab('focus')}
+                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'focus' ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/5 text-slate-500'}`}
+                    >
+                        Ma Position
+                    </button>
+                </div>
                 
-                <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-4 styled-scrollbar bg-slate-900/50">
+                <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 styled-scrollbar bg-slate-900/30">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-6">
                             <div className="relative">
                                 <div className="w-16 h-16 border-4 border-sky-500/20 rounded-full"></div>
                                 <div className="w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
                             </div>
-                            <div className="flex flex-col items-center gap-1">
-                                <p className="text-white font-black text-xs uppercase tracking-widest">Calcul du Ranking...</p>
-                                <p className="text-slate-500 text-[10px] font-bold">Analyse de la population {competition}</p>
-                            </div>
+                            <p className="text-white font-black text-xs uppercase tracking-widest animate-pulse">Analyse du classement...</p>
                         </div>
-                    ) : rankingList.length > 0 ? (
-                        <div className="space-y-4">
-                            {rankingList.map((item, idx) => {
+                    ) : displayList.length > 0 ? (
+                        <div className="space-y-3 md:space-y-4 pb-10">
+                            {displayList.map((item, idx) => {
+                                const realIdx = activeTab === 'focus' ? rankingList.indexOf(item) : idx;
                                 const isTarget = item.id === playerId || item.player_id === playerId;
                                 return (
                                     <div 
                                         key={idx} 
                                         onClick={() => !isTarget && onSelectPlayer(item.id || item.player_id)}
-                                        className={`group flex items-center justify-between p-4 rounded-3xl border transition-all duration-500 cursor-pointer ${
+                                        className={`group flex items-center justify-between p-3 md:p-4 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer ${
                                             isTarget 
-                                                ? 'bg-sky-500/20 border-sky-500/50 shadow-[0_0_20px_-5px_rgba(14,165,233,0.3)] cursor-default' 
-                                                : 'bg-slate-800/30 border-slate-800/50 hover:bg-slate-800/60 hover:border-slate-700 hover:scale-[1.02] active:scale-95'
+                                                ? 'bg-sky-500/20 border-sky-500/40 shadow-[0_0_20px_rgba(14,165,233,0.15)] cursor-default' 
+                                                : 'bg-white/[0.02] border-white/5 hover:bg-white/5 hover:border-white/10'
                                         }`}
                                     >
-                                        <div className="flex items-center gap-5">
+                                        <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0">
                                             {/* Badge de Rang */}
-                                            <div className={`w-12 h-12 flex items-center justify-center rounded-2xl font-black text-lg shadow-lg ${
-                                                idx === 0 ? 'bg-gradient-to-br from-yellow-300 to-yellow-600 text-yellow-950 ring-4 ring-yellow-500/20' : 
-                                                idx === 1 ? 'bg-gradient-to-br from-slate-200 to-slate-400 text-slate-900 ring-4 ring-slate-400/20' : 
-                                                idx === 2 ? 'bg-gradient-to-br from-orange-400 to-orange-700 text-orange-950 ring-4 ring-orange-600/20' : 
-                                                'bg-slate-800 text-slate-400 border border-slate-700'
+                                            <div className={`w-8 h-8 md:w-12 md:h-12 shrink-0 flex items-center justify-center rounded-lg md:rounded-2xl font-black text-xs md:text-lg ${
+                                                realIdx === 0 ? 'bg-yellow-500 text-yellow-950' : 
+                                                realIdx === 1 ? 'bg-slate-300 text-slate-950' : 
+                                                realIdx === 2 ? 'bg-orange-600 text-orange-50' : 
+                                                'bg-slate-800 text-slate-400'
                                             }`}>
-                                                {idx + 1}
+                                                {realIdx + 1}
                                             </div>
 
                                             {/* Photo & Info */}
-                                            <div className="flex items-center gap-4">
-                                                <div className="relative">
+                                            <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                                                <div className="relative shrink-0">
                                                     {item.image ? (
-                                                        <img src={item.image} alt="" className="w-14 h-14 rounded-full object-cover border-2 border-slate-700 bg-slate-800" />
+                                                        <img src={item.image} alt="" className="w-10 h-10 md:w-14 md:h-14 rounded-full object-cover border border-white/10 bg-slate-800" />
                                                     ) : (
-                                                        <div className="w-14 h-14 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-xl font-black text-slate-600">
+                                                        <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-sm md:text-xl font-black text-slate-600">
                                                             {item.name ? item.name.charAt(0) : '?'}
                                                         </div>
                                                     )}
-                                                    {isTarget && <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-sky-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] text-white">✓</div>}
+                                                    {isTarget && <div className="absolute -bottom-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-sky-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-[8px] md:text-[10px] text-white font-black">✓</div>}
                                                 </div>
-                                                <div className="flex flex-col">
-                                                    <span className={`text-base font-black tracking-tight leading-tight ${isTarget ? 'text-white' : 'text-slate-200 group-hover:text-white transition-colors'}`}>
+                                                <div className="flex flex-col min-w-0">
+                                                    <span className={`text-sm md:text-base font-black truncate ${isTarget ? 'text-white' : 'text-slate-200 group-hover:text-sky-400 transition-colors'}`}>
                                                         {item.name || item.player_name}
                                                     </span>
-                                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">
+                                                    <span className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase truncate">
                                                         {item.team || item.current_team_name}
                                                     </span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        {/* Score Section */}
-                                        <div className="text-right flex flex-col items-end">
-                                            <div className={`text-2xl font-black leading-none tracking-tighter ${isTarget ? 'text-sky-400' : 'text-white'}`}>
-                                                {Math.round(item.note_ponderee || item.score || 0)}
-                                                <span className="text-[10px] text-slate-500 ml-1 font-bold">PTS</span>
+                                        <div className="text-right shrink-0">
+                                            <div className={`text-sm md:text-lg font-black ${isTarget ? 'text-sky-400' : 'text-white'}`}>
+                                                {Number(item.score).toFixed(1)}
                                             </div>
-                                            <div className={`text-[9px] font-black uppercase mt-1.5 px-2 py-0.5 rounded-md border ${
-                                                isTarget ? 'bg-sky-500/20 border-sky-500/30 text-sky-400' : 'bg-slate-800 border-slate-700 text-slate-500'
-                                            }`}>
-                                                {item.position_category || 'SCOUT'}
-                                            </div>
+                                            <div className="text-[8px] font-black text-slate-500 uppercase tracking-tighter">SCORE</div>
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-20 text-slate-500 italic">
-                            <p>Aucune donnée de classement disponible pour ce contexte.</p>
+                        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+                            <div className="text-4xl">🔎</div>
+                            <div className="text-slate-500 font-bold text-sm">Aucune donnée de classement disponible pour ce contexte.</div>
                         </div>
                     )}
-                </div>
-                
-                <div className="p-6 bg-slate-900 border-t border-slate-800/50">
-                    <p className="text-[10px] text-center text-slate-500 font-bold uppercase tracking-[0.2em] opacity-50">
-                        Classement Dynamique • {competition} • {season}
-                    </p>
                 </div>
             </div>
         </div>
