@@ -47,7 +47,7 @@ export default function DataPanelWidget({ player }) {
             items = items.filter(([k]) => k.toLowerCase().includes(search.toLowerCase()));
         }
 
-        return items.sort((a, b) => a[0].localeCompare(b[0]));
+        return items.sort(([, valA], [, valB]) => Number(valB) - Number(valA));
     }, [player, tab, search]);
 
     if (!player) return null;

@@ -164,7 +164,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                         <span className="truncate text-sky-400">{playerData.competition}</span>
                                     </div>
                                     <div className="flex gap-4 mt-6 justify-center md:justify-start">
-                                        <div className="px-4 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-[11px] font-black text-slate-300 shadow-sm">{playerData.age} ANS</div>
+                                        <div className="px-4 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-[11px] font-black text-slate-300 shadow-sm">{playerData.season_age || playerData.age} ANS</div>
                                         <div className="px-4 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-[11px] font-black text-slate-300 shadow-sm">PIED {playerData?.foot ? String(playerData.foot).toUpperCase() : 'DROIT'}</div>
                                     </div>
                                 </div>

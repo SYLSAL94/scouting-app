@@ -6,11 +6,11 @@ export default function PerformancePanelWidget({ player }) {
     // On extrait dynamiquement tous les indices (colonnes commençant par Indice_)
     const indices = Object.entries(player)
         .filter(([key]) => key.startsWith('Indice_'))
+        .sort(([, valA], [, valB]) => Number(valB) - Number(valA))
         .map(([key, value]) => ({
             label: key.replace('Indice_', '').replace(/_/g, ' '),
             value: Number(value)
-        }))
-        .sort((a, b) => b.value - a.value);
+        }));
 
     return (
         <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-lg backdrop-blur-md h-full">

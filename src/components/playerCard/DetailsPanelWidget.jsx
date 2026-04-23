@@ -4,7 +4,7 @@ export default function DetailsPanelWidget({ player }) {
     if (!player) return null;
 
     const infoItems = [
-        { label: 'Âge', value: player.age, unit: 'ans' },
+        { label: 'Âge', value: player.season_age || player.age, unit: 'ans' },
         { label: 'Taille', value: player.height, unit: 'cm' },
         { label: 'Poids', value: player.weight, unit: 'kg' },
         { label: 'Temps Jeu', value: Number(player.playtime_percent || 0).toFixed(1), unit: '%' },
