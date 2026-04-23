@@ -2,14 +2,20 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE_URL = 'https://api-scouting.theanalyst.cloud';
 
-export default function TeammatesWidget({ playerId }) {
+export default function TeammatesWidget({ playerId, competition, season, team }) {
     const [teammates, setTeammates] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!playerId) return;
         setLoading(true);
-        fetch(`${API_BASE_URL}/api/players/${playerId}/teammates`)
+        
+        let url = `${API_BASE_URL}/api/players/${playerId}/teammates?`;
+        if (competition) url += `competition=${encodeURIComponent(competition)}&`;
+        if (season) url += `season=${encodeURIComponent(season)}&`;
+        if (team) url += `team=${encodeURIComponent(team)}&`;
+
+        fetch(url)
             .then(res => res.json())
             .then(data => {
                 setTeammates(data);
@@ -19,7 +25,7 @@ export default function TeammatesWidget({ playerId }) {
                 console.error(err);
                 setLoading(false);
             });
-    }, [playerId]);
+    }, [playerId, competition, season, team]);
 
     return (
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5 shadow-lg backdrop-blur-md h-full flex flex-col overflow-hidden">
@@ -28,7 +34,9 @@ export default function TeammatesWidget({ playerId }) {
                     <h3 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
                         <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Effectif
                     </h3>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter mt-1">Saison & Club Actuel</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter mt-1">
+                        {team || 'Club Actuel'} • {season || 'Toute Saison'}
+                    </p>
                 </div>
                 <div className="px-2 py-1 bg-slate-800 rounded text-[10px] font-black text-slate-400 border border-slate-700">
                     {teammates.length} JOUEURS

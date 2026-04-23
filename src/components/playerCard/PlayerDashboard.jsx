@@ -17,6 +17,9 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     const [selectedContext, setSelectedContext] = useState(rowContext);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+    // Définition du contexte actif pour le rendu et les effets
+    const contextToUse = selectedContext || rowContext;
 
     // Fetch initial des contextes disponibles
     useEffect(() => {
@@ -36,8 +39,6 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
         // Priorité : selectedContext (Switcher) > rowContext (Clic liste) > activeFilters (Sidebar)
         let profileUrl = `${API_BASE_URL}/api/players/${playerId}?`;
         const queryParams = [];
-
-        const contextToUse = selectedContext || rowContext;
 
         const finalCompetitions = contextToUse?.competition || (activeFilters?.competitions?.length > 0 ? activeFilters.competitions.join(',') : null);
         const finalSeasons = contextToUse?.season || (activeFilters?.seasons?.length > 0 ? activeFilters.seasons.join(',') : null);
@@ -244,7 +245,11 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                         <PlayerRadar player={playerData} />
                                     </div>
 
-                                    <SimilarPlayersWidget playerId={playerId} />
+                                    <SimilarPlayersWidget 
+                                        playerId={playerId} 
+                                        competition={contextToUse?.competition}
+                                        season={contextToUse?.season}
+                                    />
                                 </div>
 
                                 {/* Colonne DROITE : Table & Teammates (4/12) */}
@@ -252,7 +257,12 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                     <div className="flex-1 md:min-h-[500px]">
                                         <DataPanelWidget player={playerData} />
                                     </div>
-                                    <TeammatesWidget playerId={playerId} />
+                                    <TeammatesWidget 
+                                        playerId={playerId} 
+                                        competition={contextToUse?.competition}
+                                        season={contextToUse?.season}
+                                        team={contextToUse?.last_club_name}
+                                    />
                                 </div>
                                 
                             </div>

@@ -3,7 +3,9 @@ import pandas as pd
 import numpy as np
 import json
 import logging
+import argparse
 from sqlalchemy import create_engine, text
+from sqlalchemy.types import Text
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -172,131 +174,175 @@ PROFILE_WEIGHTS = {
 # 4. UTILITAIRES
 # =================================================================
 
-def calculate_season_age(row):
-    """Calcule l'âge du joueur au début de la saison spécifiée."""
-    try:
-        if pd.isna(row['birth_day']): return None
-        birth = pd.to_datetime(row['birth_day'])
-        season_str = str(row['season'])
-        # Si format '2023/2024' -> Janvier de l'année de début
-        # Si format '2023' -> Juin de l'année
-        year = int(season_str.split('/')[0]) if '/' in season_str else int(season_str)
-        ref_date = datetime(year, 1, 1) if '/' in season_str else datetime(year, 6, 1)
-        return round((ref_date - birth).days / 365.25, 1)
-    except:
-        return None
+# Calcul de l'âge vectorisé supprimé (déplacé dans process_batch)
 
-def normalize_metrics(df, metrics_list, min_minutes=400):
-    """Normalisation par compétition, saison et poste (min_minutes=400)."""
-    valid_mask = df['minutes_on_field'] >= min_minutes
+def normalize_metrics(df_calc, metrics_list, min_minutes=400):
+    """Calcule les séries de normalisation sans modifier le DF original."""
+    valid_mask = df_calc['minutes_on_field'] >= min_minutes
+    new_norm_series = {}
+    
     for m in metrics_list:
-        if m in df.columns:
-            valid_df = df[valid_mask]
+        if m in df_calc.columns:
+            valid_df = df_calc[valid_mask]
             if valid_df.empty: continue
             group_stats = valid_df.groupby(['competition', 'season', 'position_category'])[m].agg(['min', 'max']).reset_index()
-            df = df.merge(group_stats, on=['competition', 'season', 'position_category'], how='left', suffixes=('', '_stat'))
-            diff = df['max'] - df['min']
-            df[f'{m}_norm'] = np.where(diff > 0, (df[m] - df['min']) / diff, 0)
-            df[f'{m}_norm'] = df[f'{m}_norm'].clip(0, 1)
-            df = df.drop(columns=['min', 'max'])
-    return df
+            temp_df = df_calc[['competition', 'season', 'position_category', m]].merge(group_stats, on=['competition', 'season', 'position_category'], how='left')
+            diff = temp_df['max'] - temp_df['min']
+            norm_series = np.where(diff > 0, (temp_df[m] - temp_df['min']) / diff, 0)
+            new_norm_series[f'{m}_norm'] = np.clip(norm_series, 0, 1)
+    return new_norm_series
 
 # =================================================================
 # 5. FONCTION DE CALCUL D'UN BATCH
 # =================================================================
 
 def process_batch(df, all_metric_keys, all_profile_metrics):
-    """Applique tous les calculs analytiques sur un dataframe (batch)."""
+    """Applique tous les calculs analytiques (Optimisation: Concat Unique)."""
     if df.empty:
         return df
 
-    # 1. Mapping Positions
-    df['position_category'] = df['primary_position'].map(POS_MAPPING).fillna('Autres')
+    # 1. Bouclier typologique & Nettoyage
+    text_cols = [
+        'birth_country_code', 'birth_country_name', 'birth_date', 'birth_day', 
+        'contract_expires', 'current_team_color', 'current_team_logo', 'current_team_name', 
+        'domestic_competition_name', 'foot', 'full_name', 'image', 'last_club_name', 
+        'name', 'passport_country_codes', 'passport_country_names', 'positions', 
+        'primary_position', 'secondary_position', 'third_position', 'competition', 'season',
+        'position_category'
+    ]
+    
+    # On opère sur une copie pour éviter les SettingWithCopy
+    df_main = df.copy()
+    for col in df_main.columns:
+        if col in text_cols:
+            if col in ['secondary_position', 'third_position', 'positions']:
+                df_main[col] = df_main[col].replace({0: np.nan, '0': np.nan, 0.0: np.nan})
+        else:
+            if df_main[col].dtype == object:
+                df_main[col] = df_main[col].astype(str).str.replace(',', '.', regex=False)
+            df_main[col] = pd.to_numeric(df_main[col], errors='coerce')
 
-    # 2. Âge et Playtime
-    df['season_age'] = df.apply(calculate_season_age, axis=1)
-    df['season_age_years'] = np.floor(df['season_age'].astype(float).fillna(0)).astype(int)
-    df['max_mins_comp'] = df.groupby(['season', 'competition'])['minutes_on_field'].transform('max')
-    df['playtime_percent'] = (df['minutes_on_field'] / df['max_mins_comp'] * 100).fillna(0)
+    # Dictionnaire temporaire pour TOUTES les nouvelles colonnes
+    new_results = {}
 
-    # 3. Pré-calcul des Percentiles
+    # 2. Mapping Positions
+    pos_cat = df_main['primary_position'].map(POS_MAPPING).fillna('Autres')
+    new_results['position_category'] = pos_cat
+
+    # 3. Âge et Playtime
+    birth_dates = pd.to_datetime(df_main['birth_day'], errors='coerce')
+    season_strs = df_main['season'].astype(str)
+    season_years = season_strs.str.extract(r'(\d{4})')[0].astype(float).fillna(0).astype(int)
+    is_split = season_strs.str.contains('/')
+    ref_dates = pd.to_datetime(season_years.astype(str) + '-01-01')
+    ref_dates.loc[~is_split] = pd.to_datetime(season_years.astype(str) + '-06-01')
+    
+    new_results['season_age'] = ((ref_dates - birth_dates).dt.days / 365.25).round(1)
+    new_results['season_age_years'] = np.floor(new_results['season_age'].fillna(0)).astype(int)
+    
+    max_mins = df_main.groupby(['season', 'competition'])['minutes_on_field'].transform('max')
+    new_results['playtime_percent'] = (df_main['minutes_on_field'] / max_mins * 100).fillna(0)
+
+    # 4. Percentiles
     from scipy import stats
-    df['percentile_eligible'] = df['minutes_on_field'] >= (df['max_mins_comp'] * 0.30)
-
+    eligible_mask = df_main['minutes_on_field'] >= (max_mins * 0.30)
+    
     for m in all_metric_keys:
-        if m in df.columns:
-            df[f'{m}_pct'] = 0.0
-            for cat in df['position_category'].unique():
-                cat_mask = (df['position_category'] == cat)
-                eligible_mask = df['percentile_eligible']
+        if m in df_main.columns:
+            pct_series = pd.Series(0.0, index=df_main.index)
+            for cat in pos_cat.unique():
+                cat_mask = (pos_cat == cat)
                 full_mask = cat_mask & eligible_mask
                 if full_mask.any():
-                    dist = df.loc[full_mask, m].values
-                    # Application du percentile basé sur la distribution des éligibles du groupe
-                    df.loc[cat_mask, f'{m}_pct'] = df.loc[cat_mask, m].apply(
+                    dist = df_main.loc[full_mask, m].values
+                    pct_series.loc[cat_mask] = df_main.loc[cat_mask, m].apply(
                         lambda x: stats.percentileofscore(dist, x, kind='mean')
                     )
+            new_results[f'{m}_pct'] = pct_series
 
-    # 4. Calcul des INDICES
+    # 5. Calcul des INDICES (en utilisant new_results pour les _pct)
+    indices_data = {}
     for p_type, configs in INDICES_CONFIG.items():
-        mask = (df['position_category'] == 'Gardien') if p_type == 'goalkeeper' else (df['position_category'] != 'Gardien')
+        mask = (pos_cat == 'Gardien') if p_type == 'goalkeeper' else (pos_cat != 'Gardien')
         for idx_name, weights in configs.items():
-            df.loc[mask, idx_name] = 0.0
+            idx_series = pd.Series(0.0, index=df_main.index)
             for m, w in weights.items():
-                pct_col = f'{m}_pct'
-                if pct_col in df.columns:
-                    if w < 0:
-                        df.loc[mask, idx_name] += (100 - df.loc[mask, pct_col]) * abs(w)
-                    else:
-                        df.loc[mask, idx_name] += df.loc[mask, pct_col] * w
+                pct_key = f'{m}_pct'
+                if pct_key in new_results:
+                    val = new_results[pct_key]
+                    idx_series += (100 - val) * abs(w) if w < 0 else val * w
+            
             total_weight = sum(abs(v) for v in weights.values())
             if total_weight > 0:
-                df.loc[mask, idx_name] /= total_weight
-
-    # 5. Notes (Globale & Pondérée)
-    indice_cols = [c for c in df.columns if c.startswith('Indice_')]
-    df['note_globale'] = df[indice_cols].mean(axis=1).fillna(0)
+                idx_series /= total_weight
+            indices_data[idx_name] = idx_series.where(mask, 0.0)
     
-    df['note_ponderee'] = df['note_globale']
+    # On ajoute les indices au dictionnaire final
+    new_results.update(indices_data)
+
+    # 6. Notes
+    temp_indices_df = pd.DataFrame(indices_data)
+    if not temp_indices_df.empty:
+        new_results['note_globale'] = temp_indices_df.mean(axis=1).fillna(0)
+    else:
+        new_results['note_globale'] = pd.Series(0.0, index=df_main.index)
+    
+    note_pond_series = new_results['note_globale'].copy()
     for cat, weights in NOTES_PONDEREE_CONFIG.items():
-        mask = df['position_category'] == cat
-        if mask.any():
-            w_sum = 0.0
+        cat_mask = (pos_cat == cat)
+        if cat_mask.any():
+            w_sum = pd.Series(0.0, index=df_main.index)
             w_total = 0.0
             for idx_name, w in weights.items():
-                if idx_name in df.columns:
-                    w_sum += df.loc[mask, idx_name] * w
+                if idx_name in temp_indices_df.columns:
+                    w_sum += temp_indices_df[idx_name] * w
                     w_total += w
             if w_total > 0:
-                df.loc[mask, 'note_ponderee'] = w_sum / w_total
+                note_pond_series.loc[cat_mask] = (w_sum / w_total).loc[cat_mask]
+    new_results['note_ponderee'] = note_pond_series
 
-    # 6. Calcul des PROFILS (Normalisation Min-Max localisée)
-    df = normalize_metrics(df, list(all_profile_metrics))
+    # 7. Profils
+    # On prépare un DF de calcul temporaire pour normalize_metrics
+    df_calc = pd.concat([df_main, pd.DataFrame({'position_category': pos_cat}, index=df_main.index)], axis=1)
+    norm_cols = normalize_metrics(df_calc, list(all_profile_metrics))
+    # On ajoute les norm_cols au DF de calcul pour les profils
+    df_calc = pd.concat([df_calc, pd.DataFrame(norm_cols, index=df_main.index)], axis=1)
 
     for cat, profiles in PROFILE_WEIGHTS.items():
-        mask = df['position_category'] == cat
-        if not mask.any(): continue
+        cat_mask = (pos_cat == cat)
+        if not cat_mask.any(): continue
         for prof_name, weights in profiles.items():
             prof_col = f'profile_affinity_{prof_name.lower().replace(" ", "_").replace("-", "_")}'
-            df.loc[mask, prof_col] = 0.0
+            aff_series = pd.Series(0.0, index=df_main.index)
             for m, w in weights.items():
                 norm_col = f'{m}_norm'
-                if norm_col in df.columns:
-                    df.loc[mask, prof_col] += df.loc[mask, norm_col] * w
-            if mask.any():
-                df.loc[mask, prof_col] = df.loc[mask, prof_col].rank(pct=True) * 100
+                if norm_col in df_calc.columns:
+                    aff_series += df_calc[norm_col] * w
+            
+            # Rank PCT sur le groupe
+            final_aff = pd.Series(0.0, index=df_main.index)
+            final_aff.loc[cat_mask] = aff_series.loc[cat_mask].rank(pct=True) * 100
+            new_results[prof_col] = final_aff
 
-    # Nettoyage
-    df = df.replace({np.nan: None})
-    cols_to_drop = [c for c in df.columns if c in ['max_mins_comp', 'percentile_eligible'] or c.endswith('_norm')]
-    return df.drop(columns=cols_to_drop)
+    # 8. Fusion Unique et Nettoyage
+    # On supprime du DF original les colonnes qu'on va réinjecter pour éviter les doublons
+    cols_to_overwrite = [c for c in new_results.keys() if c in df_main.columns]
+    df_main = df_main.drop(columns=cols_to_overwrite)
+    
+    # Concaténation unique
+    df_final = pd.concat([df_main, pd.DataFrame(new_results, index=df_main.index)], axis=1)
+    
+    # Nettoyage final
+    df_final = df_final.replace({np.nan: None})
+    cols_to_drop = [c for c in df_final.columns if c in ['max_mins_comp', 'percentile_eligible'] or str(c).endswith('_norm')]
+    return df_final.drop(columns=cols_to_drop)
 
 # =================================================================
 # 5. MAIN ENRICHMENT PROCESS (BATCH MODE)
 # =================================================================
 
-def run_enrichment():
-    logger.info("Démarrage du Batch Enrichment Processing...")
+def run_enrichment(mode):
+    logger.info(f"Démarrage du Enrichment Processing (Mode: {mode})...")
     engine = create_engine(DB_URL)
     
     # Pré-collecte des métriques
@@ -318,17 +364,29 @@ def run_enrichment():
             all_contexts_set = set((r[0], r[1]) for r in all_contexts)
             
             # 2. Découverte des contextes déjà enrichis (Resume Logic)
-            logger.info(f"Vérification de l'état d'avancement dans {TARGET_TABLE}...")
-            try:
-                done_contexts = conn.execute(text(f"SELECT DISTINCT competition, season FROM {TARGET_TABLE}")).fetchall()
-                done_contexts_set = set((r[0], r[1]) for r in done_contexts)
-            except Exception:
-                # Si la table n'existe pas encore
-                done_contexts_set = set()
+            existing_ids = []
+            done_contexts_set = set()
+            
+            if mode == "-2":
+                logger.info(f"Vérification de l'état d'avancement dans {TARGET_TABLE}...")
+                try:
+                    # Lecture des IDs existants pour le Smart Delta
+                    existing_ids = pd.read_sql(f"SELECT id FROM {TARGET_TABLE}", conn)['id'].tolist()
+                    
+                    done_contexts = conn.execute(text(f"SELECT DISTINCT competition, season FROM {TARGET_TABLE}")).fetchall()
+                    done_contexts_set = set((r[0], r[1]) for r in done_contexts)
+                except Exception:
+                    # Si la table n'existe pas encore
+                    done_contexts_set = set()
+                    existing_ids = []
             
             # 3. Calcul du delta (ce qui reste à traiter)
-            to_process = sorted(list(all_contexts_set - done_contexts_set))
-            logger.info(f"Contextes totaux: {len(all_contexts_set)} | Déjà faits: {len(done_contexts_set)} | À traiter: {len(to_process)}")
+            if mode == "-1":
+                to_process = sorted(list(all_contexts_set)) # Tout traiter en Full Replace
+            else:
+                to_process = sorted(list(all_contexts_set - done_contexts_set))
+                
+            logger.info(f"Contextes totaux: {len(all_contexts_set)} | À traiter: {len(to_process)}")
 
         # 4. Boucle itérative par contexte (Résilience individuelle)
         for i, (comp, season) in enumerate(to_process):
@@ -342,11 +400,30 @@ def run_enrichment():
                 if df_batch.empty:
                     continue
 
-                # Calculs analytiques
+                # Vérification Smart Delta : On vérifie si ce batch contient des nouveautés
+                if mode == "-2" and existing_ids:
+                    if df_batch[~df_batch['id'].isin(existing_ids)].empty:
+                        logger.info(f"   -> Skip : Aucun nouveau joueur dans ce contexte.")
+                        continue
+
+                # Calculs analytiques (Sur le batch COMPLET pour la justesse statistique)
                 df_enriched = process_batch(df_batch, all_metric_keys, all_profile_metrics)
 
-                # Injection (append uniquement pour préserver l'idempotence)
-                df_enriched.to_sql('players_enriched', engine, schema='wyscout_data', if_exists='append', index=False)
+                # Logique d'insertion intelligente
+                if_exists_action = 'append'
+                
+                if mode == "-2" and existing_ids:
+                    # Filtrage post-calcul pour ne pas insérer de doublons
+                    df_enriched = df_enriched[~df_enriched['id'].isin(existing_ids)]
+                elif mode == "-1" and i == 0:
+                    # Full Replace : on écrase la table sur le premier batch du cycle
+                    if_exists_action = 'replace'
+
+                if df_enriched.empty:
+                    continue
+
+                # Injection (Optimisée par lots)
+                df_enriched.to_sql('players_enriched', engine, schema='wyscout_data', if_exists=if_exists_action, index=False, chunksize=5000, method='multi')
                 logger.info(f"   -> Succès : {len(df_enriched)} joueurs injectés.")
             
             except Exception as batch_error:
@@ -362,4 +439,8 @@ def run_enrichment():
         logger.error(traceback.format_exc())
 
 if __name__ == "__main__":
-    run_enrichment()
+    parser = argparse.ArgumentParser(description="Moteur d'enrichissement analytique Wyscout.")
+    parser.add_argument("--mode", choices=["-1", "-2"], required=True, help="Mode d'enrichissement : -1 (Full Replace) ou -2 (Smart Incremental)")
+    args = parser.parse_args()
+    
+    run_enrichment(args.mode)

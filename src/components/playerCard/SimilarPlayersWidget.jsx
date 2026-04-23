@@ -2,17 +2,26 @@ import React, { useState, useEffect } from 'react';
 
 const API_BASE_URL = 'https://api-scouting.theanalyst.cloud';
 
-export default function SimilarPlayersWidget({ playerId }) {
+export default function SimilarPlayersWidget({ playerId, competition, season }) {
     const [mode, setMode] = useState('similar'); // 'similar' or 'complementary'
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     
     // Filtres UI locaux
     const [filters, setFilters] = useState({
-        season: '',
-        competitions: '',
+        season: season || '',
+        competitions: competition || '',
         maxAge: ''
     });
+
+    // Synchronisation si le contexte parent change
+    useEffect(() => {
+        setFilters(prev => ({
+            ...prev,
+            season: season || '',
+            competitions: competition || ''
+        }));
+    }, [season, competition]);
 
     const [meta, setMeta] = useState({
         seasons: [],
