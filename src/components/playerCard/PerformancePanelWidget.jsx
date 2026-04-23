@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function PerformancePanelWidget({ player }) {
+export default function PerformancePanelWidget({ player, onSelectIndex }) {
     if (!player) return null;
 
     // On extrait dynamiquement tous les indices (colonnes commençant par Indice_)
@@ -22,14 +22,18 @@ export default function PerformancePanelWidget({ player }) {
                     <div className="text-slate-500 text-xs italic">Aucun indice de performance disponible.</div>
                 ) : (
                     indices.map((idx) => (
-                        <div key={idx.label} className="group">
+                        <div 
+                            key={idx.label} 
+                            onClick={() => onSelectIndex && onSelectIndex(idx.label)}
+                            className="group cursor-pointer transition-all duration-200 hover:translate-x-1"
+                        >
                             <div className="flex justify-between text-[10px] font-black uppercase text-slate-400 mb-1.5 group-hover:text-emerald-400 transition-colors">
                                 <span>{idx.label}</span>
-                                <span className="text-white">{idx.value.toFixed(1)}%</span>
+                                <span className="text-white group-hover:scale-110 transition-transform">{idx.value.toFixed(1)}%</span>
                             </div>
-                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50 shadow-inner p-[1px]">
+                            <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50 shadow-inner p-[1px] group-hover:border-emerald-500/30 transition-colors">
                                 <div 
-                                    className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-teal-300 rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(52,211,153,0.3)]"
+                                    className="h-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-teal-300 rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(52,211,153,0.3)] group-hover:shadow-[0_0_12px_rgba(52,211,153,0.5)]"
                                     style={{ width: `${idx.value}%` }}
                                 ></div>
                             </div>

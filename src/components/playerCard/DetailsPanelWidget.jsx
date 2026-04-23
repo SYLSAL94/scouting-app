@@ -41,13 +41,13 @@ export default function DetailsPanelWidget({ player, onSelectProfile }) {
 
             <div className="space-y-4">
                 <div className="text-[10px] uppercase font-black text-slate-400 tracking-widest border-b border-white/5 pb-2">Profils du poste — Affinité</div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                     {affinityProfiles.length > 0 ? (
                         affinityProfiles.map((profile, i) => (
                             <div 
                                 key={profile.role} 
                                 onClick={() => onSelectProfile && onSelectProfile(profile.role)}
-                                className={`flex-1 bg-slate-800/60 p-2 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 ${
+                                className={`flex-1 min-w-[80px] bg-slate-800/60 p-2 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 ${
                                     i===0?'border-yellow-500/50 hover:bg-yellow-500/10':
                                     i===1?'border-slate-400/50 hover:bg-slate-400/10':
                                     'border-orange-500/50 hover:bg-orange-500/10'

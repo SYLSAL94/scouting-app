@@ -27,7 +27,7 @@ export default function TeammatesWidget({ playerId, competition, season, team, o
     }, [playerId, competition, season, team]);
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 shadow-lg backdrop-blur-md h-full flex flex-col overflow-hidden">
+        <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-2xl backdrop-blur-md flex flex-col overflow-hidden h-[450px]">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h3 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">

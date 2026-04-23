@@ -19,6 +19,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     const [error, setError] = useState(null);
     const [isRankingModalOpen, setIsRankingModalOpen] = useState(false);
     const [selectedPositionForRanking, setSelectedPositionForRanking] = useState(null);
+    const [activeTab, setActiveTab] = useState('profil'); // 'profil', 'analyse', 'stats', 'reseau'
     
     // Définition du contexte actif pour le rendu et les effets
     const contextToUse = selectedContext || rowContext;
@@ -223,9 +224,31 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                             </div>
 
                             {/* Grille principale - Triple Colonne */}
+                            <div className="lg:hidden flex bg-slate-900/80 backdrop-blur-xl p-1 rounded-xl border border-white/5 sticky top-0 z-40 shadow-2xl mb-4 overflow-x-auto scrollbar-hide">
+                                {[
+                                    { id: 'profil', label: 'Profil', icon: '👤' },
+                                    { id: 'analyse', label: 'Analyse', icon: '📊' },
+                                    { id: 'stats', label: 'Stats', icon: '🔢' },
+                                    { id: 'reseau', label: 'Réseau', icon: '🤝' }
+                                ].map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all ${
+                                            activeTab === tab.id 
+                                            ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' 
+                                            : 'text-slate-500 hover:text-slate-300'
+                                        }`}
+                                    >
+                                        <span>{tab.icon}</span>
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8 items-start">
                                 
-                                <div className="lg:col-span-4 space-y-6 md:space-y-8">
+                                {/* Colonne GAUCHE : Profil (Onglet 'profil' sur mobile) */}
+                                <div className={`${activeTab === 'profil' ? 'block' : 'hidden'} lg:block lg:col-span-3 space-y-6 md:space-y-8`}>
                                     <DetailsPanelWidget 
                                         player={playerData} 
                                         onSelectProfile={(role) => {
@@ -240,11 +263,17 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                             setIsRankingModalOpen(true);
                                         }}
                                     />
-                                    <PerformancePanelWidget player={playerData} />
+                                    <PerformancePanelWidget 
+                                        player={playerData} 
+                                        onSelectIndex={(indexLabel) => {
+                                            setSelectedPositionForRanking(indexLabel);
+                                            setIsRankingModalOpen(true);
+                                        }}
+                                    />
                                 </div>
 
-                                {/* Colonne MILIEU : Radar, Recalcul, Similar (4/12) */}
-                                <div className="lg:col-span-4 space-y-6 md:space-y-8">
+                                {/* Colonne MILIEU : Analyse (Onglet 'analyse' sur mobile) */}
+                                <div className={`${activeTab === 'analyse' ? 'block' : 'hidden'} lg:block lg:col-span-5 space-y-6 md:space-y-8`}>
                                     <div className="space-y-4">
                                         <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2 px-2">
                                             <span className="w-2 h-2 bg-sky-400 rounded-full"></span> Analyse Comparative
@@ -276,19 +305,16 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                         <PlayerRadar player={playerData} />
                                     </div>
 
-                                    <SimilarPlayersWidget 
-                                        playerId={playerId} 
-                                        competition={contextToUse?.competition}
-                                        season={contextToUse?.season}
-                                        onSelectPlayer={onSwitchPlayer}
-                                    />
                                 </div>
 
-                                {/* Colonne DROITE : Table & Teammates (4/12) */}
-                                <div className="lg:col-span-4 space-y-6 md:space-y-8 h-full flex flex-col">
-                                    <div className="flex-1 md:min-h-[500px]">
+                                {/* Colonne DROITE : Stats & Réseau (Onglets 'stats' et 'reseau' sur mobile) */}
+                                <div className="lg:col-span-4 space-y-6">
+                                    <div className={`${activeTab === 'stats' ? 'block' : 'hidden'} lg:block`}>
                                         <DataPanelWidget player={playerData} />
                                     </div>
+                                    
+                                    <div className={`${activeTab === 'reseau' ? 'block' : 'hidden'} lg:block space-y-6`}>
+                                    
                                     {playerData && (
                                         <TeammatesWidget 
                                             playerId={playerId} 
@@ -298,8 +324,15 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                             onSelectPlayer={onSwitchPlayer}
                                         />
                                     )}
+                                    
+                                    <SimilarPlayersWidget 
+                                        playerId={playerId} 
+                                        competition={contextToUse?.competition}
+                                        season={contextToUse?.season}
+                                        onSelectPlayer={onSwitchPlayer}
+                                    />
+                                    </div>
                                 </div>
-                                
                             </div>
                         </div>
                     ) : null}
