@@ -9,11 +9,12 @@ import DataPanelWidget from './DataPanelWidget';
 import TrendsWidget from './TrendsWidget';
 import PlayerRadar from '../../PlayerRadar';
 import PlayerTrends from '../dashboard/PlayerTrends';
+import FavoriteToggle from '../dashboard/FavoriteToggle';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { API_BASE_URL } from '../../config';
 
-export default function PlayerDashboard({ playerId, onClose, activeFilters = {}, rowContext = null, onSwitchPlayer = null, metricsList = [] }) {
+export default function PlayerDashboard({ playerId, onClose, activeFilters = {}, rowContext = null, onSwitchPlayer = null, metricsList = [], user, onUpdateUser }) {
     const [playerData, setPlayerData] = useState(null);
     const [rankingData, setRankingData] = useState(null);
     const [availableContexts, setAvailableContexts] = useState([]);
@@ -175,7 +176,14 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                 )}
                                 
                                 <div className="text-center md:text-left flex-1 min-w-0 relative z-10">
-                                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">{playerData.name || playerData.full_name}</h2>
+                                    <div className="flex items-center justify-center md:justify-start gap-4">
+                                        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">{playerData.name || playerData.full_name}</h2>
+                                        <FavoriteToggle 
+                                            playerId={playerId} 
+                                            user={user} 
+                                            onUpdateUser={onUpdateUser} 
+                                        />
+                                    </div>
                                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-2 text-xs font-bold uppercase tracking-widest text-slate-400">
                                         <span className="px-3 py-1 bg-sky-500 text-white rounded-md shadow-lg shadow-sky-500/20">{playerData.position_category}</span>
                                         <span className="opacity-30 text-lg">•</span>

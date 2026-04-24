@@ -19,6 +19,7 @@ import LabDashboard from './components/dashboard/LabDashboard';
 import ContextualChatBot from './components/ContextualChatBot';
 import GlobalPlayerSearch from './components/dashboard/GlobalPlayerSearch';
 import TrendsDashboard from './components/dashboard/TrendsDashboard';
+import UserMenu from './components/layout/UserMenu';
 import { TrendingUp } from 'lucide-react';
 
 function App() {
@@ -137,12 +138,13 @@ function App() {
               </div>
             </div>
 
-            {/* Espace Droite - Colonne Droite (Balancing) */}
+            {/* Espace Droite - User Profile */}
             <div className="hidden md:flex justify-end order-2 md:order-3">
-               <div className="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-full border border-white/5">
-                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                 <span className="text-[9px] font-black uppercase tracking-widest text-white/40">Network Active</span>
-               </div>
+               <UserMenu 
+                user={user} 
+                onLogout={() => { setIsAuthenticated(false); setUser(null); setView('LANDING'); }}
+                onUpdateUser={setUser}
+               />
             </div>
             
           </div>
@@ -290,6 +292,8 @@ function App() {
               onClose={() => setSelectedPlayer(null)} 
               activeFilters={activeFilters} 
               metricsList={metricsList}
+              user={user}
+              onUpdateUser={setUser}
               onSwitchPlayer={(id) => { 
                 const newPlayer = players.find(p => p.id === id) || { id }; 
                 setSelectedPlayer(newPlayer); 
