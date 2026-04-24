@@ -120,16 +120,16 @@ const FilterPanel = ({
       if (pendingFilters.minAge !== defaults.minAge || pendingFilters.maxAge !== defaults.maxAge) { count++; parts.push(`Âge ${pendingFilters.minAge}-${pendingFilters.maxAge}`); }
       if (pendingFilters.useSeasonAge) { count++; parts.push('Âge saison'); }
       if (pendingFilters.foot !== defaults.foot) { count++; parts.push(pendingFilters.foot === 'left' ? 'Gauchers' : pendingFilters.foot === 'right' ? 'Droitiers' : '2 pieds'); }
-      if (pendingFilters.height.min !== defaults.height.min || pendingFilters.height.max !== defaults.height.max) count++;
+      if ((pendingFilters.height?.min || defaults.height.min) !== defaults.height.min || (pendingFilters.height?.max || defaults.height.max) !== defaults.height.max) count++;
     }
     if (section === 'performance') {
-      if (pendingFilters.positions.length > 0) { count++; parts.push(`${pendingFilters.positions.length} postes`); }
-      if (pendingFilters.playtime.min > 0) { count++; parts.push(`TJ ${pendingFilters.playtime.min}%+`); }
+      if (pendingFilters.positions?.length > 0) { count++; parts.push(`${pendingFilters.positions.length} postes`); }
+      if ((pendingFilters.playtime?.min || 0) > 0) { count++; parts.push(`TJ ${pendingFilters.playtime.min}%+`); }
       if (pendingFilters.minMatches > 0) { count++; parts.push(`${pendingFilters.minMatches}+ matchs`); }
     }
     if (section === 'contrat') {
       if (pendingFilters.onLoan) { count++; parts.push('En prêt'); }
-      if (pendingFilters.marketValue.min > 0 || pendingFilters.marketValue.max < 150000000) { count++; parts.push(`MV max ${Math.round(pendingFilters.marketValue.max/1000000)}M€`); }
+      if ((pendingFilters.marketValue?.min || 0) > 0 || (pendingFilters.marketValue?.max || 150000000) < 150000000) { count++; parts.push(`MV max ${Math.round((pendingFilters.marketValue?.max || 150000000)/1000000)}M€`); }
     }
 
     return { count, subtitle: parts.join(' · ') };
@@ -247,16 +247,16 @@ const FilterPanel = ({
           <DualRangeSlider 
             label="Taille (cm)" 
             min={140} max={210} 
-            currentMin={pendingFilters.height.min} 
-            currentMax={pendingFilters.height.max} 
+            currentMin={pendingFilters.height?.min || 140} 
+            currentMax={pendingFilters.height?.max || 210} 
             onChange={(min, max) => updateFilters('height', { min, max })}
             unit="cm"
           />
           <DualRangeSlider 
             label="Poids (kg)" 
             min={50} max={110} 
-            currentMin={pendingFilters.weight.min} 
-            currentMax={pendingFilters.weight.max} 
+            currentMin={pendingFilters.weight?.min || 50} 
+            currentMax={pendingFilters.weight?.max || 110} 
             onChange={(min, max) => updateFilters('weight', { min, max })}
             unit="kg"
           />
@@ -282,12 +282,12 @@ const FilterPanel = ({
           <div className="filter-group">
             <label className="filter-label flex justify-between">
               <span>Temps de Jeu (%)</span>
-              <span className="text-sky-400 font-mono">{pendingFilters.playtime.min}%+</span>
+              <span className="text-sky-400 font-mono">{(pendingFilters.playtime?.min || 0)}%+</span>
             </label>
             <input 
               type="range" min="0" max="100" step="5" 
-              value={pendingFilters.playtime.min} 
-              onChange={e => updateFilters('playtime', { ...pendingFilters.playtime, min: Number(e.target.value) })} 
+              value={pendingFilters.playtime?.min || 0} 
+              onChange={e => updateFilters('playtime', { ...(pendingFilters.playtime || {}), min: Number(e.target.value) })} 
               className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-400"
             />
           </div>
@@ -333,8 +333,8 @@ const FilterPanel = ({
             <DualRangeSlider 
               label="Valeur Marchande (€)" 
               min={0} max={150000000} step={500000}
-              currentMin={pendingFilters.marketValue.min} 
-              currentMax={pendingFilters.marketValue.max} 
+              currentMin={pendingFilters.marketValue?.min || 0} 
+              currentMax={pendingFilters.marketValue?.max || 150000000} 
               onChange={(min, max) => updateFilters('marketValue', { min, max })}
               unit="€"
             />

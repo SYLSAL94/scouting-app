@@ -145,7 +145,7 @@ function App() {
 
   // Hydratation intelligente sans fetch réseau (Bouclier Anti-Spam)
   const loadProfile = (config) => {
-    setPendingFilters(config);
+    setPendingFilters({ ...defaultFilters, ...config });
     // Note: on ne touche PAS à activeFilters ici. 
     // L'utilisateur doit cliquer sur "Apply Analysis" pour valider.
   };
