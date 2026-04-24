@@ -1,6 +1,6 @@
 // src/components/ui/MetricSelectionPanel.js
 import React, { useContext } from 'react';
-import { Percent, Hash, Trash2 } from 'lucide-react';
+import { Percent, Hash, Trash2, Info } from 'lucide-react';
 import { TemplateSelector } from './TemplateSelector';
 import { SearchableMultiSelect } from './SearchableMultiSelect';
 
@@ -74,9 +74,22 @@ export const MetricSelectionPanel = ({
 
                 {!hideModeSelector && (
                     <div className="space-y-2">
-                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                            Type de données
-                        </label>
+                        <div className="flex items-center justify-between">
+                            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                                Type de données
+                            </label>
+                            <div className="group relative">
+                                <Info size={14} className="text-slate-500 hover:text-sky-400 cursor-help transition-colors" />
+                                <div className="absolute right-0 bottom-full mb-2 w-64 p-3 bg-slate-900 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                                    <p className="text-[10px] leading-relaxed text-slate-300 space-y-2">
+                                        <span className="block font-bold text-sky-400 mb-1 uppercase tracking-tighter">Guide Analytique :</span>
+                                        <span className="block"><strong className="text-white">Percentiles :</strong> Compare les joueurs dynamiquement au sein de votre population filtrée actuelle.</span>
+                                        <span className="block mt-1"><strong className="text-white">Valeurs Brutes :</strong> Affiche les statistiques réelles (par 90 min) sans aucune transformation.</span>
+                                        <span className="block mt-2 pt-2 border-t border-white/5 text-slate-500 italic">Note : Les infobulles du radar affichent toujours les unités réelles (buts, passes, etc.).</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                         <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-white/5">
                             {renderModeButton('percentile', 'Percentiles', Percent)}
                             {renderModeButton('standard', 'Valeurs Brutes', Hash)}
