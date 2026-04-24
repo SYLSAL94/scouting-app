@@ -18,24 +18,44 @@ const ScatterTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="glass-panel p-4 border border-white/10 shadow-2xl backdrop-blur-xl">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 overflow-hidden">
-            {data.image && <img src={data.image} alt="" className="w-full h-full object-cover" />}
+      <div className="glass-panel p-4 border border-white/10 shadow-2xl backdrop-blur-xl min-w-[200px]">
+        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/5">
+          <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 overflow-hidden shadow-inner">
+            {data.image ? (
+              <img src={data.image} alt="" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-white/20 font-black text-xl">
+                {data.name?.charAt(0)}
+              </div>
+            )}
           </div>
-          <div>
-            <div className="text-sm font-bold text-white">{data.name}</div>
-            <div className="text-[10px] text-sky-400 font-medium uppercase tracking-wider">{data.team}</div>
+          <div className="min-w-0">
+            <div className="text-sm font-black text-white truncate">{data.name}</div>
+            <div className="text-[9px] text-sky-400 font-bold uppercase tracking-widest truncate">{data.team}</div>
+            <div className="mt-1">
+              <span className="px-1.5 py-0.5 rounded bg-white/5 text-[8px] font-black text-white/40 uppercase border border-white/5">
+                {data.position_category}
+              </span>
+            </div>
           </div>
         </div>
-        <div className="space-y-1.5 pt-2 border-t border-white/5">
-          <div className="flex justify-between gap-4">
-            <span className="text-[10px] text-white/40 uppercase font-black">X Axis</span>
-            <span className="text-xs font-mono text-sky-400 font-bold">{formatNumber(data.x)}</span>
+        <div className="space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-[9px] text-white/30 uppercase font-black">Performance X</span>
+            <span className="text-xs font-mono text-sky-400 font-black bg-sky-500/10 px-2 py-0.5 rounded-md">
+              {formatNumber(data.x)}
+            </span>
           </div>
-          <div className="flex justify-between gap-4">
-            <span className="text-[10px] text-white/40 uppercase font-black">Y Axis</span>
-            <span className="text-xs font-mono text-emerald-400 font-bold">{formatNumber(data.y)}</span>
+          <div className="flex justify-between items-center">
+            <span className="text-[9px] text-white/30 uppercase font-black">Performance Y</span>
+            <span className="text-xs font-mono text-emerald-400 font-black bg-emerald-500/10 px-2 py-0.5 rounded-md">
+              {formatNumber(data.y)}
+            </span>
+          </div>
+        </div>
+        <div className="mt-3 pt-2 border-t border-white/5 text-center">
+          <div className="text-[8px] text-white/20 uppercase font-bold tracking-tighter">
+            Clic: Focus • Double Clic: Fiche
           </div>
         </div>
       </div>
@@ -137,6 +157,10 @@ plt.show()
     setShowSave(false);
   };
 
+  const handleDeletePreset = (index) => {
+    setVisualPresets(visualPresets.filter((_, i) => i !== index));
+  };
+
   const selectStyles = {
     control: (base) => ({
       ...base,
@@ -231,28 +255,52 @@ plt.show()
         <div className="flex flex-col">
           <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Visual Presets</span>
           <div className="flex items-center gap-2">
-            <select 
-              className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white appearance-none outline-none focus:border-sky-500/50 min-w-[120px]"
-              onChange={(e) => {
-                const preset = visualPresets[e.target.value];
-                if (preset) {
-                  setXAxis(preset.x);
-                  setYAxis(preset.y);
-                }
-              }}
-              defaultValue=""
-            >
-              <option value="" disabled>Load axes...</option>
-              {visualPresets.map((p, i) => (
-                <option key={i} value={i}>{p.name}</option>
-              ))}
-            </select>
+            <div className="relative group/presets">
+              <select 
+                className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white appearance-none outline-none focus:border-sky-500/50 min-w-[120px] pr-8"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === "delete_mode") return;
+                  const preset = visualPresets[val];
+                  if (preset) {
+                    setXAxis(preset.x);
+                    setYAxis(preset.y);
+                  }
+                }}
+                defaultValue=""
+              >
+                <option value="" disabled>Load axes...</option>
+                {visualPresets.map((p, i) => (
+                  <option key={i} value={i}>{p.name}</option>
+                ))}
+              </select>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
+                <Search size={10} className="text-white" />
+              </div>
+            </div>
+            
             <button 
               onClick={() => setShowSave(true)}
               className="p-2 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-sky-400 hover:border-sky-500/30 transition-all"
+              title="Save current"
             >
               <Save size={14} />
             </button>
+
+            {visualPresets.length > 0 && (
+              <button 
+                onClick={() => {
+                   const index = prompt("Entrez le nom du preset à supprimer ou son numéro (1, 2...):");
+                   if (!index) return;
+                   const foundIndex = visualPresets.findIndex((p, i) => p.name === index || (i + 1).toString() === index);
+                   if (foundIndex !== -1) handleDeletePreset(foundIndex);
+                }}
+                className="p-2 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-rose-400 hover:border-rose-500/30 transition-all"
+                title="Delete preset"
+              >
+                <Activity size={14} className="rotate-45" /> 
+              </button>
+            )}
           </div>
         </div>
 
@@ -287,34 +335,55 @@ plt.show()
 };
 
 const CustomScatterPoint = (props) => {
-  const { cx, cy, fill, payload, focusedPlayerIds } = props;
+  const { cx, cy, fill, payload, focusedPlayerIds, setFocusedPlayerIds, onPlayerClick } = props;
   if (cx == null || cy == null) return null;
 
   const isFocused = focusedPlayerIds.includes(payload.id);
   const hasFocusActive = focusedPlayerIds.length > 0;
   
   const opacity = hasFocusActive ? (isFocused ? 1 : 0.15) : 0.8;
-  const radius = isFocused ? 8 : 5;
+  const radius = isFocused ? 9 : 6;
   const stroke = isFocused ? "white" : "rgba(255,255,255,0.1)";
-  const strokeWidth = isFocused ? 2 : 1;
+  const strokeWidth = isFocused ? 2.5 : 1;
+
+  // Gestion Single vs Double Click via useRef pour éviter les re-renders inutiles
+  // Mais ici on utilise une variable persistante simple via un timer local au closure du point
+  const handleClick = (e) => {
+    e.stopPropagation();
+    if (e.detail === 2) {
+      // Double clic -> Ouverture fiche
+      onPlayerClick(payload.originalPlayer);
+    } else {
+      // Simple clic -> Toggle Focus (on attend un peu pour être sûr que ce n'est pas un double clic)
+      setTimeout(() => {
+        if (e.detail === 1) {
+           setFocusedPlayerIds(prev => 
+            prev.includes(payload.id) 
+              ? prev.filter(id => id !== payload.id) 
+              : [...prev, payload.id]
+          );
+        }
+      }, 200);
+    }
+  };
 
   return (
-    <g>
+    <g onClick={handleClick} cursor="pointer">
       <circle 
         cx={cx} cy={cy} r={radius} 
         fill={fill} opacity={opacity} 
         stroke={stroke} strokeWidth={strokeWidth}
         style={{ 
           filter: isFocused ? 'url(#scatterGlow)' : 'none',
-          transition: 'all 0.3s ease'
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
         }}
       />
       {isFocused && (
         <text 
-          x={cx} y={cy - 12} 
+          x={cx} y={cy - 14} 
           textAnchor="middle" 
-          className="text-[10px] font-black fill-white pointer-events-none"
-          style={{ textShadow: '0 0 10px rgba(0,0,0,0.8)' }}
+          className="text-[10px] font-black fill-white pointer-events-none uppercase tracking-tighter"
+          style={{ textShadow: '0 2px 8px rgba(0,0,0,1)' }}
         >
           {payload.name}
         </text>
@@ -471,9 +540,12 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
 
             <Scatter 
               name="Players" data={chartData} 
-              onClick={(data) => onPlayerClick(data.originalPlayer)} 
               cursor="pointer" isAnimationActive={false}
-              shape={<CustomScatterPoint focusedPlayerIds={focusedPlayerIds} />}
+              shape={<CustomScatterPoint 
+                focusedPlayerIds={focusedPlayerIds} 
+                setFocusedPlayerIds={setFocusedPlayerIds}
+                onPlayerClick={onPlayerClick}
+              />}
             >
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']} />
