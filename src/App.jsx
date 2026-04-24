@@ -16,6 +16,7 @@ import { VersusDashboard } from './components/dashboard/VersusDashboard';
 import { RadarDashboard } from './components/dashboard/RadarDashboard';
 import TeamBuilderDashboard from './components/dashboard/TeamBuilderDashboard';
 import LabDashboard from './components/dashboard/LabDashboard';
+import ContextualChatBot from './components/ContextualChatBot';
 
 function App() {
   // --- ÉTATS DE SÉCURITÉ ---
@@ -101,7 +102,6 @@ function App() {
     url += `&min_weight=${activeFilters.weight.min}&max_weight=${activeFilters.weight.max}`;
     if (activeFilters.playtime.min > 0) url += `&min_playtime=${activeFilters.playtime.min}`;
     
-    // Nouveaux filtres API-First
     if (activeFilters.foot && activeFilters.foot !== 'all') url += `&foot=${activeFilters.foot}`;
     if (activeFilters.onLoan) url += `&on_loan=true`;
     if (activeFilters.useSeasonAge) url += `&use_season_age=true`;
@@ -134,7 +134,7 @@ function App() {
   const handleApplyFilters = () => {
     setActiveFilters(pendingFilters);
     setCurrentPage(1);
-    setShowFilters(false); // Fermer le drawer après application
+    setShowFilters(false);
   };
 
   const handleResetFilters = () => {
@@ -143,11 +143,8 @@ function App() {
     setCurrentPage(1);
   };
 
-  // Hydratation intelligente sans fetch réseau (Bouclier Anti-Spam)
   const loadProfile = (config) => {
     setPendingFilters({ ...defaultFilters, ...config });
-    // Note: on ne touche PAS à activeFilters ici. 
-    // L'utilisateur doit cliquer sur "Apply Analysis" pour valider.
   };
 
   const handlePlayerClick = (playerData) => {
@@ -196,7 +193,6 @@ function App() {
                 </h1>
               </div>
               <div className="flex flex-col gap-4 w-full">
-                {/* Search Bar - Full width */}
                 <div className="relative w-full">
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-sky-400/50" size={20} />
                     <input 
@@ -206,8 +202,6 @@ function App() {
                         onChange={(e) => setPendingFilters({...pendingFilters, search: e.target.value})}
                     />
                 </div>
-
-                {/* Tabs Selector */}
                 <div className="flex flex-wrap xl:flex-nowrap items-center gap-2 xl:gap-6">
                   <div className="flex w-full xl:w-auto gap-1 bg-white/5 p-1 rounded-xl border border-white/5 h-fit">
                       <button 
@@ -229,69 +223,59 @@ function App() {
                       >
                           Versus ({selectedPlayersToCompare.length}/2)
                       </button>
-                      <button 
-                          onClick={() => setDashboardView('FILTERS')}
-                          className={`xl:hidden flex-1 px-4 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'FILTERS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white bg-sky-500/10'}`}
-                      >
-                          Filtres
-                      </button>
                   </div>
                 </div>
               </div>
             </div>
 
-              <div className="flex flex-col xl:flex-row gap-6 xl:gap-10">
-                {/* FilterPanel: Sidebar sur Desktop, Onglet sur Mobile */}
-                <div className={`
-                  ${dashboardView === 'FILTERS' ? 'block' : 'hidden'}
-                  xl:block xl:w-[350px] shrink-0
-                `}>
-                  <FilterPanel 
-                    openSection={openSection} 
-                    setOpenSection={setOpenSection}
-                    pendingFilters={pendingFilters}
-                    setPendingFilters={setPendingFilters}
-                    competitionsList={competitionsList}
-                    positionsList={positionsList}
-                    teamsList={teamsList}
-                    seasonsList={seasonsList}
-                    metricsList={metricsList}
-                    profiles={profiles}
-                    loadProfile={loadProfile}
-                    onProfileSaved={(newProfile) => setProfiles(prev => [newProfile, ...prev])}
-                    handleResetFilters={handleResetFilters} 
-                    handleApplyFilters={() => {
-                        handleApplyFilters();
-                        if (window.innerWidth < 1280) setDashboardView('TABLE');
-                    }}
-                    hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
-                  />
-                </div>
+            <div className="flex flex-col xl:flex-row gap-6 xl:gap-10">
+              <div className={`xl:block xl:w-[350px] shrink-0 ${dashboardView === 'FILTERS' ? 'block' : 'hidden'}`}>
+                <FilterPanel 
+                  openSection={openSection} 
+                  setOpenSection={setOpenSection}
+                  pendingFilters={pendingFilters}
+                  setPendingFilters={setPendingFilters}
+                  competitionsList={competitionsList}
+                  positionsList={positionsList}
+                  teamsList={teamsList}
+                  seasonsList={seasonsList}
+                  metricsList={metricsList}
+                  profiles={profiles}
+                  loadProfile={loadProfile}
+                  onProfileSaved={(newProfile) => setProfiles(prev => [newProfile, ...prev])}
+                  handleResetFilters={handleResetFilters} 
+                  handleApplyFilters={() => {
+                      handleApplyFilters();
+                      if (window.innerWidth < 1280) setDashboardView('TABLE');
+                  }}
+                  hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
+                />
+              </div>
 
-                <main className={`ranking-content-panel flex-1 flex flex-col gap-4 min-w-0 ${dashboardView === 'FILTERS' ? 'hidden xl:flex' : 'flex'}`}>
-                  {dashboardView === 'TABLE' ? (
-                    <RankingTable 
-                        players={players} loading={loading} error={error} 
-                        currentPage={currentPage} pageSize={pageSize} totalPlayers={totalPlayers} 
-                        totalPages={Math.ceil(totalPlayers / pageSize)}
-                        setCurrentPage={setCurrentPage} handlePlayerClick={handlePlayerClick}
-                        selectedSortBy={pendingFilters.sortBy}
-                        selectedPlayersToCompare={selectedPlayersToCompare}
-                        setSelectedPlayersToCompare={setSelectedPlayersToCompare}
-                        metricsList={metricsList}
-                        useSeasonAge={activeFilters.useSeasonAge}
-                        onSortChange={(val) => {
-                          setPendingFilters(prev => ({ ...prev, sortBy: val }));
-                        }}
-                    />
+              <main className="ranking-content-panel flex-1 flex flex-col gap-4 min-w-0">
+                {dashboardView === 'TABLE' ? (
+                  <RankingTable 
+                      players={players} loading={loading} error={error} 
+                      currentPage={currentPage} pageSize={pageSize} totalPlayers={totalPlayers} 
+                      totalPages={Math.ceil(totalPlayers / pageSize)}
+                      setCurrentPage={setCurrentPage} handlePlayerClick={handlePlayerClick}
+                      selectedSortBy={pendingFilters.sortBy}
+                      selectedPlayersToCompare={selectedPlayersToCompare}
+                      setSelectedPlayersToCompare={setSelectedPlayersToCompare}
+                      metricsList={metricsList}
+                      useSeasonAge={activeFilters.useSeasonAge}
+                      onSortChange={(val) => {
+                        setPendingFilters(prev => ({ ...prev, sortBy: val }));
+                      }}
+                  />
                 ) : dashboardView === 'VERSUS' ? (
-                    <HeadToHeadContent selectedPlayersToCompare={selectedPlayersToCompare} />
+                  <HeadToHeadContent selectedPlayersToCompare={selectedPlayersToCompare} />
                 ) : (
-                    <ScatterContent 
-                        players={players} 
-                        metricsList={metricsList} 
-                        onPlayerClick={handlePlayerClick} 
-                    />
+                  <ScatterContent 
+                      players={players} 
+                      metricsList={metricsList} 
+                      onPlayerClick={handlePlayerClick} 
+                  />
                 )}
               </main>
             </div>
@@ -301,169 +285,42 @@ function App() {
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
                 <ArrowLeft size={14} /> Intelligence Hub
              </button>
-             <div className="flex justify-between items-end mb-8">
-                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Radar <span className="text-highlight">Profiling</span></h1>
-             </div>
-
-             {/* Mobile Tab Bar for Radar */}
-              <div className="flex xl:hidden bg-white/5 p-1 rounded-xl border border-white/5 mb-6">
-                <button 
-                    onClick={() => setDashboardView('RADAR')}
-                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${dashboardView !== 'FILTERS' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
-                >
-                    Radar
-                </button>
-                <button 
-                    onClick={() => setDashboardView('FILTERS')}
-                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${dashboardView === 'FILTERS' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
-                >
-                    Filtres
-                </button>
-              </div>
-              
-              <div className="flex flex-col xl:flex-row gap-6 xl:gap-10">
-                <div className={`
-                  ${dashboardView === 'FILTERS' ? 'block' : 'hidden'}
-                  xl:block xl:w-[350px] shrink-0
-                `}>
-                  <FilterPanel 
-                    openSection={openSection} 
-                    setOpenSection={setOpenSection}
-                    pendingFilters={pendingFilters}
-                    setPendingFilters={setPendingFilters}
-                    competitionsList={competitionsList}
-                    positionsList={positionsList}
-                    teamsList={teamsList}
-                    seasonsList={seasonsList}
-                    metricsList={metricsList}
-                    handleResetFilters={handleResetFilters} 
-                    handleApplyFilters={() => {
-                        handleApplyFilters();
-                        if (window.innerWidth < 1280) setDashboardView('RADAR');
-                    }}
-                    hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
-                  />
-                </div>
-                
-                <div className={`flex-1 min-w-0 ${dashboardView === 'FILTERS' ? 'hidden xl:block' : 'block'}`}>
-                  <RadarDashboard 
-                    players={players} 
-                    metricsList={metricsList}
-                    activeFilters={activeFilters}
-                    initialSelectedPlayer={selectedPlayer || (selectedPlayersToCompare.length > 0 ? selectedPlayersToCompare[0] : null)}
-                  />
-                </div>
-             </div>
+             <RadarDashboard 
+                players={players} 
+                metricsList={metricsList}
+                activeFilters={activeFilters}
+                initialSelectedPlayer={selectedPlayer || (selectedPlayersToCompare.length > 0 ? selectedPlayersToCompare[0] : null)}
+              />
           </div>
-        ) : view === 'MATCHUP' ? (
-          <VersusDashboard 
-              metricsList={metricsList}
-              activeFilters={activeFilters}
-              selectedPlayersToCompare={selectedPlayersToCompare}
-              setSelectedPlayersToCompare={setSelectedPlayersToCompare}
-              onClose={() => setView('EXPLORATION')}
-          />
         ) : view === 'TEAMBUILDER' ? (
           <div className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
                 <ArrowLeft size={14} /> Back
              </button>
-             <div className="flex justify-between items-end mb-8">
-                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Tactical <span className="text-highlight">Team Builder</span></h1>
-             </div>
-             
-             <div className="flex gap-10 flex-1 min-h-0">
-                {/* Sidebar Filtres : Cachée sur mobile car intégrée aux onglets du dashboard */}
-                <div className="hidden lg:block w-[350px] shrink-0">
-                  <FilterPanel 
-                    openSection={openSection} 
-                    setOpenSection={setOpenSection}
-                    pendingFilters={pendingFilters}
-                    setPendingFilters={setPendingFilters}
-                    competitionsList={competitionsList}
-                    positionsList={positionsList}
-                    teamsList={teamsList}
-                    seasonsList={seasonsList}
-                    metricsList={metricsList}
-                    handleResetFilters={handleResetFilters} 
-                    handleApplyFilters={handleApplyFilters}
-                    hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
-                  />
-                </div>
-                
-                <TeamBuilderDashboard 
-                  activeFilters={activeFilters} 
-                  onPlayerClick={handlePlayerClick}
-                  // Props de filtrage pour l'onglet mobile
-                  filterProps={{
-                    openSection, setOpenSection,
-                    pendingFilters, setPendingFilters,
-                    competitionsList, positionsList, teamsList, seasonsList, metricsList,
-                    handleResetFilters, handleApplyFilters,
-                    hasChanges: JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)
-                  }}
-                />
-             </div>
+             <TeamBuilderDashboard 
+                activeFilters={activeFilters} 
+                onPlayerClick={handlePlayerClick}
+                filterProps={{
+                  openSection, setOpenSection,
+                  pendingFilters, setPendingFilters,
+                  competitionsList, positionsList, teamsList, seasonsList, metricsList,
+                  handleResetFilters, handleApplyFilters,
+                  hasChanges: JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)
+                }}
+              />
           </div>
         ) : view === 'LAB' ? (
           <div className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8">
                 <ArrowLeft size={14} /> Back
              </button>
-             <div className="flex justify-between items-end mb-8">
-                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Joueur : <span className="text-highlight">Laboratoire</span></h1>
-             </div>
-             
-             {/* Mobile Tab Bar for Lab */}
-             <div className="flex xl:hidden bg-white/5 p-1 rounded-xl border border-white/5 mb-6">
-                <button 
-                    onClick={() => setDashboardView('LAB')}
-                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${dashboardView !== 'FILTERS' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
-                >
-                    Laboratoire
-                </button>
-                <button 
-                    onClick={() => setDashboardView('FILTERS')}
-                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${dashboardView === 'FILTERS' ? 'bg-sky-500 text-white' : 'text-white/40'}`}
-                >
-                    Filtres
-                </button>
-              </div>
-
-             <div className="flex flex-col xl:flex-row gap-6 xl:gap-10">
-                <div className={`
-                  ${dashboardView === 'FILTERS' ? 'block' : 'hidden'}
-                  xl:block xl:w-[300px] shrink-0
-                `}>
-                  <FilterPanel 
-                    openSection={openSection} 
-                    setOpenSection={setOpenSection}
-                    pendingFilters={pendingFilters}
-                    setPendingFilters={setPendingFilters}
-                    competitionsList={competitionsList}
-                    positionsList={positionsList}
-                    teamsList={teamsList}
-                    seasonsList={seasonsList}
-                    metricsList={metricsList}
-                    handleResetFilters={handleResetFilters} 
-                    handleApplyFilters={() => {
-                        handleApplyFilters();
-                        if (window.innerWidth < 1280) setDashboardView('LAB');
-                    }}
-                    hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
-                  />
-                </div>
-                
-                <div className={`flex-1 min-w-0 ${dashboardView === 'FILTERS' ? 'hidden xl:block' : 'block'}`}>
-                  <LabDashboard 
-                    activeFilters={activeFilters} 
-                    metricsList={metricsList}
-                    onPlayerClick={handlePlayerClick}
-                    activeTab={activeTab}
-                    setActiveTab={setActiveTab}
-                  />
-                </div>
-             </div>
+             <LabDashboard 
+                activeFilters={activeFilters} 
+                metricsList={metricsList}
+                onPlayerClick={handlePlayerClick}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+              />
           </div>
         ) : null}
       </AnimatePresence>
@@ -471,6 +328,12 @@ function App() {
       <footer className="mt-auto py-8 border-t border-white/5 text-center text-[10px] text-[rgb(var(--text-muted))] uppercase tracking-widest">
         © 2026 The Analyst Scouting System • Cloud-Native Architecture
       </footer>
+
+      <ContextualChatBot 
+        selectedPlayer={selectedPlayer}
+        players={players}
+        activeFilters={activeFilters}
+      />
 
       <AnimatePresence>
         {selectedPlayer && (
