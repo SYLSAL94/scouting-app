@@ -84,8 +84,8 @@ const TrendsDashboard = ({ metricsList = [] }) => {
 
   return (
     <div className="flex flex-col gap-6 min-h-screen pb-12">
-      {/* Header & Search */}
-      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-slate-900/40 p-6 rounded-[2rem] border border-white/5 backdrop-blur-xl">
+      {/* Header & Search - Elevate z-index for search results */}
+      <div className="relative z-50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-slate-900/40 p-6 rounded-[2rem] border border-white/5 backdrop-blur-xl">
         <div className="flex items-center gap-4">
           <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
             <TrendingUp size={24} className="text-sky-400" />
