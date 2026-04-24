@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Users, Globe, BarChart2, Calendar, Activity, Zap, Save, ChevronDown, Check, X } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Users, Globe, BarChart2, Calendar, Activity, Zap, Save, ChevronDown, Check, X, Filter, Coins, User, ArrowRight } from 'lucide-react';
 import AccordionSection from './AccordionSection';
 import MultiSelectWithChips from '../ui/MultiSelectWithChips';
 import DualRangeSlider from '../ui/DualRangeSlider';
@@ -118,6 +119,8 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
   );
 };
 
+import TacticalPositionPicker from './TacticalPositionPicker';
+
 const FilterPanel = ({ 
   openSection, setOpenSection, 
   pendingFilters, setPendingFilters,
@@ -167,21 +170,37 @@ const FilterPanel = ({
   };
 
   return (
-    <aside className="sidebar-filters w-full xl:w-[420px] shrink-0 xl:sticky xl:top-8 xl:h-[calc(100vh-4rem)] overflow-y-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">Filters</h3>
-        <button onClick={handleResetFilters} className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-sky-400 transition-colors">Reset all</button>
+    <aside className="sidebar-filters w-full xl:w-[400px] shrink-0 xl:sticky xl:top-8 h-[700px] xl:h-[calc(100vh-6rem)] flex flex-col bg-[#0f172a]/30 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500">
+      
+      {/* Header Section - Fixe */}
+      <div className="p-6 pb-2 border-b border-white/5 bg-white/[0.01]">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col">
+            <h3 className="text-xl font-black uppercase tracking-tighter flex items-center gap-2 text-white">
+              <Zap size={20} className="text-sky-400 fill-sky-400/20" />
+              Scouting Engine
+            </h3>
+            <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em] mt-1">Configuring population filters</p>
+          </div>
+          <button 
+            onClick={handleResetFilters}
+            className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-red-500/10 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-red-400 transition-all border border-white/5"
+          >
+            Reset
+          </button>
+        </div>
+
+        <ProfileSelector 
+          profiles={profiles} 
+          loadProfile={loadProfile} 
+          pendingFilters={pendingFilters}
+          onProfileSaved={onProfileSaved}
+          onProfileDeleted={onProfileDeleted}
+        />
       </div>
 
-      <ProfileSelector 
-        profiles={profiles} 
-        loadProfile={loadProfile} 
-        pendingFilters={pendingFilters}
-        onProfileSaved={onProfileSaved}
-        onProfileDeleted={onProfileDeleted}
-      />
-
-      <div className="space-y-2">
+      {/* Content Section - Scrollable */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
         <AccordionSection 
           id="periode" title="Période" icon={<Calendar size={18} />}
           isOpen={openSection === 'periode'} onToggle={() => setOpenSection(openSection === 'periode' ? null : 'periode')}
@@ -197,8 +216,10 @@ const FilterPanel = ({
           badge={getSectionStats('entites').count}
           subtitle={getSectionStats('entites').subtitle}
         >
-          <MultiSelectWithChips label="Compétitions" options={competitionsList} selected={pendingFilters.competitions} onChange={(val) => updateFilters('competitions', val)} placeholder="Select leagues..." />
-          <MultiSelectWithChips label="Équipes" options={teamsList} selected={pendingFilters.teams} onChange={(val) => updateFilters('teams', val)} placeholder="Filter by club..." />
+          <div className="space-y-4">
+            <MultiSelectWithChips label="Compétitions" options={competitionsList} selected={pendingFilters.competitions} onChange={(val) => updateFilters('competitions', val)} placeholder="Select leagues..." />
+            <MultiSelectWithChips label="Équipes" options={teamsList} selected={pendingFilters.teams} onChange={(val) => updateFilters('teams', val)} placeholder="Filter by club..." />
+          </div>
         </AccordionSection>
 
         <AccordionSection 
@@ -207,13 +228,37 @@ const FilterPanel = ({
           badge={getSectionStats('morphologie').count}
           subtitle={getSectionStats('morphologie').subtitle}
         >
-          <DualRangeSlider label="Âge" min={15} max={45} currentMin={pendingFilters.minAge} currentMax={pendingFilters.maxAge} onChange={(min, max) => setPendingFilters(prev => ({ ...prev, minAge: min, maxAge: max }))} />
-          <div className="flex items-center justify-between p-2.5 bg-sky-500/5 rounded-xl border border-sky-500/10 mt-3 mb-6">
-            <div className="flex flex-col"><span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest">Âge de Saison</span><span className="text-[8px] text-slate-500">Utiliser l'âge historique</span></div>
-            <button onClick={() => updateFilters('useSeasonAge', !pendingFilters.useSeasonAge)} className={`w-8 h-4 rounded-full p-0.5 transition-all duration-300 ${pendingFilters.useSeasonAge ? 'bg-sky-500' : 'bg-slate-700'}`}><div className={`w-3 h-3 bg-white rounded-full transition-transform duration-300 ${pendingFilters.useSeasonAge ? 'translate-x-4' : 'translate-x-0'}`} /></button>
+          <div className="space-y-6">
+            <div className="filter-group">
+               <DualRangeSlider label="Tranche d'Âge" min={15} max={45} currentMin={pendingFilters.minAge} currentMax={pendingFilters.maxAge} onChange={(min, max) => setPendingFilters(prev => ({ ...prev, minAge: min, maxAge: max }))} />
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest">Âge de Saison</span>
+                <span className="text-[8px] text-slate-500 uppercase tracking-tighter">Based on season year</span>
+              </div>
+              <button onClick={() => updateFilters('useSeasonAge', !pendingFilters.useSeasonAge)} className={`w-8 h-4 rounded-full p-0.5 transition-all duration-300 ${pendingFilters.useSeasonAge ? 'bg-sky-500 shadow-lg shadow-sky-500/30' : 'bg-slate-700'}`}>
+                <div className={`w-3 h-3 bg-white rounded-full transition-transform duration-300 ${pendingFilters.useSeasonAge ? 'translate-x-4' : 'translate-x-0'}`} />
+              </button>
+            </div>
+
+            <div className="filter-group">
+              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-3 block">Lateral Preference</label>
+              <div className="flex p-1 bg-black/40 rounded-2xl border border-white/5">
+                {['all', 'right', 'left', 'both'].map((f) => (
+                  <button key={f} onClick={() => updateFilters('foot', f)} className={`flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase transition-all duration-300 ${pendingFilters.foot === f ? 'bg-sky-500 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>
+                    {f === 'all' ? 'All' : f === 'right' ? 'R' : f === 'left' ? 'L' : '2P'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-8 pt-4">
+              <DualRangeSlider label="Taille (cm)" min={140} max={210} currentMin={pendingFilters.height?.min || 140} currentMax={pendingFilters.height?.max || 210} onChange={(min, max) => updateFilters('height', { min, max })} unit="cm" />
+              <DualRangeSlider label="Poids (kg)" min={50} max={110} currentMin={pendingFilters.weight?.min || 50} currentMax={pendingFilters.weight?.max || 110} onChange={(min, max) => updateFilters('weight', { min, max })} unit="kg" />
+            </div>
           </div>
-          <div className="filter-group mt-8"><label className="text-[10px] font-black uppercase tracking-widest text-sky-400/60 mb-4 block">Latéralité (Pied)</label><div className="flex p-1.5 bg-slate-950/50 rounded-2xl border border-white/5">{['all', 'right', 'left', 'both'].map((f) => (<button key={f} onClick={() => updateFilters('foot', f)} className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase transition-all duration-300 ${pendingFilters.foot === f ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/40' : 'text-slate-500 hover:text-slate-300'}`}>{f === 'all' ? 'Tous' : f === 'right' ? 'Droit' : f === 'left' ? 'Gauche' : '2P'}</button>))}</div></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10"><DualRangeSlider label="Taille (cm)" min={140} max={210} currentMin={pendingFilters.height?.min || 140} currentMax={pendingFilters.height?.max || 210} onChange={(min, max) => updateFilters('height', { min, max })} unit="cm" /><DualRangeSlider label="Poids (kg)" min={50} max={110} currentMin={pendingFilters.weight?.min || 50} currentMax={pendingFilters.weight?.max || 110} onChange={(min, max) => updateFilters('weight', { min, max })} unit="kg" /></div>
         </AccordionSection>
 
         <AccordionSection 
@@ -222,8 +267,30 @@ const FilterPanel = ({
           badge={getSectionStats('performance').count}
           subtitle={getSectionStats('performance').subtitle}
         >
+          <div className="mb-6 bg-black/20 rounded-3xl p-1 border border-white/5 shadow-inner">
+            <TacticalPositionPicker 
+              selectedPositions={pendingFilters.positions}
+              onChange={(val) => updateFilters('positions', val)}
+            />
+          </div>
           <MultiSelectWithChips label="Postes" options={positionsList} selected={pendingFilters.positions} onChange={(val) => updateFilters('positions', val)} placeholder="Tactical roles..." />
-          <div className="space-y-6 mt-6"><div className="filter-group"><label className="filter-label flex justify-between"><span>Temps de Jeu (%)</span><span className="text-sky-400 font-mono">{(pendingFilters.playtime?.min || 0)}%+</span></label><input type="range" min="0" max="100" step="5" value={pendingFilters.playtime?.min || 0} onChange={e => updateFilters('playtime', { ...(pendingFilters.playtime || {}), min: Number(e.target.value) })} className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-400" /></div><div className="filter-group"><label className="filter-label flex justify-between"><span>Volume de Matchs</span><span className="text-sky-400 font-mono">{pendingFilters.minMatches}+</span></label><input type="range" min="0" max="60" step="1" value={pendingFilters.minMatches} onChange={e => updateFilters('minMatches', Number(e.target.value))} className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-400" /></div></div>
+          
+          <div className="space-y-6 mt-8 p-4 bg-white/[0.02] rounded-2xl border border-white/5">
+            <div className="filter-group">
+               <label className="filter-label flex justify-between">
+                 <span>Playtime (%)</span>
+                 <span className="text-sky-400 font-mono">{(pendingFilters.playtime?.min || 0)}%+</span>
+               </label>
+               <input type="range" min="0" max="100" step="5" value={pendingFilters.playtime?.min || 0} onChange={e => updateFilters('playtime', { ...(pendingFilters.playtime || {}), min: Number(e.target.value) })} className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-400" />
+            </div>
+            <div className="filter-group">
+               <label className="filter-label flex justify-between">
+                 <span>Min Matches</span>
+                 <span className="text-emerald-400 font-mono">{pendingFilters.minMatches}+</span>
+               </label>
+               <input type="range" min="0" max="60" step="1" value={pendingFilters.minMatches} onChange={e => updateFilters('minMatches', Number(e.target.value))} className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-400" />
+            </div>
+          </div>
         </AccordionSection>
 
         <AccordionSection 
@@ -232,13 +299,43 @@ const FilterPanel = ({
           badge={getSectionStats('contrat').count}
           subtitle={getSectionStats('contrat').subtitle}
         >
-          <div className="space-y-10 py-4"><div className="flex items-center justify-between p-5 bg-white/5 rounded-3xl border border-white/5 shadow-inner"><div className="flex flex-col"><span className="text-xs font-bold text-white uppercase tracking-tight">Joueur en Prêt</span><span className="text-[10px] text-slate-500">Filtrer les statuts temporaires</span></div><button onClick={() => updateFilters('onLoan', !pendingFilters.onLoan)} className={`w-12 h-6 rounded-full p-1 transition-all duration-500 ${pendingFilters.onLoan ? 'bg-sky-500 shadow-lg shadow-sky-500/50' : 'bg-slate-700'}`}><div className={`w-4 h-4 bg-white rounded-full transition-transform duration-500 ${pendingFilters.onLoan ? 'translate-x-6' : 'translate-x-0'}`} /></button></div><div className="px-2"><DualRangeSlider label="Valeur Marchande (€)" min={0} max={150000000} step={500000} currentMin={pendingFilters.marketValue?.min || 0} currentMax={pendingFilters.marketValue?.max || 150000000} onChange={(min, max) => updateFilters('marketValue', { min, max })} unit="€" /></div></div>
+          <div className="space-y-8 py-2">
+            <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+              <div className="flex flex-col">
+                <span className="text-[11px] font-bold text-white uppercase tracking-tight">On Loan</span>
+                <span className="text-[8px] text-slate-500 uppercase tracking-widest">Filter temporary status</span>
+              </div>
+              <button onClick={() => updateFilters('onLoan', !pendingFilters.onLoan)} className={`w-10 h-5 rounded-full p-0.5 transition-all duration-500 ${pendingFilters.onLoan ? 'bg-sky-500 shadow-lg shadow-sky-500/50' : 'bg-slate-700'}`}>
+                <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-500 ${pendingFilters.onLoan ? 'translate-x-4' : 'translate-x-0'}`} />
+              </button>
+            </div>
+            
+            <div className="px-1">
+              <DualRangeSlider label="Market Value (€)" min={0} max={150000000} step={500000} currentMin={pendingFilters.marketValue?.min || 0} currentMax={pendingFilters.marketValue?.max || 150000000} onChange={(min, max) => updateFilters('marketValue', { min, max })} unit="€" />
+            </div>
+          </div>
         </AccordionSection>
       </div>
 
-      <div className="mt-12 space-y-4">
-         {hasChanges && <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-400/20 text-[11px] text-sky-400 font-black uppercase tracking-widest text-center animate-pulse shadow-inner">Analyse en attente d'application</div>}
-         <button className={`btn w-full py-6 rounded-[1.5rem] uppercase font-black tracking-widest text-sm transition-all duration-500 ${hasChanges ? 'bg-sky-500 text-white shadow-2xl shadow-sky-500/50 translate-y-[-4px]' : 'bg-white/5 text-white/10 cursor-not-allowed'}`} onClick={handleApplyFilters} disabled={!hasChanges}>Apply Analysis</button>
+      {/* Footer Section - Fixe / Action */}
+      <div className="p-6 bg-white/[0.04] border-t border-white/5 backdrop-blur-3xl">
+        <button 
+          onClick={handleApplyFilters} 
+          disabled={!hasChanges} 
+          className={`w-full py-5 rounded-[1.5rem] flex items-center justify-center gap-3 transition-all duration-500 relative group overflow-hidden ${
+            hasChanges 
+            ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-2xl shadow-sky-500/40 hover:scale-[1.02]' 
+            : 'bg-white/5 text-white/10 cursor-not-allowed'
+          }`}
+        >
+          {hasChanges && (
+            <motion.div 
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
+            />
+          )}
+          <span className="text-[11px] font-black uppercase tracking-[0.3em]">Apply Analysis</span>
+          <Check size={18} className={`${hasChanges ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all duration-300`} />
+        </button>
       </div>
     </aside>
   );

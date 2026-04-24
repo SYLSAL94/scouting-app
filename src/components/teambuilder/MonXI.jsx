@@ -89,7 +89,7 @@ export default function MonXI({ activeFilters, onPlayerClick }) {
             </div>
 
             {/* Zone Terrain */}
-            <div className={`${activeTab === 'field' ? 'block' : 'hidden'} xl:block flex-1 min-h-[500px] md:min-h-[600px] relative rounded-3xl overflow-hidden border border-white/5 bg-slate-900/50 shadow-2xl`}>
+            <div className={`${activeTab === 'field' ? 'block' : 'hidden'} xl:block flex-1 h-[calc(100vh-220px)] min-h-[550px] relative rounded-3xl overflow-hidden border border-white/5 bg-slate-900/50 shadow-2xl`}>
                 <Field
                     formationLayout={formationLayout}
                     formation={formation}

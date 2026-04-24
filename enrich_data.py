@@ -77,10 +77,10 @@ INDICES_CONFIG = {
         'Indice_Sortie_de_but': { 'gk_aerial_duels_avg': 0.70, 'goalkeeper_exits_avg': 0.30 },
         'Indice_xG_Subit_Différentiel': { 'prevented_goals_avg': 0.35, 'xg_save_avg': 0.25, 'clean_sheets': 0.20, 'save_with_reflex_percent': 0.13, 'easy_conceded_goal_avg': -0.07 },
         'Indice_Aerial_duel': { 'aerial_duels_won': 0.70, 'aerial_duels_avg': 0.30 },
-        'Indice_Pass': { 'pass_to_penalty_area_avg': 0.30, 'passes_to_final_third_avg': 0.25, 'pass_to_zone_fourteen_avg': 0.15, 'progressive_pass_avg': 0.13, 'passes_avg': 0.10, 'buildup_pass_avg': 0.07 },
-        'Indice_Acc_pass': { 'accurate_pass_to_penalty_area_percent': 0.35, 'accurate_passes_to_final_third_percent': 0.25, 'successful_progressive_pass_percent': 0.20, 'successful_forward_passes_percent': 0.13, 'accurate_passes_percent': 0.07 },
-        'Indice_Type_pass': { 'vertical_passes_avg': 0.20, 'through_passes_avg': 0.15, 'diagonal_to_flank_avg': 0.13, 'crosses_avg': 0.12, 'long_passes_avg': 0.10, 'short_medium_pass_avg': 0.08, 'average_pass_length': 0.07, 'average_long_pass_length': 0.06, 'corners_taken_avg': 0.05, 'free_kicks_taken_avg': 0.04 },
-        'Indice_Acc_type_pass': { 'successful_vertical_passes_percent': 0.35, 'successful_through_passes_percent': 0.25, 'accurate_crosses_percent': 0.20, 'successful_long_passes_percent': 0.13, 'accurate_short_medium_pass_percent': 0.07 },
+        'Indice_Pass': { 'long_passes_avg': 0.35, 'short_medium_pass_avg': 0.25, 'gk_throws_avg': 0.20, 'goal_kicks_avg': 0.20 },
+        'Indice_Acc_pass': { 'successful_long_passes_percent': 0.40, 'accurate_short_medium_pass_percent': 0.40, 'accurate_passes_percent': 0.20 },
+        'Indice_Type_pass': { 'average_pass_length': 0.50, 'average_long_pass_length': 0.50 },
+        'Indice_Acc_type_pass': { 'successful_long_passes_percent': 0.50, 'accurate_short_medium_pass_percent': 0.50 },
         'Indice_Covering_Interception': { 'possession_adjusted_interceptions': 0.50, 'interceptions_avg': 0.30, 'covering_depth_avg': 0.20 },
         'Indice_Discipline': { 'red_cards_avg': -0.40, 'dangerous_foul_avg': -0.25, 'yellow_cards_avg': -0.20, 'fouls_avg': -0.15 },
     }
@@ -213,11 +213,15 @@ def process_batch(df, all_metric_keys, all_profile_metrics):
     
     # On opère sur une copie pour éviter les SettingWithCopy
     df_main = df.copy()
+    
     # 1. Nettoyage Numérique Absolu (Bouclier de typage)
     for col in df_main.columns:
         if col in text_cols:
             if col in ['secondary_position', 'third_position', 'positions']:
                 df_main[col] = df_main[col].replace({0: np.nan, '0': np.nan, 0.0: np.nan})
+        elif col == 'on_loan':
+            # Traitement spécifique pour le prêt (booléen)
+            df_main[col] = pd.to_numeric(df_main[col], errors='coerce').fillna(0).astype(int).astype(bool)
         else:
             # On force le passage en string pour nettoyer toute virgule européenne résiduelle
             df_main[col] = pd.to_numeric(df_main[col].astype(str).str.replace(',', '.', regex=False), errors='coerce')
@@ -254,10 +258,9 @@ def process_batch(df, all_metric_keys, all_profile_metrics):
                 cat_mask = (pos_cat == cat)
                 full_mask = cat_mask & eligible_mask
                 if full_mask.any():
-                    dist = df_main.loc[full_mask, m].values
-                    pct_series.loc[cat_mask] = df_main.loc[cat_mask, m].apply(
-                        lambda x: stats.percentileofscore(dist, x, kind='mean')
-                    )
+                    # OPTIMISATION DEVOPS : Remplacement de percentileofscore (lent) par rank() vectorisé
+                    vals = df_main.loc[cat_mask, m]
+                    pct_series.loc[cat_mask] = vals.rank(pct=True) * 100
             new_results[f'{m}_pct'] = pct_series
 
     # 5. Calcul des INDICES (Approche sécurisée .loc anti-écrasement)
@@ -273,15 +276,17 @@ def process_batch(df, all_metric_keys, all_profile_metrics):
 
         for idx_name, weights in configs.items():
             idx_series = pd.Series(0.0, index=df_main.index)
+            current_total_weight = 0.0
+            
             for m, w in weights.items():
                 pct_key = f'{m}_pct'
                 if pct_key in new_results:
                     val = new_results[pct_key]
                     idx_series += (100 - val) * abs(w) if w < 0 else val * w
+                    current_total_weight += abs(w)
             
-            total_weight = sum(abs(v) for v in weights.values())
-            if total_weight > 0:
-                idx_series /= total_weight
+            if current_total_weight > 0:
+                idx_series /= current_total_weight
             
             # Injection sécurisée par masque pour préserver les calculs du groupe précédent
             indices_data[idx_name].loc[mask] = idx_series.loc[mask]
@@ -289,12 +294,26 @@ def process_batch(df, all_metric_keys, all_profile_metrics):
     # On ajoute les indices au dictionnaire final
     new_results.update(indices_data)
 
-    # 6. Notes
+    # 6. Notes (Bouclier conditionnel et isolation des moyennes)
     temp_indices_df = pd.DataFrame(indices_data)
+    
+    # Récupération des listes d'indices par profil pour éviter la dilution
+    cols_field = [c for c in INDICES_CONFIG['field_player'].keys() if c in temp_indices_df.columns]
+    cols_gk = [c for c in INDICES_CONFIG['goalkeeper'].keys() if c in temp_indices_df.columns]
+    
+    note_globale = pd.Series(0.0, index=df_main.index)
+    
+    # Calcul isolé : On ne fait la moyenne que sur les colonnes pertinentes pour le poste
+    mask_gk = (pos_cat == 'Gardien')
+    mask_field = (pos_cat != 'Gardien')
+    
     if not temp_indices_df.empty:
-        new_results['note_globale'] = temp_indices_df.mean(axis=1).fillna(0)
-    else:
-        new_results['note_globale'] = pd.Series(0.0, index=df_main.index)
+        if mask_gk.any():
+            note_globale.loc[mask_gk] = temp_indices_df.loc[mask_gk, cols_gk].mean(axis=1)
+        if mask_field.any():
+            note_globale.loc[mask_field] = temp_indices_df.loc[mask_field, cols_field].mean(axis=1)
+            
+    new_results['note_globale'] = note_globale.fillna(0)
     
     note_pond_series = new_results['note_globale'].copy()
     for cat, weights in NOTES_PONDEREE_CONFIG.items():
@@ -304,9 +323,11 @@ def process_batch(df, all_metric_keys, all_profile_metrics):
             w_total = 0.0
             for idx_name, w in weights.items():
                 if idx_name in temp_indices_df.columns:
-                    w_sum += temp_indices_df[idx_name] * w
+                    # IMMUNITÉ : .fillna(0) empêche un indice manquant de corrompre toute l'addition
+                    w_sum += temp_indices_df[idx_name].fillna(0) * w
                     w_total += w
             if w_total > 0:
+                # Injection sécurisée par masque pour respecter les spécificités de chaque poste
                 note_pond_series.loc[cat_mask] = (w_sum / w_total).loc[cat_mask]
     new_results['note_ponderee'] = note_pond_series
 
@@ -367,36 +388,34 @@ def run_enrichment(mode):
 
     try:
         with engine.connect() as conn:
-            # 1. Découverte des contextes bruts
-            logger.info("Analyse des contextes (Compétitions / Saisons) disponibles dans la source...")
+            # 1. Découverte des contextes bruts (GLOBAL PRODUCTION)
+            logger.info("Analyse globale des contextes (Compétitions / Saisons) disponibles...")
             all_contexts = conn.execute(text(f"SELECT DISTINCT competition, season FROM {SOURCE_TABLE}")).fetchall()
             all_contexts_set = set((r[0], r[1]) for r in all_contexts)
             
-            # 2. Découverte des contextes déjà enrichis (Resume Logic)
+            # 2. Découverte des contextes déjà enrichis (Smart Delta Logic)
             existing_keys = []
             done_contexts_set = set()
             
             if mode == "-2":
                 logger.info(f"Vérification de l'état d'avancement dans {TARGET_TABLE}...")
                 try:
-                    # Lecture des Clés Composites existantes pour le Smart Delta
+                    # Lecture des Clés Composites existantes pour éviter les doublons
                     existing_data = pd.read_sql(f"SELECT id, competition, season FROM {TARGET_TABLE}", conn)
                     existing_keys = (existing_data['id'].astype(str) + '_' + existing_data['competition'].astype(str) + '_' + existing_data['season'].astype(str)).tolist()
                     
                     done_contexts = conn.execute(text(f"SELECT DISTINCT competition, season FROM {TARGET_TABLE}")).fetchall()
                     done_contexts_set = set((r[0], r[1]) for r in done_contexts)
                 except Exception:
-                    # Si la table n'existe pas encore
                     done_contexts_set = set()
-                    existing_ids = []
             
             # 3. Calcul du delta (ce qui reste à traiter)
             if mode == "-1":
-                to_process = sorted(list(all_contexts_set)) # Tout traiter en Full Replace
+                to_process = sorted(list(all_contexts_set)) # Full recalculation
             else:
                 to_process = sorted(list(all_contexts_set - done_contexts_set))
                 
-            logger.info(f"Contextes totaux: {len(all_contexts_set)} | À traiter: {len(to_process)}")
+            logger.info(f"Contextes totaux (PROD): {len(all_contexts_set)} | À traiter: {len(to_process)}")
 
         # 4. Boucle itérative par contexte (Résilience individuelle)
         for i, (comp, season) in enumerate(to_process):

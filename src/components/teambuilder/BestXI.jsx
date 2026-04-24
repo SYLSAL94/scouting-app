@@ -68,7 +68,7 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
             </div>
 
             {/* Zone Terrain - Dynamique et Flexible (Harmonisée avec MonXI) */}
-            <div className={`${activeTab === 'field' ? 'block' : 'hidden'} xl:block flex-[4] min-h-[700px] 2xl:min-h-[850px] flex relative rounded-[2rem] overflow-hidden border border-white/5 bg-[#0a0d14]/50 shadow-2xl backdrop-blur-md`}>
+            <div className={`${activeTab === 'field' ? 'block' : 'hidden'} xl:block flex-[4] h-[calc(100vh-220px)] min-h-[550px] flex relative rounded-[2rem] overflow-hidden border border-white/5 bg-[#0a0d14]/50 shadow-2xl backdrop-blur-md`}>
                 {loading && (
                     <div className="absolute inset-0 z-50 bg-[#080a0f]/80 backdrop-blur-md flex flex-col items-center justify-center gap-6">
                         <div className="relative">
