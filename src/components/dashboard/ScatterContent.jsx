@@ -56,7 +56,7 @@ const ROLE_COLORS = {
   'Autres': '#94a3b8'
 };
 
-const ScatterControls = ({ metricsList, xAxis, setXAxis, yAxis, setYAxis, playersCount }) => {
+const ScatterControls = ({ metricsList, xAxis, setXAxis, yAxis, setYAxis, playersCount, chartData }) => {
   const [visualPresets, setVisualPresets] = useState([
     { name: "Volume vs Efficacité", x: "minutes_on_field", y: "note_ponderee" },
     { name: "Création vs xG", x: "xg_assist_avg", y: "xg_shot_avg" },
@@ -64,6 +64,62 @@ const ScatterControls = ({ metricsList, xAxis, setXAxis, yAxis, setYAxis, player
   ]);
   const [showSave, setShowSave] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
+
+  const handleExportPython = () => {
+    const pythonScript = `
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+# Données exportées depuis le Scouting Dashboard (The Analyst)
+data = ${JSON.stringify(chartData.map(p => ({
+  name: p.name,
+  team: p.team,
+  x: p.x,
+  y: p.y,
+  role: p.position_category
+})), null, 2)}
+
+df = pd.DataFrame(data)
+
+# Configuration du style
+plt.style.use('dark_background')
+plt.figure(figsize=(14, 10))
+sns.set_theme(style="dark", palette="muted")
+
+# Création du Scatter Plot
+scatter = sns.scatterplot(
+    data=df, x='x', y='y', hue='role', 
+    s=100, alpha=0.7, edgecolors='white', linewidth=0.5
+)
+
+# Ajout des lignes de moyennes
+plt.axvline(df['x'].mean(), color='white', linestyle='--', alpha=0.3, label='Moyenne X')
+plt.axhline(df['y'].mean(), color='white', linestyle='--', alpha=0.3, label='Moyenne Y')
+
+# Labels et Titre
+plt.title(f"Analyse Scouting : ${xAxis.replace(/_/g, ' ')} vs ${yAxis.replace(/_/g, ' ')}", fontsize=16, pad=20)
+plt.xlabel("${xAxis.replace(/_/g, ' ').toUpperCase()}", fontsize=12)
+plt.ylabel("${yAxis.replace(/_/g, ' ').toUpperCase()}", fontsize=12)
+
+# Optimisation de la légende
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title="Postes")
+plt.tight_layout()
+
+print("Graphique généré avec succès.")
+plt.show()
+`;
+
+    const blob = new Blob([pythonScript], { type: 'text/x-python' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `scatter_export_${new Date().getTime()}.py`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const handleSavePreset = () => {
     if (!newPresetName.trim()) return;
@@ -155,7 +211,10 @@ const ScatterControls = ({ metricsList, xAxis, setXAxis, yAxis, setYAxis, player
 
       <div className="flex flex-col border-l border-white/10 pl-6">
          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Advanced Export</span>
-         <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl text-[10px] font-black text-indigo-300 uppercase tracking-tighter opacity-50 cursor-not-allowed">
+         <button 
+           onClick={handleExportPython}
+           className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl text-[10px] font-black text-indigo-300 uppercase tracking-tighter hover:from-indigo-500/30 hover:to-purple-500/30 transition-all"
+         >
            <Activity size={12} />
            Python Export
          </button>
@@ -235,6 +294,7 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
         xAxis={xAxis} setXAxis={setXAxis}
         yAxis={yAxis} setYAxis={setYAxis}
         playersCount={players.length}
+        chartData={chartData}
       />
 
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-2 border-b border-white/5">
