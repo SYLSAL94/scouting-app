@@ -33,7 +33,6 @@ const LandingPage = ({ onEnter }) => {
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-sky-600/10 rounded-full blur-[150px] opacity-50" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-indigo-600/10 rounded-full blur-[150px] opacity-50" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
       </div>
 
       {/* Navigation (Header discret) */}
