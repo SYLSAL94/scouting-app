@@ -55,7 +55,10 @@ function App() {
     weight: { min: 50, max: 110 },
     playtime: { min: 0, max: 100 },
     foot: 'all',
-    onLoan: 'all'
+    onLoan: false,
+    useSeasonAge: false,
+    marketValue: { min: 0, max: 150000000 },
+    minMatches: 0
   };
 
   const [activeFilters, setActiveFilters] = useState(defaultFilters);
@@ -97,6 +100,15 @@ function App() {
     url += `&min_height=${activeFilters.height.min}&max_height=${activeFilters.height.max}`;
     url += `&min_weight=${activeFilters.weight.min}&max_weight=${activeFilters.weight.max}`;
     if (activeFilters.playtime.min > 0) url += `&min_playtime=${activeFilters.playtime.min}`;
+    
+    // Nouveaux filtres API-First
+    if (activeFilters.foot && activeFilters.foot !== 'all') url += `&foot=${activeFilters.foot}`;
+    if (activeFilters.onLoan) url += `&on_loan=true`;
+    if (activeFilters.useSeasonAge) url += `&use_season_age=true`;
+    if (activeFilters.marketValue.min > 0) url += `&min_market_value=${activeFilters.marketValue.min}`;
+    if (activeFilters.marketValue.max < 150000000) url += `&max_market_value=${activeFilters.marketValue.max}`;
+    if (activeFilters.minMatches > 0) url += `&min_matches=${activeFilters.minMatches}`;
+
     url += `&sort_by=${activeFilters.sortBy}`;
 
     fetch(url)
@@ -267,6 +279,7 @@ function App() {
                         selectedPlayersToCompare={selectedPlayersToCompare}
                         setSelectedPlayersToCompare={setSelectedPlayersToCompare}
                         metricsList={metricsList}
+                        useSeasonAge={activeFilters.useSeasonAge}
                         onSortChange={(val) => {
                           setPendingFilters(prev => ({ ...prev, sortBy: val }));
                         }}

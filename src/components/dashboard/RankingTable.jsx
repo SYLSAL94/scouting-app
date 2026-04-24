@@ -29,7 +29,7 @@ const RankingTable = ({
   players, loading, error, currentPage, pageSize, totalPlayers, totalPages,
   setCurrentPage, handlePlayerClick, selectedSortBy,
   selectedPlayersToCompare = [], setSelectedPlayersToCompare,
-  metricsList, onSortChange
+  metricsList, onSortChange, useSeasonAge
 }) => {
   const handleToggleCompare = (e, player) => {
     e.stopPropagation();
@@ -224,7 +224,7 @@ const RankingTable = ({
                 <td className="hidden md:table-cell text-[rgb(var(--text-muted))]">{player.competition || '—'}</td>
                 <td className="hidden md:table-cell text-[rgb(var(--text-muted))]">{player.last_club_name || 'Équipe inconnue'}</td>
                 <td className="hidden md:table-cell"><span className="px-2 py-0.5 rounded bg-white/5 text-xs border border-white/5">{player.position_category || 'Non renseigné'}</span></td>
-                <td className="text-center font-bold md:font-normal">{player.age || '—'}</td>
+                <td className="text-center font-bold md:font-normal">{ (useSeasonAge ? player.season_age : player.age) || '—'}</td>
                 <td className="hidden md:table-cell text-center text-[rgb(var(--text-muted))] text-xs font-mono">{player.minutes_on_field || 0}'</td>
                 <td className="text-right font-mono font-black text-sky-400 text-base md:text-lg">{formattedValue}</td>
               </tr>
