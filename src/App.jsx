@@ -147,7 +147,7 @@ function App() {
         </div>
       )}
 
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {view === 'LANDING' ? (
           <LandingPage key="landing" onEnter={() => setView('EXPLORATION')} />
         ) : view === 'EXPLORATION' ? (
@@ -161,6 +161,17 @@ function App() {
             }} 
             onBack={() => setView('LANDING')} 
           />
+        ) : view === 'MATCHUP' ? (
+          <div key="matchup" className="min-h-screen">
+            <div className="bg-sky-500 text-white text-[10px] p-1 text-center font-bold">MODE MATCHUP ACTIF</div>
+            <VersusDashboard 
+              metricsList={metricsList}
+              selectedPlayersToCompare={selectedPlayersToCompare}
+              setSelectedPlayersToCompare={setSelectedPlayersToCompare}
+              onClose={() => setView('EXPLORATION')}
+              activeFilters={activeFilters}
+            />
+          </div>
         ) : view === 'DASHBOARD' ? (
           <motion.div 
             key="dashboard" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -209,17 +220,19 @@ function App() {
             </div>
           </motion.div>
         ) : view === 'RADAR' ? (
-          <div className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
+          <div key="radar" className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8"><ArrowLeft size={14} /> Intelligence Hub</button>
              <RadarDashboard players={players} metricsList={metricsList} activeFilters={activeFilters} initialSelectedPlayer={selectedPlayer || (selectedPlayersToCompare.length > 0 ? selectedPlayersToCompare[0] : null)} />
           </div>
         ) : view === 'TEAMBUILDER' ? (
-          <div className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
-             <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8"><ArrowLeft size={14} /> Back</button>
-             <TeamBuilderDashboard activeFilters={activeFilters} onPlayerClick={handlePlayerClick} filterProps={{ openSection, setOpenSection, pendingFilters, setPendingFilters, competitionsList, positionsList, teamsList, seasonsList, metricsList, handleResetFilters, handleApplyFilters, hasChanges: JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters) }} />
+          <div key="teambuilder" className="w-full px-4 md:px-8 min-h-screen flex flex-col">
+             <div className="max-w-[1700px] mx-auto w-full flex flex-col flex-1">
+                <button onClick={() => setView('EXPLORATION')} className="btn-back mt-8 mb-4 md:mb-8"><ArrowLeft size={14} /> Intelligence Hub</button>
+                <TeamBuilderDashboard activeFilters={activeFilters} onPlayerClick={handlePlayerClick} filterProps={{ openSection, setOpenSection, pendingFilters, setPendingFilters, competitionsList, positionsList, teamsList, seasonsList, metricsList, handleResetFilters, handleApplyFilters, hasChanges: JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters) }} />
+             </div>
           </div>
         ) : view === 'LAB' ? (
-          <div className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
+          <div key="lab" className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
              <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8"><ArrowLeft size={14} /> Back</button>
              <LabDashboard activeFilters={activeFilters} metricsList={metricsList} onPlayerClick={handlePlayerClick} activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>

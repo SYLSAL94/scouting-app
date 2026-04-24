@@ -7,8 +7,8 @@ export default function Field({ formationLayout, formation, onSlotClick }) {
         return <div className="text-center p-8 text-slate-500">Veuillez sélectionner une formation.</div>;
     }
     return (
-        <div className="w-full h-full flex items-center justify-center p-2 md:p-4">
-            <div className="relative aspect-[7/10] h-full max-w-full bg-emerald-900/40 rounded-3xl overflow-hidden shadow-2xl border border-white/5 backdrop-blur-sm">
+        <div className="w-full h-full flex items-center justify-center p-4">
+            <div className="relative aspect-[7/10] h-full w-auto mx-auto bg-emerald-900/20 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 backdrop-blur-sm">
                 {/* Pelouse stylisée */}
                 <div className="absolute inset-0">
                     <div className="h-full w-full flex flex-col">

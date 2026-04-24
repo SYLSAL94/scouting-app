@@ -1,6 +1,6 @@
 // src/components/teambuilder/BestXI.jsx
 import React, { useMemo, useState, useEffect } from 'react';
-import { ToggleLeft, ToggleRight, UserX, Loader2 } from 'lucide-react';
+import { ToggleLeft, ToggleRight, UserX, Loader2, Activity } from 'lucide-react';
 import { formations } from '../../config/formations';
 import Field from './Field';
 
@@ -67,21 +67,28 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
                 </button>
             </div>
 
-            {/* Zone Terrain */}
-            <div className={`${activeTab === 'field' ? 'block' : 'hidden'} xl:block flex-1 min-h-[500px] md:min-h-[600px] flex relative rounded-3xl overflow-hidden border border-white/5 bg-slate-900/50 shadow-2xl`}>
+            {/* Zone Terrain - Dynamique et Flexible (Harmonisée avec MonXI) */}
+            <div className={`${activeTab === 'field' ? 'block' : 'hidden'} xl:block flex-[4] min-h-[700px] 2xl:min-h-[850px] flex relative rounded-[2rem] overflow-hidden border border-white/5 bg-[#0a0d14]/50 shadow-2xl backdrop-blur-md`}>
                 {loading && (
-                    <div className="absolute inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex flex-col items-center justify-center gap-4">
-                        <Loader2 className="w-12 h-12 text-sky-500 animate-spin" />
-                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-sky-400">Tactical Optimization...</p>
+                    <div className="absolute inset-0 z-50 bg-[#080a0f]/80 backdrop-blur-md flex flex-col items-center justify-center gap-6">
+                        <div className="relative">
+                           <Loader2 className="w-16 h-16 text-sky-500 animate-spin" />
+                           <div className="absolute inset-0 bg-sky-500/20 blur-2xl rounded-full animate-pulse"></div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400 mb-1">Neural Optimization</p>
+                           <p className="text-[9px] text-white/30 uppercase tracking-widest">Processing tactical weights...</p>
+                        </div>
                     </div>
                 )}
                 {!loading && bestXI.length === 0 && (
-                    <div className="absolute inset-0 z-40 bg-slate-950/40 backdrop-blur-[2px] flex flex-col items-center justify-center p-8 md:p-12 text-center">
-                        <div className="w-16 h-16 md:w-20 md:h-20 bg-sky-500/10 border border-sky-500/20 rounded-full flex items-center justify-center mb-6 shadow-2xl">
-                             <Loader2 className="w-8 h-8 md:w-10 md:h-10 text-sky-500 opacity-20" />
+                    <div className="absolute inset-0 z-40 bg-slate-950/20 backdrop-blur-[2px] flex flex-col items-center justify-center p-8 md:p-12 text-center">
+                        <div className="w-16 h-16 md:w-20 md:h-20 bg-sky-500/10 border border-sky-500/20 rounded-full flex items-center justify-center mb-6 shadow-2xl relative">
+                             <div className="absolute inset-0 bg-sky-500/5 blur-xl rounded-full"></div>
+                             <Activity className="w-8 h-8 md:w-10 md:h-10 text-sky-500/40" />
                         </div>
-                        <h4 className="text-xl md:text-2xl font-black text-white uppercase tracking-tight mb-3">Prêt pour l'Optimisation</h4>
-                        <p className="max-w-xs text-slate-400 text-[10px] md:text-sm font-medium">
+                        <h4 className="text-xl md:text-3xl font-black text-white uppercase tracking-tight mb-3">Prêt pour l'Optimisation</h4>
+                        <p className="max-w-xs text-slate-400 text-[10px] md:text-xs font-medium uppercase tracking-widest leading-relaxed">
                             Configurez votre formation et cliquez sur le bouton pour générer le meilleur XI.
                         </p>
                     </div>
@@ -96,8 +103,8 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
                 />
             </div>
 
-            {/* Zone Optimisation */}
-            <div className={`${activeTab === 'config' ? 'block' : 'hidden'} xl:block xl:w-[400px] flex-shrink-0 flex flex-col bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl`}>
+            {/* Zone Optimisation - Panneau Latéral */}
+            <div className={`${activeTab === 'config' ? 'block' : 'hidden'} xl:block xl:w-[420px] flex-shrink-0 flex flex-col bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] overflow-hidden shadow-2xl`}>
                 <div className="p-6 md:p-8 space-y-6">
                     <h3 className="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter">
                         Best <span className="text-sky-400">XI</span>
