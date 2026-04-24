@@ -13,7 +13,7 @@ import { RadarRankingModal } from './RadarRankingModal';
 const initialOf = (label) => (label && label.trim() ? label.trim().charAt(0) : '?');
 
 export const RadarChartVisualization = ({ 
-    selectedEntityIds = [], 
+    selectedEntities = [], 
     metrics = [], 
     compareWithMedian = false, 
     activeFilters = {}, 
@@ -29,7 +29,7 @@ export const RadarChartVisualization = ({
 
     // Fetch Zéro-Calcul Radar Data
     useEffect(() => {
-        if (!selectedEntityIds.length || !metrics.length) {
+        if (!selectedEntities?.length || !metrics.length) {
             setRadarChartData(null);
             return;
         }
@@ -38,7 +38,7 @@ export const RadarChartVisualization = ({
             setIsLoading(true);
             try {
                 const payload = {
-                    player_ids: selectedEntityIds,
+                    players: selectedEntities,
                     metrics: metrics,
                     compare_with_median: compareWithMedian,
                     population_filters: activeFilters,
@@ -66,7 +66,7 @@ export const RadarChartVisualization = ({
         };
 
         fetchRadarData();
-    }, [selectedEntityIds, metrics, compareWithMedian, activeFilters, metricDisplayMode]);
+    }, [selectedEntities, metrics, compareWithMedian, activeFilters, metricDisplayMode]);
 
     const handleMetricClick = (metricName) => {
         // Here metricName is the display name (e.g. "Xg Shot"). We need the technical id if we want to query the API exactly.
@@ -125,7 +125,7 @@ export const RadarChartVisualization = ({
                                             boxShadow: (clickable || isHovered) ? `0 4px 20px -12px ${strokeColor}60` : 'none',
                                             transform: isHovered ? 'translateY(-2px)' : 'none'
                                         }}
-                                        onClick={() => clickable && onPlayerSelect && onPlayerSelect({ id: ent.id })}
+                                        onClick={() => clickable && onPlayerSelect && onPlayerSelect(ent)}
                                         onMouseEnter={() => setHoveredEntityIndex(idx)}
                                         onMouseLeave={() => setHoveredEntityIndex(null)}
                                     >
@@ -239,7 +239,7 @@ export const RadarChartVisualization = ({
                 isOpen={rankingData.isOpen}
                 onClose={() => setRankingData(prev => ({ ...prev, isOpen: false }))}
                 metric={rankingData.metric}
-                selectedEntityIds={selectedEntityIds}
+                selectedEntityIds={selectedEntities.map(e => e.id)}
                 entityColors={entityColors}
                 metricDisplayMode={metricDisplayMode}
                 onPlayerSelect={onPlayerSelect}

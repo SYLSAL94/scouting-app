@@ -80,10 +80,15 @@ export const RadarDashboard = ({
 
     const handleGenerate = () => {
         setAppliedConfig({
-            entityIds: selectedEntityIds,
+            entities: selectedEntities.map(p => ({
+                id: p.id || p.unique_id,
+                season: p.season,
+                competition: p.competition
+            })),
             metrics: activeMetrics,
             compareWithMedian,
-            activeFilters
+            activeFilters,
+            displayMode: metricDisplayMode
         });
     };
 
@@ -159,22 +164,23 @@ export const RadarDashboard = ({
 
                     {/* Étape 2 : Métriques */}
                     <Step number="2" title="Sélection des Métriques">
-                        <MetricSelectionPanel
-                            cat="joueurs"
-                            selectedTemplateLabels={selectedTemplateLabels}
-                            onTemplateToggle={onMetricChangeWrapper(handleTemplateToggle)}
-                            metricDisplayMode={metricDisplayMode}
-                            onMetricModeChange={setMetricDisplayMode}
-                            metricOptions={metricsList}
-                            selectedMetrics={selectedMetrics}
-                            onMetricToggle={onMetricChangeWrapper(handleMetricToggle)}
-                            MIN_METRICS={3}
-                            customTemplates={customTemplates}
-                            saveCustomTemplate={saveCustomTemplate}
-                            deleteCustomTemplate={deleteCustomTemplate}
-                            applyCustomTemplate={(m) => { setSelectedMetrics(m); setSelectedTemplateLabels(new Set()); setAppliedConfig(null); }}
-                            onResetMetrics={() => { setSelectedMetrics([]); setSelectedTemplateLabels(new Set()); setAppliedConfig(null); }}
-                        />
+                            <MetricSelectionPanel
+                                cat="joueurs"
+                                selectedTemplateLabels={selectedTemplateLabels}
+                                onTemplateToggle={onMetricChangeWrapper(handleTemplateToggle)}
+                                metricDisplayMode={metricDisplayMode}
+                                onMetricModeChange={(mode) => { setMetricDisplayMode(mode); setAppliedConfig(null); }}
+                                metricOptions={metricsList}
+                                selectedMetrics={selectedMetrics}
+                                onMetricToggle={onMetricChangeWrapper(handleMetricToggle)}
+                                MIN_METRICS={3}
+                                customTemplates={customTemplates}
+                                saveCustomTemplate={saveCustomTemplate}
+                                deleteCustomTemplate={deleteCustomTemplate}
+                                applyCustomTemplate={(m) => { setSelectedMetrics(m); setSelectedTemplateLabels(new Set()); setAppliedConfig(null); }}
+                                onResetMetrics={() => { setSelectedMetrics([]); setSelectedTemplateLabels(new Set()); setAppliedConfig(null); }}
+                                selectedPlayersToCompare={selectedEntities}
+                            />
                     </Step>
                     
                     {/* Étape 3 : Bouton Générer */}
@@ -198,12 +204,13 @@ export const RadarDashboard = ({
                 <div className={`flex-1 glass-panel flex flex-col p-4 md:p-6 min-h-[500px] md:min-h-[600px] ${activeTab === 'CHART' ? 'flex' : 'hidden lg:flex'}`}>
                  {appliedConfig ? (
                      <RadarChartVisualization
-                        selectedEntityIds={appliedConfig.entityIds}
+                        selectedEntities={appliedConfig.entities}
                         metrics={appliedConfig.metrics}
                         compareWithMedian={appliedConfig.compareWithMedian}
                         activeFilters={appliedConfig.activeFilters}
-                        metricDisplayMode={metricDisplayMode}
+                        metricDisplayMode={appliedConfig.displayMode}
                         entityColors={[{stroke: '#38bdf8', fill: '#38bdf8'}, {stroke: '#f59e0b', fill: '#f59e0b'}, {stroke: '#10b981', fill: '#10b981'}]}
+                        onPlayerSelect={initialSelectedPlayer ? undefined : undefined} // À connecter si besoin d'ouvrir la card
                      />
                  ) : (
                      <div className="flex-1 flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-white/10 rounded-3xl m-4">

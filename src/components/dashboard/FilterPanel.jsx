@@ -136,7 +136,7 @@ const FilterPanel = ({
   };
 
   return (
-    <aside className="sidebar-filters w-full lg:w-80 shrink-0 min-h-[85vh] lg:h-fit lg:sticky lg:top-8">
+    <aside className="sidebar-filters w-full xl:w-80 shrink-0 xl:sticky xl:top-8 xl:h-[calc(100vh-4rem)] overflow-y-auto">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
            Filters
