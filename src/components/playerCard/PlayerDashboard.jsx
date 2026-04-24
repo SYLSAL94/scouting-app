@@ -176,13 +176,17 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                 )}
                                 
                                 <div className="text-center md:text-left flex-1 min-w-0 relative z-10">
-                                    <div className="flex items-center justify-center md:justify-start gap-4">
-                                        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">{playerData.name || playerData.full_name}</h2>
-                                        <FavoriteToggle 
-                                            playerId={playerId} 
-                                            user={user} 
-                                            onUpdateUser={onUpdateUser} 
-                                        />
+                                    <div className="flex flex-col md:flex-row items-center md:items-end gap-4 mb-4">
+                                        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-none">{playerData.name || playerData.full_name}</h2>
+                                        <div className="shrink-0">
+                                            <FavoriteToggle 
+                                                playerId={playerId} 
+                                                season={playerData.season}
+                                                competition={playerData.competition}
+                                                user={user} 
+                                                onUpdateUser={onUpdateUser} 
+                                            />
+                                        </div>
                                     </div>
                                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-2 text-xs font-bold uppercase tracking-widest text-slate-400">
                                         <span className="px-3 py-1 bg-sky-500 text-white rounded-md shadow-lg shadow-sky-500/20">{playerData.position_category}</span>

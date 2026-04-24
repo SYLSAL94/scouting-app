@@ -20,6 +20,7 @@ import ContextualChatBot from './components/ContextualChatBot';
 import GlobalPlayerSearch from './components/dashboard/GlobalPlayerSearch';
 import TrendsDashboard from './components/dashboard/TrendsDashboard';
 import UserMenu from './components/layout/UserMenu';
+import SettingsModal from './components/layout/SettingsModal';
 import { TrendingUp } from 'lucide-react';
 
 function App() {
@@ -45,6 +46,10 @@ function App() {
   const [seasonsList, setSeasonsList] = useState([]);
   const [metricsList, setMetricsList] = useState([]);
   const [profiles, setProfiles] = useState([]);
+  
+  // États Paramètres Globaux
+  const [showSettings, setShowSettings] = useState(false);
+  const [settingsTab, setSettingsTab] = useState('profile');
   
   const defaultFilters = {
     search: '', competitions: [], positions: [], minAge: 16, maxAge: 40,
@@ -144,6 +149,7 @@ function App() {
                 user={user} 
                 onLogout={() => { setIsAuthenticated(false); setUser(null); setView('LANDING'); }}
                 onUpdateUser={setUser}
+                onOpenSettings={(tab) => { setSettingsTab(tab); setShowSettings(true); }}
                />
             </div>
             
@@ -299,6 +305,26 @@ function App() {
                 setSelectedPlayer(newPlayer); 
               }} 
             />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showSettings && (
+          <SettingsModal 
+            isOpen={showSettings} 
+            onClose={() => setShowSettings(false)} 
+            user={user} 
+            initialTab={settingsTab} 
+            onUpdateUser={setUser}
+            profiles={profiles}
+            onProfileDeleted={(id) => {
+              fetch(`https://api-scouting.theanalyst.cloud/api/profiles/${id}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(() => setProfiles(prev => prev.filter(p => p.id !== id)))
+                .catch(err => console.error(err));
+            }}
+            onPlayerClick={handlePlayerClick}
+          />
         )}
       </AnimatePresence>
     </div>
