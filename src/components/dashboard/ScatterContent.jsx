@@ -4,10 +4,10 @@ import {
   Tooltip, ResponsiveContainer, ZAxis, Cell, Label, ReferenceLine,
   ReferenceArea
 } from 'recharts';
-import { Search, Activity, Target } from 'lucide-react';
+import { Search, Activity, Target, Save } from 'lucide-react';
 import Select from 'react-select';
 
-// Utilitaire de formatage (identique à celui de PlayerModal)
+// Utilitaire de formatage
 const formatNumber = (val) => {
   if (val === null || val === undefined || val === "") return "-";
   const num = Number(val);
@@ -56,62 +56,22 @@ const ROLE_COLORS = {
   'Autres': '#94a3b8'
 };
 
-const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
-  const [xAxis, setXAxis] = useState('minutes_on_field');
-  const [yAxis, setYAxis] = useState('note_ponderee');
+const ScatterControls = ({ metricsList, xAxis, setXAxis, yAxis, setYAxis, playersCount }) => {
+  const [visualPresets, setVisualPresets] = useState([
+    { name: "Volume vs Efficacité", x: "minutes_on_field", y: "note_ponderee" },
+    { name: "Création vs xG", x: "xg_assist_avg", y: "xg_shot_avg" },
+    { name: "Duels vs Physique", x: "duels_avg", y: "weight" }
+  ]);
+  const [showSave, setShowSave] = useState(false);
+  const [newPresetName, setNewPresetName] = useState("");
 
-  // Préparation des données pour Recharts
-  const chartData = useMemo(() => {
-    return players.map(p => ({
-      x: Number(p[xAxis]) || 0,
-      y: Number(p[yAxis]) || 0,
-      name: p.name || p.full_name,
-      team: p.last_club_name,
-      image: p.image,
-      id: p.wyId || p.id,
-      position_category: p.position_category,
-      originalPlayer: p
-    }));
-  }, [players, xAxis, yAxis]);
+  const handleSavePreset = () => {
+    if (!newPresetName.trim()) return;
+    setVisualPresets([...visualPresets, { name: newPresetName, x: xAxis, y: yAxis }]);
+    setNewPresetName("");
+    setShowSave(false);
+  };
 
-  // Calcul des moyennes et statistiques de quadrants
-  const { averages, stats, extent } = useMemo(() => {
-    if (!chartData.length) return { averages: { x: 0, y: 0 }, stats: [], extent: { xMin: 0, xMax: 1, yMin: 0, yMax: 1 } };
-    
-    const xVals = chartData.map(p => p.x);
-    const yVals = chartData.map(p => p.y);
-    const avgX = xVals.reduce((a, b) => a + b, 0) / chartData.length;
-    const avgY = yVals.reduce((a, b) => a + b, 0) / chartData.length;
-
-    const qStats = { q1: 0, q2: 0, q3: 0, q4: 0 };
-    chartData.forEach(p => {
-      if (p.x >= avgX && p.y >= avgY) qStats.q1++; // Top-Right (Elite)
-      else if (p.x < avgX && p.y >= avgY) qStats.q2++; // Top-Left
-      else if (p.x < avgX && p.y < avgY) qStats.q3++; // Bottom-Left (Critical)
-      else qStats.q4++; // Bottom-Right
-    });
-
-    const total = chartData.length;
-    const breakdown = [
-      { label: 'Élite (H/H)', count: qStats.q1, pct: ((qStats.q1/total)*100).toFixed(1), color: 'text-emerald-400' },
-      { label: 'Efficace (B/H)', count: qStats.q2, pct: ((qStats.q2/total)*100).toFixed(1), color: 'text-sky-400' },
-      { label: 'Volume (H/B)', count: qStats.q4, pct: ((qStats.q4/total)*100).toFixed(1), color: 'text-amber-400' },
-      { label: 'Critique (B/B)', count: qStats.q3, pct: ((qStats.q3/total)*100).toFixed(1), color: 'text-rose-400' },
-    ];
-
-    return { 
-      averages: { x: avgX, y: avgY }, 
-      stats: breakdown,
-      extent: {
-        xMin: Math.min(...xVals),
-        xMax: Math.max(...xVals),
-        yMin: Math.min(...yVals),
-        yMax: Math.max(...yVals)
-      }
-    };
-  }, [chartData]);
-
-  // Styles custom pour react-select (matching FilterPanel)
   const selectStyles = {
     control: (base) => ({
       ...base,
@@ -119,7 +79,8 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
       borderColor: 'rgba(255, 255, 255, 0.1)',
       borderRadius: '12px',
       color: 'white',
-      minWidth: '220px'
+      minWidth: '200px',
+      fontSize: '12px'
     }),
     menu: (base) => ({
       ...base,
@@ -136,73 +97,159 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
     }),
     singleValue: (base) => ({ ...base, color: 'white' }),
     input: (base) => ({ ...base, color: 'white' }),
-    placeholder: (base) => ({ ...base, color: 'white/30' }),
-    groupHeading: (base) => ({
-        ...base,
-        color: '#38bdf8',
-        fontWeight: 'bold',
-        fontSize: '10px'
-    }),
-    menuPortal: (base) => ({ ...base, zIndex: 9999 })
+    placeholder: (base) => ({ ...base, color: 'white/30' })
   };
 
   return (
-    <div className="flex flex-col h-full space-y-6">
-      {/* Contrôles des axes et Légende */}
-      <div className="flex flex-wrap gap-4 items-center p-6 glass-panel border border-white/5 relative z-[60]">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-sky-500/10 rounded-lg"><Target size={16} className="text-sky-400" /></div>
-          <div className="flex flex-col">
-            <span className="text-[10px] text-white/40 uppercase font-black mb-1">Axe X (Horizontal)</span>
-            <Select 
-              options={metricsList}
-              defaultValue={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
-              onChange={(opt) => setXAxis(opt.value)}
-              styles={selectStyles}
-              isSearchable
-              menuPortalTarget={document.body}
-            />
-          </div>
+    <div className="flex flex-wrap gap-6 items-center p-6 glass-panel border border-white/5 relative z-[60]">
+      <div className="flex items-center gap-4">
+        <div className="flex flex-col">
+          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Axe X (Horizontal)</span>
+          <Select 
+            options={metricsList}
+            value={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
+            onChange={(opt) => setXAxis(opt.value)}
+            styles={selectStyles}
+            isSearchable
+          />
         </div>
-
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-emerald-500/10 rounded-lg"><Activity size={16} className="text-emerald-400" /></div>
-          <div className="flex flex-col">
-            <span className="text-[10px] text-white/40 uppercase font-black mb-1">Axe Y (Vertical)</span>
-            <Select 
-              options={metricsList}
-              defaultValue={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
-              onChange={(opt) => setYAxis(opt.value)}
-              styles={selectStyles}
-              isSearchable
-              menuPortalTarget={document.body}
-            />
-          </div>
-        </div>
-
-        {/* Légende des Rôles */}
-        <div className="flex-1 flex flex-wrap items-center gap-x-4 gap-y-2 px-4 border-l border-white/10">
-          {Object.entries(ROLE_COLORS).map(([role, color]) => (
-            <div key={role} className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ backgroundColor: color }} />
-              <span className="text-[10px] font-bold text-white/60 uppercase tracking-tight">{role}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="ml-auto text-right">
-          <div className="text-[10px] text-white/40 uppercase font-black mb-1">Population</div>
-          <div className="text-xl font-black text-white">{players.length} <span className="text-sky-400">Joueurs</span></div>
+        <div className="flex flex-col">
+          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Axe Y (Vertical)</span>
+          <Select 
+            options={metricsList}
+            value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
+            onChange={(opt) => setYAxis(opt.value)}
+            styles={selectStyles}
+            isSearchable
+          />
         </div>
       </div>
 
-      {/* Zone Graphique */}
+      <div className="flex flex-col border-l border-white/10 pl-6">
+        <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Visual Presets</span>
+        <div className="flex items-center gap-2">
+          <select 
+            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white appearance-none outline-none focus:border-sky-500/50"
+            onChange={(e) => {
+              const preset = visualPresets[e.target.value];
+              if (preset) {
+                setXAxis(preset.x);
+                setYAxis(preset.y);
+              }
+            }}
+            defaultValue=""
+          >
+            <option value="" disabled>Load axes preset...</option>
+            {visualPresets.map((p, i) => (
+              <option key={i} value={i}>{p.name}</option>
+            ))}
+          </select>
+          <button 
+            onClick={() => setShowSave(true)}
+            className="p-2 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-sky-400 hover:border-sky-500/30 transition-all"
+          >
+            <Save size={14} />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-col border-l border-white/10 pl-6">
+         <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Advanced Export</span>
+         <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl text-[10px] font-black text-indigo-300 uppercase tracking-tighter opacity-50 cursor-not-allowed">
+           <Activity size={12} />
+           Python Export
+         </button>
+      </div>
+
+      <div className="ml-auto text-right">
+        <div className="text-[9px] text-white/30 uppercase font-black mb-1">Population</div>
+        <div className="text-xl font-black text-white">{playersCount} <span className="text-sky-400">Joueurs</span></div>
+      </div>
+
+      {showSave && (
+        <div className="absolute top-full left-0 mt-2 p-4 glass-panel border border-sky-500/30 shadow-2xl z-[70]">
+          <input 
+            type="text" placeholder="Preset name..." 
+            className="bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white mb-2 block w-full"
+            value={newPresetName}
+            onChange={(e) => setNewPresetName(e.target.value)}
+          />
+          <div className="flex gap-2">
+            <button onClick={handleSavePreset} className="flex-1 bg-sky-500 text-white text-[10px] font-bold py-2 rounded-lg">Save</button>
+            <button onClick={() => setShowSave(false)} className="flex-1 bg-white/5 text-white/40 text-[10px] font-bold py-2 rounded-lg">Cancel</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
+  const [xAxis, setXAxis] = useState('minutes_on_field');
+  const [yAxis, setYAxis] = useState('note_ponderee');
+
+  const chartData = useMemo(() => {
+    return players.map(p => ({
+      x: Number(p[xAxis]) || 0,
+      y: Number(p[yAxis]) || 0,
+      name: p.name || p.full_name,
+      team: p.last_club_name,
+      image: p.image,
+      id: p.wyId || p.id,
+      position_category: p.position_category,
+      originalPlayer: p
+    }));
+  }, [players, xAxis, yAxis]);
+
+  const { averages, stats } = useMemo(() => {
+    if (!chartData.length) return { averages: { x: 0, y: 0 }, stats: [] };
+    const xVals = chartData.map(p => p.x);
+    const yVals = chartData.map(p => p.y);
+    const avgX = xVals.reduce((a, b) => a + b, 0) / chartData.length;
+    const avgY = yVals.reduce((a, b) => a + b, 0) / chartData.length;
+
+    const qStats = { q1: 0, q2: 0, q3: 0, q4: 0 };
+    chartData.forEach(p => {
+      if (p.x >= avgX && p.y >= avgY) qStats.q1++;
+      else if (p.x < avgX && p.y >= avgY) qStats.q2++;
+      else if (p.x < avgX && p.y < avgY) qStats.q3++;
+      else qStats.q4++;
+    });
+
+    const total = chartData.length;
+    return { 
+      averages: { x: avgX, y: avgY }, 
+      stats: [
+        { label: 'Élite (H/H)', count: qStats.q1, pct: ((qStats.q1/total)*100).toFixed(1), color: 'text-emerald-400' },
+        { label: 'Efficace (B/H)', count: qStats.q2, pct: ((qStats.q2/total)*100).toFixed(1), color: 'text-sky-400' },
+        { label: 'Volume (H/B)', count: qStats.q4, pct: ((qStats.q4/total)*100).toFixed(1), color: 'text-amber-400' },
+        { label: 'Critique (B/B)', count: qStats.q3, pct: ((qStats.q3/total)*100).toFixed(1), color: 'text-rose-400' },
+      ]
+    };
+  }, [chartData]);
+
+  return (
+    <div className="flex flex-col h-full space-y-6">
+      <ScatterControls 
+        metricsList={metricsList}
+        xAxis={xAxis} setXAxis={setXAxis}
+        yAxis={yAxis} setYAxis={setYAxis}
+        playersCount={players.length}
+      />
+
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-2 border-b border-white/5">
+        {Object.entries(ROLE_COLORS).map(([role, color]) => (
+          <div key={role} className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}40` }} />
+            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{role}</span>
+          </div>
+        ))}
+      </div>
+
       <div className="flex-1 min-h-[500px] glass-panel p-8 relative overflow-hidden border border-white/5">
-        {/* Background Grid Accent */}
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
              style={{ backgroundImage: 'radial-gradient(#38bdf8 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
-        {/* Panel de Distribution (Flottant) */}
         <div className="absolute top-8 right-8 z-10 w-48 p-4 rounded-2xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-2xl pointer-events-none">
           <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">Distribution</div>
           <div className="space-y-3">
@@ -221,74 +268,31 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 30 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            
-            <XAxis 
-              type="number" 
-              dataKey="x" 
-              name={xAxis} 
-              stroke="rgba(255,255,255,0.2)"
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }}
-              axisLine={false}
-              tickLine={false}
-              domain={['auto', 'auto']}
-            >
+            <XAxis type="number" dataKey="x" name={xAxis} stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} domain={['auto', 'auto']}>
               <Label value={xAxis.replace(/_/g, ' ')} offset={-20} position="insideBottom" fill="rgba(255,255,255,0.2)" fontSize={10} fontWeight="900" style={{ textTransform: 'uppercase' }} />
             </XAxis>
-
-            <YAxis 
-              type="number" 
-              dataKey="y" 
-              name={yAxis} 
-              stroke="rgba(255,255,255,0.2)"
-              tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }}
-              axisLine={false}
-              tickLine={false}
-              domain={['auto', 'auto']}
-            >
+            <YAxis type="number" dataKey="y" name={yAxis} stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} domain={['auto', 'auto']}>
               <Label value={yAxis.replace(/_/g, ' ')} angle={-90} offset={-10} position="insideLeft" fill="rgba(255,255,255,0.2)" fontSize={10} fontWeight="900" style={{ textTransform: 'uppercase' }} />
             </YAxis>
-
             <ZAxis type="number" range={[60, 60]} />
-            
-            <Tooltip 
-              content={<ScatterTooltip />} 
-              cursor={{ strokeDasharray: '3 3', stroke: '#38bdf8', strokeWidth: 1 }} 
-              isAnimationActive={false}
-            />
-
-            {/* Zones de Quadrants */}
+            <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#38bdf8', strokeWidth: 1 }} isAnimationActive={false} />
             {averages.x && averages.y && (
               <>
-                <ReferenceArea x1={averages.x} y1={averages.y} fill="rgba(34, 197, 94, 0.05)" stroke="none" /> {/* Elite */}
-                <ReferenceArea x2={averages.x} y1={averages.y} fill="rgba(56, 189, 248, 0.05)" stroke="none" /> {/* Top-Left */}
-                <ReferenceArea x2={averages.x} y2={averages.y} fill="rgba(244, 63, 94, 0.05)" stroke="none" />  {/* Critical */}
-                <ReferenceArea x1={averages.x} y2={averages.y} fill="rgba(245, 158, 11, 0.05)" stroke="none" /> {/* Bottom-Right */}
+                <ReferenceArea x1={averages.x} y1={averages.y} fill="rgba(34, 197, 94, 0.05)" stroke="none" />
+                <ReferenceArea x2={averages.x} y1={averages.y} fill="rgba(56, 189, 248, 0.05)" stroke="none" />
+                <ReferenceArea x2={averages.x} y2={averages.y} fill="rgba(244, 63, 94, 0.05)" stroke="none" />
+                <ReferenceArea x1={averages.x} y2={averages.y} fill="rgba(245, 158, 11, 0.05)" stroke="none" />
               </>
             )}
-
-            {/* Lignes de Moyenne */}
             <ReferenceLine x={averages.x} stroke="rgba(255,255,255,0.15)" strokeDasharray="10 5">
                <Label value={`Moy. X: ${formatNumber(averages.x)}`} position="top" fill="rgba(255,255,255,0.3)" fontSize={9} fontWeight="bold" />
             </ReferenceLine>
             <ReferenceLine y={averages.y} stroke="rgba(255,255,255,0.15)" strokeDasharray="10 5">
                <Label value={`Moy. Y: ${formatNumber(averages.y)}`} position="insideLeft" fill="rgba(255,255,255,0.3)" fontSize={9} fontWeight="bold" dx={10} />
             </ReferenceLine>
-
-            <Scatter 
-              name="Players" 
-              data={chartData} 
-              onClick={(data) => onPlayerClick(data.originalPlayer)}
-              cursor="pointer"
-              isAnimationActive={false}
-            >
+            <Scatter name="Players" data={chartData} onClick={(data) => onPlayerClick(data.originalPlayer)} cursor="pointer" isAnimationActive={false}>
               {chartData.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']}
-                  fillOpacity={0.8}
-                  stroke="rgba(255,255,255,0.1)"
-                  strokeWidth={1}
-                />
+                <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']} fillOpacity={0.8} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
               ))}
             </Scatter>
           </ScatterChart>

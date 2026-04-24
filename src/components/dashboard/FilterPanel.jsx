@@ -22,8 +22,8 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
         })
       });
       const data = await response.json();
-      if (data.success) {
-        onProfileSaved({ id: data.id, profile_name: profileName, filter_config: pendingFilters });
+      if (data.status === 'success') {
+        onProfileSaved({ id: data.id || Date.now(), profile_name: profileName, filter_config: pendingFilters });
         setProfileName('');
         setIsSaving(false);
         setShowConfirm(true);
