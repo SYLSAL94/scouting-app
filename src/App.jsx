@@ -18,6 +18,8 @@ import TeamBuilderDashboard from './components/dashboard/TeamBuilderDashboard';
 import LabDashboard from './components/dashboard/LabDashboard';
 import ContextualChatBot from './components/ContextualChatBot';
 import GlobalPlayerSearch from './components/dashboard/GlobalPlayerSearch';
+import TrendsDashboard from './components/dashboard/TrendsDashboard';
+import { TrendingUp } from 'lucide-react';
 
 function App() {
   // --- ÉTATS DE SÉCURITÉ ---
@@ -155,6 +157,7 @@ function App() {
             onSelectPath={(p) => {
                if (p === 'SCATTER') { setView('DASHBOARD'); setDashboardView('SCATTER'); }
                else if (p === 'DASHBOARD') { setView('DASHBOARD'); setDashboardView('TABLE'); }
+               else if (p === 'TRENDS') { setView('DASHBOARD'); setDashboardView('TRENDS'); }
                else if (p === 'TEAMBUILDER') { setView('TEAMBUILDER'); }
                else if (p === 'LAB') { setView('LAB'); }
                else setView(p);
@@ -190,6 +193,7 @@ function App() {
                   <div className="flex w-full xl:w-auto gap-1 bg-white/5 p-1 rounded-xl border border-white/5 h-fit">
                       <button onClick={() => setDashboardView('TABLE')} className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'TABLE' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}>Tableau</button>
                       <button onClick={() => setDashboardView('SCATTER')} className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'SCATTER' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}>Analyse</button>
+                      <button onClick={() => setDashboardView('TRENDS')} className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'TRENDS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}>Trends</button>
                       <button onClick={() => setDashboardView('VERSUS')} disabled={selectedPlayersToCompare.length !== 2} className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'VERSUS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : (selectedPlayersToCompare.length === 2 ? 'text-sky-400 hover:text-sky-300 border border-sky-500/30' : 'text-white/20 cursor-not-allowed')}`}>Versus ({selectedPlayersToCompare.length}/2)</button>
                   </div>
               </div>
@@ -209,12 +213,46 @@ function App() {
               </div>
 
               <main className="ranking-content-panel flex-1 flex flex-col gap-4 min-w-0">
-                {dashboardView === 'TABLE' ? (
-                  <RankingTable players={players} loading={loading} error={error} currentPage={currentPage} pageSize={pageSize} totalPlayers={totalPlayers} totalPages={Math.ceil(totalPlayers / pageSize)} setCurrentPage={setCurrentPage} handlePlayerClick={handlePlayerClick} selectedSortBy={pendingFilters.sortBy} selectedPlayersToCompare={selectedPlayersToCompare} setSelectedPlayersToCompare={setSelectedPlayersToCompare} metricsList={metricsList} useSeasonAge={activeFilters.useSeasonAge} onSortChange={(val) => setPendingFilters(prev => ({ ...prev, sortBy: val }))} />
-                ) : dashboardView === 'VERSUS' ? (
-                  <HeadToHeadContent selectedPlayersToCompare={selectedPlayersToCompare} />
-                ) : (
-                  <ScatterContent players={players} metricsList={metricsList} onPlayerClick={handlePlayerClick} />
+                {dashboardView === 'TABLE' && (
+                  <RankingTable 
+                    players={players} 
+                    loading={loading} 
+                    error={error} 
+                    currentPage={currentPage} 
+                    pageSize={pageSize} 
+                    totalPlayers={totalPlayers} 
+                    totalPages={Math.ceil(totalPlayers / pageSize)} 
+                    setCurrentPage={setCurrentPage} 
+                    handlePlayerClick={handlePlayerClick} 
+                    selectedSortBy={pendingFilters.sortBy} 
+                    selectedPlayersToCompare={selectedPlayersToCompare} 
+                    setSelectedPlayersToCompare={setSelectedPlayersToCompare} 
+                    metricsList={metricsList} 
+                    useSeasonAge={activeFilters.useSeasonAge} 
+                    onSortChange={(val) => setPendingFilters(prev => ({ ...prev, sortBy: val }))} 
+                  />
+                )}
+                {dashboardView === 'SCATTER' && (
+                  <ScatterContent 
+                    players={players} 
+                    metricsList={metricsList} 
+                    onPlayerClick={handlePlayerClick} 
+                  />
+                )}
+                {dashboardView === 'TRENDS' && (
+                  <TrendsDashboard metricsList={metricsList} />
+                )}
+                {dashboardView === 'VERSUS' && (
+                  <div className="flex-1 bg-slate-900/50 rounded-3xl border border-white/5 p-8 flex flex-col items-center justify-center gap-6">
+                    <div className="w-20 h-20 bg-sky-500/20 rounded-full flex items-center justify-center">
+                       <Users className="text-sky-400" size={40} />
+                    </div>
+                    <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Mode Versus Activé</h2>
+                    <button 
+                      onClick={() => setView('MATCHUP')}
+                      className="px-10 py-4 bg-sky-500 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-sky-500/20 hover:scale-105 transition-all"
+                    > Lancer la comparaison </button>
+                  </div>
                 )}
               </main>
             </div>
@@ -245,7 +283,17 @@ function App() {
 
       <AnimatePresence>
         {selectedPlayer && (
-            <PlayerDashboard playerId={selectedPlayer.id} rowContext={selectedPlayer} onClose={() => setSelectedPlayer(null)} activeFilters={activeFilters} onSwitchPlayer={(id) => { const newPlayer = players.find(p => p.id === id) || { id }; setSelectedPlayer(newPlayer); }} />
+            <PlayerDashboard 
+              playerId={selectedPlayer.id} 
+              rowContext={selectedPlayer} 
+              onClose={() => setSelectedPlayer(null)} 
+              activeFilters={activeFilters} 
+              metricsList={metricsList}
+              onSwitchPlayer={(id) => { 
+                const newPlayer = players.find(p => p.id === id) || { id }; 
+                setSelectedPlayer(newPlayer); 
+              }} 
+            />
         )}
       </AnimatePresence>
     </div>

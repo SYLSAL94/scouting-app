@@ -6,11 +6,14 @@ import DetailsPanelWidget from './DetailsPanelWidget';
 import PerformancePanelWidget from './PerformancePanelWidget';
 import PositionDistributionWidget from './PositionDistributionWidget';
 import DataPanelWidget from './DataPanelWidget';
+import TrendsWidget from './TrendsWidget';
 import PlayerRadar from '../../PlayerRadar';
+import PlayerTrends from '../dashboard/PlayerTrends';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { API_BASE_URL } from '../../config';
 
-export default function PlayerDashboard({ playerId, onClose, activeFilters = {}, rowContext = null, onSwitchPlayer = null }) {
+export default function PlayerDashboard({ playerId, onClose, activeFilters = {}, rowContext = null, onSwitchPlayer = null, metricsList = [] }) {
     const [playerData, setPlayerData] = useState(null);
     const [rankingData, setRankingData] = useState(null);
     const [availableContexts, setAvailableContexts] = useState([]);
@@ -20,6 +23,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     const [isRankingModalOpen, setIsRankingModalOpen] = useState(false);
     const [selectedPositionForRanking, setSelectedPositionForRanking] = useState(null);
     const [activeTab, setActiveTab] = useState('profil'); // 'profil', 'analyse', 'stats', 'reseau'
+    const [analysisSubTab, setAnalysisSubTab] = useState('radar'); // 'radar' ou 'trends'
     
     // Définition du contexte actif pour le rendu et les effets
     const contextToUse = selectedContext || rowContext;
@@ -298,18 +302,58 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                         />
                                     </div>
                                     
+                                    
                                     <div className="space-y-4">
-                                        <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2 px-2">
-                                            <span className="w-2 h-2 bg-sky-400 rounded-full"></span> Tactical Radar
-                                        </h3>
-                                        <PlayerRadar player={playerData} />
+                                        <div className="flex justify-between items-end px-2">
+                                            <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2">
+                                                <span className="w-2 h-2 bg-sky-400 rounded-full"></span> 
+                                                {analysisSubTab === 'radar' ? 'Tactical Radar' : 'Career Evolution'}
+                                            </h3>
+                                            <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 shadow-inner">
+                                                <button 
+                                                    onClick={() => setAnalysisSubTab('radar')}
+                                                    className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all duration-300 ${analysisSubTab === 'radar' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+                                                > RADAR </button>
+                                                <button 
+                                                    onClick={() => setAnalysisSubTab('trends')}
+                                                    className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all duration-300 ${analysisSubTab === 'trends' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-slate-500 hover:text-slate-300'}`}
+                                                > TRENDS </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="min-h-[400px]">
+                                            <AnimatePresence mode="wait">
+                                                {analysisSubTab === 'radar' ? (
+                                                    <motion.div 
+                                                        key="radar" 
+                                                        initial={{ opacity: 0, x: -20 }} 
+                                                        animate={{ opacity: 1, x: 0 }} 
+                                                        exit={{ opacity: 0, x: 20 }}
+                                                        transition={{ duration: 0.3 }}
+                                                    >
+                                                        <PlayerRadar player={playerData} />
+                                                    </motion.div>
+                                                ) : (
+                                                    <motion.div 
+                                                        key="trends" 
+                                                        initial={{ opacity: 0, x: 20 }} 
+                                                        animate={{ opacity: 1, x: 0 }} 
+                                                        exit={{ opacity: 0, x: -20 }}
+                                                        transition={{ duration: 0.3 }}
+                                                    >
+                                                        <PlayerTrends player={playerData} metricsList={metricsList} />
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
                                     </div>
 
                                 </div>
 
                                 {/* Colonne DROITE : Stats & Réseau (Onglets 'stats' et 'reseau' sur mobile) */}
                                 <div className="lg:col-span-4 space-y-6">
-                                    <div className={`${activeTab === 'stats' ? 'block' : 'hidden'} lg:block`}>
+                                    <div className={`${activeTab === 'stats' ? 'block' : 'hidden'} lg:block space-y-6`}>
+                                        <TrendsWidget player={playerData} />
                                         <DataPanelWidget player={playerData} />
                                     </div>
                                     

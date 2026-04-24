@@ -70,14 +70,19 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
               desc="Comprehensive leaderboards powered by enriched performance metrics." 
               onClick={() => onSelectPath('DASHBOARD')}
             />
-             <PathCard 
-              icon={<TrendingUp />} title="Scatter Analysis" 
+            <PathCard 
+              icon={<TrendingUp />} title="Trends Evolution" 
+              desc="Track historical performance and market value across multiple seasons." 
+              onClick={() => onSelectPath('TRENDS')}
+            />
+            <PathCard 
+              icon={<Activity />} title="Scatter Analysis" 
               desc="Correlate metrics (Age vs Impact) to find outliers and undervalued talents." 
               onClick={() => onSelectPath('SCATTER')} 
             />
             <div className="path-grid-full">
               <PathCard 
-                icon={<Activity />} title="Radar Analysis" 
+                icon={<Zap />} title="Radar Analysis" 
                 desc="Deep dive into calculated tactical profiles with multi-axis overlays." 
                 large onClick={() => onSelectPath('RADAR')} 
               />
