@@ -397,25 +397,26 @@ def run_enrichment(mode):
             existing_keys = []
             done_contexts_set = set()
             
+            existing_keys = set()
             if mode == "-2":
-                logger.info(f"Vérification de l'état d'avancement dans {TARGET_TABLE}...")
+                logger.info(f"Analyse granulaire de {TARGET_TABLE} pour détection de deltas...")
                 try:
-                    # Lecture des Clés Composites existantes pour éviter les doublons
+                    # On charge les clés composites existantes pour le filtrage précis
                     existing_data = pd.read_sql(f"SELECT id, competition, season FROM {TARGET_TABLE}", conn)
-                    existing_keys = (existing_data['id'].astype(str) + '_' + existing_data['competition'].astype(str) + '_' + existing_data['season'].astype(str)).tolist()
-                    
-                    done_contexts = conn.execute(text(f"SELECT DISTINCT competition, season FROM {TARGET_TABLE}")).fetchall()
-                    done_contexts_set = set((r[0], r[1]) for r in done_contexts)
-                except Exception:
-                    done_contexts_set = set()
+                    if not existing_data.empty:
+                        existing_data['comp_key'] = (
+                            existing_data['id'].astype(str) + '_' + 
+                            existing_data['competition'].astype(str) + '_' + 
+                            existing_data['season'].astype(str)
+                        )
+                        existing_keys = set(existing_data['comp_key'].tolist())
+                except Exception as e:
+                    logger.warning(f"Impossible de lire les clés existantes (normal si 1ère fois) : {e}")
             
-            # 3. Calcul du delta (ce qui reste à traiter)
-            if mode == "-1":
-                to_process = sorted(list(all_contexts_set)) # Full recalculation
-            else:
-                to_process = sorted(list(all_contexts_set - done_contexts_set))
+            # 3. On traite TOUS les contextes présents en source (le filtrage se fera par ligne)
+            to_process = sorted(list(all_contexts_set))
                 
-            logger.info(f"Contextes totaux (PROD): {len(all_contexts_set)} | À traiter: {len(to_process)}")
+            logger.info(f"Contextes à scanner : {len(to_process)} | Clés existantes : {len(existing_keys)}")
 
         # 4. Boucle itérative par contexte (Résilience individuelle)
         for i, (comp, season) in enumerate(to_process):
@@ -430,29 +431,28 @@ def run_enrichment(mode):
                     continue
 
                 # Vérification Smart Delta : On vérifie si ce batch contient des nouveautés (Clé Composite)
-                if mode == "-2" and existing_keys:
+                if mode == "-2":
                     df_batch['comp_key'] = df_batch['id'].astype(str) + '_' + df_batch['competition'].astype(str) + '_' + df_batch['season'].astype(str)
-                    if df_batch[~df_batch['comp_key'].isin(existing_keys)].empty:
-                        logger.info(f"   -> Skip : Aucun nouveau joueur dans ce contexte.")
+                    df_new = df_batch[~df_batch['comp_key'].isin(existing_keys)]
+                    
+                    if df_new.empty:
+                        logger.info(f"   -> Skip : Déjà à jour.")
                         continue
-                    df_batch = df_batch.drop(columns=['comp_key'])
+                    
+                    # On ne garde que les nouveautés pour le calcul (Gain de temps massif)
+                    df_batch = df_new.drop(columns=['comp_key'])
 
-                # Calculs analytiques (Sur le batch COMPLET pour la justesse statistique)
+                # Calculs analytiques
                 df_enriched = process_batch(df_batch, all_metric_keys, all_profile_metrics)
 
                 # Logique d'insertion intelligente
                 if_exists_action = 'append'
                 
-                if mode == "-2" and existing_keys:
-                    # Filtrage post-calcul via Clé Composite pour ne pas insérer de doublons
-                    df_enriched['comp_key'] = df_enriched['id'].astype(str) + '_' + df_enriched['competition'].astype(str) + '_' + df_enriched['season'].astype(str)
-                    df_enriched = df_enriched[~df_enriched['comp_key'].isin(existing_keys)]
-                    df_enriched = df_enriched.drop(columns=['comp_key'])
-                elif mode == "-1" and i == 0:
+                if mode == "-1" and i == 0:
                     # Full Replace : on écrase la table sur le premier batch du cycle
                     if_exists_action = 'replace'
 
-                if df_enriched.empty:
+                if df_enriched is None or df_enriched.empty:
                     continue
 
                 # Injection (Optimisée par lots)

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, ChevronDown, Check, Search } from 'lucide-react';
 import { createPortal } from 'react-dom';
+import { normalizeString } from '../../utils/stringUtils';
 
 /**
  * MultiSelectWithChips.jsx — Version "Combobox Pro"
@@ -37,9 +38,10 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
     }
   }, [isOpen]);
 
-  const filteredOptions = (options || []).filter(opt => 
-    opt && typeof opt === 'string' && opt.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOptions = (options || []).filter(opt => {
+    if (!opt || typeof opt !== 'string') return false;
+    return normalizeString(opt).includes(normalizeString(searchTerm));
+  });
 
   // Reset de l'index quand la recherche change
   useEffect(() => {

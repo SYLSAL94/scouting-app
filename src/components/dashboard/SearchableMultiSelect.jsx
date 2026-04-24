@@ -2,11 +2,9 @@ import React, { useState, useMemo, useEffect, useContext, useRef, useLayoutEffec
 import { createPortal } from 'react-dom';
 import { X as IconX, Search, Check } from 'lucide-react';
 
-const normalize = (s) =>
-    String(s ?? '')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .toLowerCase();
+import { normalizeString } from '../../utils/stringUtils';
+
+const normalize = normalizeString;
 
 export const SearchableMultiSelect = ({
     placeholder = 'Rechercher…',

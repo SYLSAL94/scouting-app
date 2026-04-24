@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, User, ChevronRight, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { normalizeString } from '../../utils/stringUtils';
 
 /**
  * GlobalPlayerSearch.jsx — Barre de recherche universelle
@@ -152,7 +153,14 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
                       )}
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="font-black text-sm truncate uppercase tracking-tighter">{player.name}</span>
+                      <span className="font-black text-sm truncate uppercase tracking-tighter">
+                        {player.name || player.full_name}
+                      </span>
+                      {player.full_name && player.name && player.full_name !== player.name && (
+                        <span className="text-[10px] text-white/30 font-medium truncate -mt-0.5">
+                          {player.full_name}
+                        </span>
+                      )}
                       <div className="flex items-center gap-1.5 overflow-hidden">
                         <span className={`text-[9px] font-bold uppercase truncate ${index === activeIndex ? 'text-white/80' : 'text-sky-400'}`}>
                           {player.last_club_name || 'Free Agent'}

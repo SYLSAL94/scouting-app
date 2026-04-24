@@ -215,7 +215,14 @@ const RankingTable = ({
                       {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> : null}
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-bold group-hover:text-sky-400 transition-colors text-sm md:text-base">{player.name || player.full_name || 'Nom inconnu'}</span>
+                      <span className="font-bold group-hover:text-sky-400 transition-colors text-sm md:text-base">
+                        {player.name || player.full_name || 'Nom inconnu'}
+                      </span>
+                      {player.full_name && player.name && player.full_name !== player.name && (
+                        <span className="text-[10px] text-[rgb(var(--text-muted))] uppercase -mt-0.5">
+                          {player.full_name}
+                        </span>
+                      )}
                       <span className="md:hidden text-[10px] text-[rgb(var(--text-muted))] uppercase">{player.last_club_name}</span>
                     </div>
                   </div>

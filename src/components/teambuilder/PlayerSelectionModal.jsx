@@ -1,6 +1,7 @@
 // src/components/teambuilder/PlayerSelectionModal.jsx
 import React, { useState, useEffect } from 'react';
 import { X, Search, User, Filter } from 'lucide-react';
+import { normalizeString } from '../../utils/stringUtils';
 
 export default function PlayerSelectionModal({ isOpen, onClose, onSelectPlayer, slot, activeFilters }) {
     const [players, setPlayers] = useState([]);
@@ -35,11 +36,12 @@ export default function PlayerSelectionModal({ isOpen, onClose, onSelectPlayer, 
             });
     }, [isOpen, slot, activeFilters]);
 
-    const filteredPlayers = players.filter(p => 
-        p.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        p.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.last_club_name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredPlayers = players.filter(p => {
+        const q = normalizeString(searchTerm);
+        return normalizeString(p.name).includes(q) || 
+               normalizeString(p.full_name).includes(q) ||
+               normalizeString(p.last_club_name).includes(q);
+    });
 
     if (!isOpen) return null;
 

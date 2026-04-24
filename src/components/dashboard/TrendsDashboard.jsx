@@ -6,6 +6,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrendingUp, Plus, X, Search, Activity, Calendar, UserPlus, ChevronDown, Check, Star, Target, BarChart, Settings, ArrowUpRight } from 'lucide-react';
 import GlobalPlayerSearch from './GlobalPlayerSearch';
+import { normalizeString } from '../../utils/stringUtils';
 
 const COLORS = ['#38bdf8', '#f43f5e', '#22d3ee', '#a78bfa', '#f59e0b', '#4ade80', '#ec4899', '#8b5cf6'];
 
@@ -29,10 +30,13 @@ const TrendsDashboard = ({ metricsList = [] }) => {
 
   const filteredMetrics = useMemo(() => {
     if (!metricSearch) return metricsList;
-    const search = metricSearch.toLowerCase();
+    const search = normalizeString(metricSearch);
     return metricsList.map(group => {
       if (!group.options) return null;
-      const matching = group.options.filter(opt => (opt.label || '').toLowerCase().includes(search) || (opt.value || '').toLowerCase().includes(search));
+      const matching = group.options.filter(opt => 
+        normalizeString(opt.label || '').includes(search) || 
+        normalizeString(opt.value || '').includes(search)
+      );
       return matching.length === 0 ? null : { ...group, options: matching };
     }).filter(Boolean);
   }, [metricsList, metricSearch]);

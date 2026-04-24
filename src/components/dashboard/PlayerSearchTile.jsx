@@ -112,8 +112,13 @@ export const PlayerSearchTile = ({ onSelectPlayer, label = "Player Selection", a
                               </div>
                               <div className="flex flex-col">
                                   <span className="font-bold text-sm text-slate-100">
-                                      {p.full_name || p.name} ({p.competition || 'N/A'} - {p.season || 'N/A'})
+                                      {p.name || p.full_name} ({p.competition || 'N/A'} - {p.season || 'N/A'})
                                   </span>
+                                  {p.full_name && p.name && p.full_name !== p.name && (
+                                      <span className="text-[10px] text-white/40 font-medium truncate -mt-0.5">
+                                          {p.full_name}
+                                      </span>
+                                  )}
                                   <span className="text-xs text-sky-300 font-medium opacity-80">{p.last_club_name} • {p.position_category} • {p.age} ans</span>
                               </div>
                           </div>

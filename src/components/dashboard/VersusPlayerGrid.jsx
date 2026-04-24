@@ -123,10 +123,15 @@ const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds, activeF
                                 >
                                     <div className="flex flex-col min-w-0">
                                         <span className={`text-sm font-semibold truncate ${Math.max(0, highlightedIndex) === index ? 'text-sky-700 dark:text-sky-300' : 'text-slate-700 dark:text-slate-200'}`}>
-                                            {displayNameOf(opt)} ({opt.competition || 'N/A'} - {opt.season || 'N/A'})
+                                            {displayNameOf(opt)}
                                         </span>
+                                        {opt.full_name && opt.name && opt.full_name !== opt.name && (
+                                            <span className="text-[10px] text-slate-500 opacity-70 truncate -mt-0.5">
+                                                {opt.full_name}
+                                            </span>
+                                        )}
                                         <span className="text-xs text-slate-500 dark:text-slate-500 truncate">
-                                            {opt.last_club_name} • {opt.position_category}
+                                            {opt.competition || 'N/A'} - {opt.season || 'N/A'} • {opt.last_club_name}
                                         </span>
                                     </div>
                                 </div>
