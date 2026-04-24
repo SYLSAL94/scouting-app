@@ -56,7 +56,12 @@ const ROLE_COLORS = {
   'Autres': '#94a3b8'
 };
 
-const ScatterControls = ({ metricsList, xAxis, setXAxis, yAxis, setYAxis, playersCount, chartData }) => {
+const ScatterControls = ({ 
+  metricsList, xAxis, setXAxis, yAxis, setYAxis, playersCount, chartData,
+  showAvgX, setShowAvgX, showAvgY, setShowAvgY,
+  invertX, setInvertX, invertY, setInvertY,
+  focusedPlayerIds, setFocusedPlayerIds
+}) => {
   const [visualPresets, setVisualPresets] = useState([
     { name: "Volume vs Efficacité", x: "minutes_on_field", y: "note_ponderee" },
     { name: "Création vs xG", x: "xg_assist_avg", y: "xg_shot_avg" },
@@ -93,9 +98,13 @@ scatter = sns.scatterplot(
     s=100, alpha=0.7, edgecolors='white', linewidth=0.5
 )
 
+# Inversion des axes si nécessaire
+if ${invertX}: plt.gca().invert_xaxis()
+if ${invertY}: plt.gca().invert_yaxis()
+
 # Ajout des lignes de moyennes
-plt.axvline(df['x'].mean(), color='white', linestyle='--', alpha=0.3, label='Moyenne X')
-plt.axhline(df['y'].mean(), color='white', linestyle='--', alpha=0.3, label='Moyenne Y')
+if ${showAvgX}: plt.axvline(df['x'].mean(), color='white', linestyle='--', alpha=0.3, label='Moyenne X')
+if ${showAvgY}: plt.axhline(df['y'].mean(), color='white', linestyle='--', alpha=0.3, label='Moyenne Y')
 
 # Labels et Titre
 plt.title(f"Analyse Scouting : ${xAxis.replace(/_/g, ' ')} vs ${yAxis.replace(/_/g, ' ')}", fontsize=16, pad=20)
@@ -135,8 +144,8 @@ plt.show()
       borderColor: 'rgba(255, 255, 255, 0.1)',
       borderRadius: '12px',
       color: 'white',
-      minWidth: '200px',
-      fontSize: '12px'
+      minWidth: '180px',
+      fontSize: '11px'
     }),
     menu: (base) => ({
       ...base,
@@ -149,80 +158,114 @@ plt.show()
       ...base,
       background: state.isFocused ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
       color: state.isSelected ? '#38bdf8' : 'white',
-      fontSize: '12px'
+      fontSize: '11px'
     }),
     singleValue: (base) => ({ ...base, color: 'white' }),
+    multiValue: (base) => ({ ...base, background: 'rgba(56, 189, 248, 0.2)', borderRadius: '6px' }),
+    multiValueLabel: (base) => ({ ...base, color: '#38bdf8', fontSize: '10px', fontWeight: 'bold' }),
+    multiValueRemove: (base) => ({ ...base, color: '#38bdf8', ':hover': { background: '#38bdf8', color: 'white' } }),
     input: (base) => ({ ...base, color: 'white' }),
     placeholder: (base) => ({ ...base, color: 'white/30' })
   };
 
+  const Toggle = ({ label, checked, onChange }) => (
+    <div className="flex items-center justify-between gap-4 py-1">
+      <span className="text-[10px] font-bold text-white/50 uppercase">{label}</span>
+      <button 
+        onClick={() => onChange(!checked)}
+        className={`w-8 h-4 rounded-full p-0.5 transition-all ${checked ? 'bg-sky-500' : 'bg-white/10'}`}
+      >
+        <div className={`w-3 h-3 bg-white rounded-full transition-transform ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
+      </button>
+    </div>
+  );
+
   return (
-    <div className="flex flex-wrap gap-6 items-center p-6 glass-panel border border-white/5 relative z-[60]">
+    <div className="flex flex-wrap gap-8 items-start p-6 glass-panel border border-white/5 relative z-[60]">
       <div className="flex items-center gap-4">
         <div className="flex flex-col">
-          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Axe X (Horizontal)</span>
-          <Select 
-            options={metricsList}
-            value={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
-            onChange={(opt) => setXAxis(opt.value)}
-            styles={selectStyles}
-            isSearchable
-          />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Axe Y (Vertical)</span>
-          <Select 
-            options={metricsList}
-            value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
-            onChange={(opt) => setYAxis(opt.value)}
-            styles={selectStyles}
-            isSearchable
-          />
+          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Axes X / Y</span>
+          <div className="flex gap-2">
+            <Select 
+              options={metricsList}
+              value={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
+              onChange={(opt) => setXAxis(opt.value)}
+              styles={selectStyles}
+              isSearchable
+            />
+            <Select 
+              options={metricsList}
+              value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
+              onChange={(opt) => setYAxis(opt.value)}
+              styles={selectStyles}
+              isSearchable
+            />
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col border-l border-white/10 pl-6">
-        <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Visual Presets</span>
-        <div className="flex items-center gap-2">
-          <select 
-            className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white appearance-none outline-none focus:border-sky-500/50"
-            onChange={(e) => {
-              const preset = visualPresets[e.target.value];
-              if (preset) {
-                setXAxis(preset.x);
-                setYAxis(preset.y);
-              }
-            }}
-            defaultValue=""
-          >
-            <option value="" disabled>Load axes preset...</option>
-            {visualPresets.map((p, i) => (
-              <option key={i} value={i}>{p.name}</option>
-            ))}
-          </select>
+      <div className="flex flex-col flex-1 min-w-[200px]">
+        <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Focus & Highlight</span>
+        <Select 
+          isMulti
+          options={chartData.map(p => ({ value: p.id, label: p.name }))}
+          value={chartData.filter(p => focusedPlayerIds.includes(p.id)).map(p => ({ value: p.id, label: p.name }))}
+          onChange={(opts) => setFocusedPlayerIds(opts ? opts.map(o => o.value) : [])}
+          styles={selectStyles}
+          placeholder="Focus on players..."
+          className="w-full"
+        />
+      </div>
+
+      <div className="flex flex-col border-l border-white/10 pl-6 min-w-[150px]">
+        <span className="text-[9px] text-white/30 uppercase font-black mb-2 ml-1">Affichage</span>
+        <div className="grid grid-cols-1 gap-x-6">
+          <Toggle label="Moyenne X" checked={showAvgX} onChange={setShowAvgX} />
+          <Toggle label="Moyenne Y" checked={showAvgY} onChange={setShowAvgY} />
+          <Toggle label="Inverser X" checked={invertX} onChange={setInvertX} />
+          <Toggle label="Inverser Y" checked={invertY} onChange={setInvertY} />
+        </div>
+      </div>
+
+      <div className="flex items-start gap-6 border-l border-white/10 pl-6">
+        <div className="flex flex-col">
+          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Visual Presets</span>
+          <div className="flex items-center gap-2">
+            <select 
+              className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white appearance-none outline-none focus:border-sky-500/50 min-w-[120px]"
+              onChange={(e) => {
+                const preset = visualPresets[e.target.value];
+                if (preset) {
+                  setXAxis(preset.x);
+                  setYAxis(preset.y);
+                }
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled>Load axes...</option>
+              {visualPresets.map((p, i) => (
+                <option key={i} value={i}>{p.name}</option>
+              ))}
+            </select>
+            <button 
+              onClick={() => setShowSave(true)}
+              className="p-2 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-sky-400 hover:border-sky-500/30 transition-all"
+            >
+              <Save size={14} />
+            </button>
+          </div>
+        </div>
+
+        <div className="flex flex-col">
+          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Export</span>
           <button 
-            onClick={() => setShowSave(true)}
-            className="p-2 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-sky-400 hover:border-sky-500/30 transition-all"
+            onClick={handleExportPython}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl text-[10px] font-black text-indigo-300 uppercase tracking-tighter hover:from-indigo-500/30 hover:to-purple-500/30 transition-all"
           >
-            <Save size={14} />
+            <Activity size={12} />
+            Python
           </button>
         </div>
-      </div>
-
-      <div className="flex flex-col border-l border-white/10 pl-6">
-         <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Advanced Export</span>
-         <button 
-           onClick={handleExportPython}
-           className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl text-[10px] font-black text-indigo-300 uppercase tracking-tighter hover:from-indigo-500/30 hover:to-purple-500/30 transition-all"
-         >
-           <Activity size={12} />
-           Python Export
-         </button>
-      </div>
-
-      <div className="ml-auto text-right">
-        <div className="text-[9px] text-white/30 uppercase font-black mb-1">Population</div>
-        <div className="text-xl font-black text-white">{playersCount} <span className="text-sky-400">Joueurs</span></div>
       </div>
 
       {showSave && (
@@ -243,9 +286,52 @@ plt.show()
   );
 };
 
+const CustomScatterPoint = (props) => {
+  const { cx, cy, fill, payload, focusedPlayerIds } = props;
+  if (cx == null || cy == null) return null;
+
+  const isFocused = focusedPlayerIds.includes(payload.id);
+  const hasFocusActive = focusedPlayerIds.length > 0;
+  
+  const opacity = hasFocusActive ? (isFocused ? 1 : 0.15) : 0.8;
+  const radius = isFocused ? 8 : 5;
+  const stroke = isFocused ? "white" : "rgba(255,255,255,0.1)";
+  const strokeWidth = isFocused ? 2 : 1;
+
+  return (
+    <g>
+      <circle 
+        cx={cx} cy={cy} r={radius} 
+        fill={fill} opacity={opacity} 
+        stroke={stroke} strokeWidth={strokeWidth}
+        style={{ 
+          filter: isFocused ? 'url(#scatterGlow)' : 'none',
+          transition: 'all 0.3s ease'
+        }}
+      />
+      {isFocused && (
+        <text 
+          x={cx} y={cy - 12} 
+          textAnchor="middle" 
+          className="text-[10px] font-black fill-white pointer-events-none"
+          style={{ textShadow: '0 0 10px rgba(0,0,0,0.8)' }}
+        >
+          {payload.name}
+        </text>
+      )}
+    </g>
+  );
+};
+
 const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
   const [xAxis, setXAxis] = useState('minutes_on_field');
   const [yAxis, setYAxis] = useState('note_ponderee');
+
+  const [showAvgX, setShowAvgX] = useState(true);
+  const [showAvgY, setShowAvgY] = useState(true);
+  const [invertX, setInvertX] = useState(false);
+  const [invertY, setInvertY] = useState(false);
+  const [focusedPlayerIds, setFocusedPlayerIds] = useState([]);
 
   const chartData = useMemo(() => {
     return players.map(p => ({
@@ -295,6 +381,11 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
         yAxis={yAxis} setYAxis={setYAxis}
         playersCount={players.length}
         chartData={chartData}
+        showAvgX={showAvgX} setShowAvgX={setShowAvgX}
+        showAvgY={showAvgY} setShowAvgY={setShowAvgY}
+        invertX={invertX} setInvertX={setInvertX}
+        invertY={invertY} setInvertY={setInvertY}
+        focusedPlayerIds={focusedPlayerIds} setFocusedPlayerIds={setFocusedPlayerIds}
       />
 
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-2 border-b border-white/5">
@@ -310,33 +401,55 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
              style={{ backgroundImage: 'radial-gradient(#38bdf8 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
-        <div className="absolute top-8 right-8 z-10 w-48 p-4 rounded-2xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-2xl pointer-events-none">
-          <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">Distribution</div>
-          <div className="space-y-3">
-            {stats.map(item => (
-              <div key={item.label} className="flex items-center justify-between">
-                <span className={`text-[10px] font-bold uppercase ${item.color}`}>{item.label}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black text-white">{item.count}</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-white/40 font-mono">{item.pct}%</span>
+        {showAvgX && showAvgY && (
+          <div className="absolute top-8 right-8 z-10 w-48 p-4 rounded-2xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-2xl pointer-events-none">
+            <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">Distribution</div>
+            <div className="space-y-3">
+              {stats.map(item => (
+                <div key={item.label} className="flex items-center justify-between">
+                  <span className={`text-[10px] font-bold uppercase ${item.color}`}>{item.label}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-black text-white">{item.count}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-white/40 font-mono">{item.pct}%</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 30 }}>
+            <defs>
+              <filter id="scatterGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-            <XAxis type="number" dataKey="x" name={xAxis} stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} domain={['auto', 'auto']}>
+            <XAxis 
+              type="number" dataKey="x" name={xAxis} 
+              reversed={invertX}
+              stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }} 
+              axisLine={false} tickLine={false} domain={['auto', 'auto']}
+            >
               <Label value={xAxis.replace(/_/g, ' ')} offset={-20} position="insideBottom" fill="rgba(255,255,255,0.2)" fontSize={10} fontWeight="900" style={{ textTransform: 'uppercase' }} />
             </XAxis>
-            <YAxis type="number" dataKey="y" name={yAxis} stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} domain={['auto', 'auto']}>
+            <YAxis 
+              type="number" dataKey="y" name={yAxis} 
+              reversed={invertY}
+              stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }} 
+              axisLine={false} tickLine={false} domain={['auto', 'auto']}
+            >
               <Label value={yAxis.replace(/_/g, ' ')} angle={-90} offset={-10} position="insideLeft" fill="rgba(255,255,255,0.2)" fontSize={10} fontWeight="900" style={{ textTransform: 'uppercase' }} />
             </YAxis>
             <ZAxis type="number" range={[60, 60]} />
             <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#38bdf8', strokeWidth: 1 }} isAnimationActive={false} />
-            {averages.x && averages.y && (
+            
+            {showAvgX && showAvgY && averages.x && averages.y && (
               <>
                 <ReferenceArea x1={averages.x} y1={averages.y} fill="rgba(34, 197, 94, 0.05)" stroke="none" />
                 <ReferenceArea x2={averages.x} y1={averages.y} fill="rgba(56, 189, 248, 0.05)" stroke="none" />
@@ -344,15 +457,26 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
                 <ReferenceArea x1={averages.x} y2={averages.y} fill="rgba(245, 158, 11, 0.05)" stroke="none" />
               </>
             )}
-            <ReferenceLine x={averages.x} stroke="rgba(255,255,255,0.15)" strokeDasharray="10 5">
-               <Label value={`Moy. X: ${formatNumber(averages.x)}`} position="top" fill="rgba(255,255,255,0.3)" fontSize={9} fontWeight="bold" />
-            </ReferenceLine>
-            <ReferenceLine y={averages.y} stroke="rgba(255,255,255,0.15)" strokeDasharray="10 5">
-               <Label value={`Moy. Y: ${formatNumber(averages.y)}`} position="insideLeft" fill="rgba(255,255,255,0.3)" fontSize={9} fontWeight="bold" dx={10} />
-            </ReferenceLine>
-            <Scatter name="Players" data={chartData} onClick={(data) => onPlayerClick(data.originalPlayer)} cursor="pointer" isAnimationActive={false}>
+
+            {showAvgX && averages.x && (
+              <ReferenceLine x={averages.x} stroke="rgba(255,255,255,0.15)" strokeDasharray="10 5">
+                 <Label value={`Moy. X: ${formatNumber(averages.x)}`} position="top" fill="rgba(255,255,255,0.3)" fontSize={9} fontWeight="bold" />
+              </ReferenceLine>
+            )}
+            {showAvgY && averages.y && (
+              <ReferenceLine y={averages.y} stroke="rgba(255,255,255,0.15)" strokeDasharray="10 5">
+                 <Label value={`Moy. Y: ${formatNumber(averages.y)}`} position="insideLeft" fill="rgba(255,255,255,0.3)" fontSize={9} fontWeight="bold" dx={10} />
+              </ReferenceLine>
+            )}
+
+            <Scatter 
+              name="Players" data={chartData} 
+              onClick={(data) => onPlayerClick(data.originalPlayer)} 
+              cursor="pointer" isAnimationActive={false}
+              shape={<CustomScatterPoint focusedPlayerIds={focusedPlayerIds} />}
+            >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']} fillOpacity={0.8} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+                <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']} />
               ))}
             </Scatter>
           </ScatterChart>
