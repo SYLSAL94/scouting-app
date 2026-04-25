@@ -19,14 +19,14 @@
   --secondary-text: #949494;
   --muted-text: #e9e9e9;
   
-  /* Border Radii */
+  /* Border Radii - Sharp Industrial Geometry */
   --radius-2: 2px;
   --radius-3: 3px;
   --radius-4: 4px;
-  --radius-20: 20px;
-  --radius-24: 24px;
-  --radius-30: 30px;
-  --radius-40: 40px;
+  --radius-20: 4px; /* Overridden for Verge Sharpness */
+  --radius-24: 4px; /* Overridden for Verge Sharpness */
+  --radius-30: 4px; /* Overridden for Verge Sharpness */
+  --radius-40: 4px; /* Overridden for Verge Sharpness */
 
   /* Typography Fallbacks */
   --font-display: 'Manuka', 'Impact', 'Helvetica Neue', sans-serif;
@@ -35,6 +35,89 @@
 
   font-family: var(--font-ui);
   color-scheme: dark;
+}
+
+@utility verge-card {
+  background: var(--canvas-black);
+  border: 1px solid var(--hazard-white);
+  border-radius: var(--radius-4);
+  padding: 24px;
+  transition: border-color 150ms ease;
+}
+
+@utility verge-card-slate {
+  background: var(--surface-slate);
+  border: none;
+  border-radius: var(--radius-4);
+  padding: 24px;
+}
+
+@utility verge-card-mint {
+  background: var(--jelly-mint);
+  color: var(--absolute-black);
+  border: none;
+  border-radius: var(--radius-4);
+  padding: 32px;
+}
+
+@utility verge-card-ultraviolet {
+  background: rgba(82, 0, 255, 0.9);
+  color: var(--hazard-white);
+  border: none;
+  border-radius: var(--radius-4);
+  padding: 32px;
+}
+
+@utility btn-verge-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--jelly-mint);
+  color: var(--absolute-black);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 10px 24px;
+  border-radius: var(--radius-4);
+  border: none;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+@utility btn-verge-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-slate);
+  color: var(--muted-text);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 400;
+  padding: 10px 24px;
+  border-radius: var(--radius-4);
+  border: none;
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+@utility btn-verge-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--jelly-mint);
+  color: var(--jelly-mint);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 10px 20px;
+  border-radius: var(--radius-4);
+  cursor: pointer;
+  transition: all 150ms ease;
 }
 
 body {
@@ -85,53 +168,24 @@ h1, h2, h3, .verge-display {
 
 /* Flat Depth - 1px borders instead of shadows */
 .verge-card {
-  background: var(--canvas-black);
-  border: 1px solid var(--hazard-white);
-  border-radius: var(--radius-20);
-  padding: 24px;
-  transition: border-color 150ms ease;
+  @apply verge-card;
 }
 
 .verge-card-slate {
-  background: var(--surface-slate);
-  border: none;
-  border-radius: var(--radius-20);
-  padding: 24px;
+  @apply verge-card-slate;
 }
 
 .verge-card-mint {
-  background: var(--jelly-mint);
-  color: var(--absolute-black);
-  border: none;
-  border-radius: var(--radius-24);
-  padding: 32px;
+  @apply verge-card-mint;
 }
 
 .verge-card-ultraviolet {
-  background: rgba(82, 0, 255, 0.9);
-  color: var(--hazard-white);
-  border: none;
-  border-radius: var(--radius-24);
-  padding: 32px;
+  @apply verge-card-ultraviolet;
 }
 
 /* Buttons */
 .btn-verge-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--jelly-mint);
-  color: var(--absolute-black);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  padding: 10px 24px;
-  border-radius: var(--radius-24);
-  border: none;
-  cursor: pointer;
-  transition: all 180ms ease;
+  @apply btn-verge-primary;
 }
 
 .btn-verge-primary:hover {
@@ -141,19 +195,7 @@ h1, h2, h3, .verge-display {
 }
 
 .btn-verge-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface-slate);
-  color: var(--muted-text);
-  font-family: var(--font-ui);
-  font-size: 16px;
-  font-weight: 400;
-  padding: 10px 24px;
-  border-radius: var(--radius-24);
-  border: none;
-  cursor: pointer;
-  transition: all 180ms ease;
+  @apply btn-verge-secondary;
 }
 
 .btn-verge-secondary:hover {
@@ -163,21 +205,7 @@ h1, h2, h3, .verge-display {
 }
 
 .btn-verge-outline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid var(--jelly-mint);
-  color: var(--jelly-mint);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  padding: 10px 20px;
-  border-radius: var(--radius-40);
-  cursor: pointer;
-  transition: all 150ms ease;
+  @apply btn-verge-outline;
 }
 
 .btn-verge-outline:hover {
@@ -255,7 +283,7 @@ a:hover, .verge-link:hover {
   z-index: 1;
 }
 
-/* Legacy Compatibility Shims (Optional - to avoid total breakage during migration) */
+/* Legacy Compatibility Shims - Fixed for Tailwind v4 @utility support */
 .glass-panel, .glass-card {
   @apply verge-card;
   background: rgba(45, 45, 45, 0.4);
