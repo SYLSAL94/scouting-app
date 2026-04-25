@@ -10,8 +10,8 @@ const FIRST_COL_PCT = 30;
 const formatDSLabel = (label) => {
     if (!label) return "";
     return label
-        .replace('_avg_norm', '')
-        .replace('_norm', '')
+        .replace('_avg_pct', '')
+        .replace('_pct', '')
         .replace(/_/g, ' ')
         .replace('xg', 'xG')
         .toUpperCase();
@@ -29,7 +29,7 @@ const FaceToFaceComparison = ({ player1, player2, metrics, availableMetrics }) =
                 const isP1Winner = v1 > v2;
                 const isP2Winner = v2 > v1;
 
-                const isPercentile = metricId.includes('norm') || metricId.includes('_pct') || metricLabel.toLowerCase().includes('percentile');
+                const isPercentile = metricId.includes('_pct') || metricLabel.toLowerCase().includes('percentile') || metricId.startsWith('Indice_');
                 const denominator = isPercentile ? 100 * 1.05 : (Math.max(v1, v2) * 1.2 || 1);
 
                 return (
@@ -228,7 +228,7 @@ export const VersusComparison = ({
 }) => {
     const activeMetrics = useMemo(() => {
         if (metricDisplayMode === 'standard') {
-            return selectedMetrics.map(m => m.replace(/_norm$|_pct$/, ''));
+            return selectedMetrics.map(m => m.replace(/_pct$/, ''));
         }
         return selectedMetrics;
     }, [selectedMetrics, metricDisplayMode]);

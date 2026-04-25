@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, ChevronDown, Check, Search } from 'lucide-react';
+import { X, ChevronDown, Check, Search, Layers } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { normalizeString } from '../../utils/stringUtils';
 
@@ -100,6 +100,26 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
     }
   };
 
+  const renderLabelContent = (item, isChip = false, isActive = false) => {
+    const isComposite = item.startsWith('🧩');
+    const cleanLabel = isComposite ? item.replace('🧩', '').trim() : item;
+
+    if (isComposite) {
+      return (
+        <div className="flex items-center gap-2">
+          <div className={`flex items-center justify-center w-4 h-4 rounded-[3px] border ${
+            isChip ? 'bg-black/20 border-black/10' : 
+            isActive ? 'bg-black/20 border-black/20' : 'bg-[#2d2d2d] border-white/10'
+          }`}>
+            <Layers size={9} className={isChip || isActive ? 'text-black' : 'text-[#3cffd0]'} />
+          </div>
+          <span className="truncate">{cleanLabel}</span>
+        </div>
+      );
+    }
+    return <span className="truncate">{cleanLabel}</span>;
+  };
+
   return (
     <div className="filter-group relative" ref={dropdownRef}>
       <label className="verge-label-mono text-[9px] text-[#949494] mb-3 block">{label}</label>
@@ -115,7 +135,7 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
       >
         {selected.map(item => (
           <span key={item} className="bg-[#3cffd0] text-black verge-label-mono text-[9px] px-2.5 py-1.5 rounded-[2px] font-black flex items-center gap-2 animate-in zoom-in-95 duration-200">
-            {item}
+            {renderLabelContent(item, true)}
             <button 
               onClick={(e) => { e.stopPropagation(); onChange(selected.filter(i => i !== item)); }} 
               className="hover:bg-black/10 rounded-sm p-0.5 transition-colors"
@@ -171,7 +191,7 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
                   onClick={(e) => { e.stopPropagation(); toggleOption(option); }}
                   onMouseEnter={() => setActiveIndex(index)}
                 >
-                  <span className="truncate">{option}</span>
+                  {renderLabelContent(option, false, index === activeIndex)}
                   {selected.includes(option) && <Check size={14} className={`${index === activeIndex ? 'text-black' : 'text-[#3cffd0]'} shrink-0 ml-2`} />}
                 </div>
               ))

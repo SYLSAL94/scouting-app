@@ -15,13 +15,12 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
       ? selectedMetrics 
       : Object.keys(selectedPlayersToCompare[0]).filter(key => 
           key.toLowerCase().startsWith('indice_') || 
-          key.toLowerCase().endsWith('_pct') ||
-          key.toLowerCase().endsWith('_norm')
+          key.toLowerCase().endsWith('_pct')
         ).slice(0, 8);
 
     return metricKeys.map(key => {
       const cleanMetric = key
-        .replace(/_avg_norm|_norm|_pct|indice_/gi, '')
+        .replace(/_avg_pct|_pct|indice_/gi, '')
         .replace(/_/g, ' ')
         .toUpperCase()
         .trim();
@@ -30,7 +29,14 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
       
       selectedPlayersToCompare.forEach(p => {
         const name = `${p.full_name || p.name || 'Inconnu'}`;
-        dataPoint[name] = (Number(p[key]) || 0) * 100;
+        const val = Number(p[key]) || 0;
+        
+        // Si c'est une métrique de percentile (_pct) ou un Indice, on prend la valeur telle quelle (déjà en 0-100)
+        // Sinon (valeurs brutes), on garde aussi la valeur réelle (pas de transformation)
+        const isNormalized = key.toLowerCase().endsWith('_pct') || 
+                             key.toLowerCase().startsWith('indice_');
+                             
+        dataPoint[name] = val;
       });
       return dataPoint;
     });
