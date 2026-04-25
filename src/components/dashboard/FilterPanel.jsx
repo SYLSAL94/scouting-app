@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Globe, BarChart2, Calendar, Activity, Zap, Save, ChevronDown, Check, X, Filter, SlidersHorizontal } from 'lucide-react';
 import AccordionSection from './AccordionSection';
 import MultiSelectWithChips from '../ui/MultiSelectWithChips';
@@ -127,6 +127,7 @@ const FilterPanel = ({
   profiles, loadProfile, onProfileSaved, onProfileDeleted,
   handleResetFilters, handleApplyFilters, hasChanges
 }) => {
+  const [showPresets, setShowPresets] = useState(false);
   const defaults = {
     foot: 'all', onLoan: false, minMatches: 0, useSeasonAge: false,
     marketValue: { min: 0, max: 150000000 },
@@ -189,13 +190,41 @@ const FilterPanel = ({
           </button>
         </div>
 
-        <ProfileSelector 
-          profiles={profiles} 
-          loadProfile={loadProfile} 
-          pendingFilters={pendingFilters}
-          onProfileSaved={onProfileSaved}
-          onProfileDeleted={onProfileDeleted}
-        />
+        <div className="flex flex-col gap-4">
+          <button 
+            onClick={() => setShowPresets(!showPresets)}
+            className="flex items-center justify-between w-full group py-2"
+          >
+            <div className="flex items-center gap-2">
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${showPresets ? 'bg-[#3cffd0] shadow-[0_0_8px_#3cffd0]' : 'bg-[#949494]'}`} />
+              <label className={`verge-label-mono text-[9px] uppercase tracking-widest font-black transition-colors cursor-pointer ${showPresets ? 'text-[#3cffd0]' : 'text-[#949494] group-hover:text-white'}`}>
+                Analyse Presets
+              </label>
+            </div>
+            <motion.div animate={{ rotate: showPresets ? 180 : 0 }} className={showPresets ? "text-[#3cffd0]" : "text-[#949494]"}>
+              <ChevronDown size={12} />
+            </motion.div>
+          </button>
+
+          <AnimatePresence>
+            {showPresets && (
+              <motion.div
+                initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ProfileSelector 
+                  profiles={profiles} 
+                  loadProfile={loadProfile} 
+                  pendingFilters={pendingFilters}
+                  onProfileSaved={onProfileSaved}
+                  onProfileDeleted={onProfileDeleted}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Content Section */}

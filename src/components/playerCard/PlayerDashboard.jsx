@@ -11,6 +11,7 @@ import PlayerRadar from '../../PlayerRadar';
 import PlayerTrends from '../dashboard/PlayerTrends';
 import FavoriteToggle from '../dashboard/FavoriteToggle';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
 
 import { API_BASE_URL } from '../../config';
 
@@ -25,6 +26,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     const [selectedPositionForRanking, setSelectedPositionForRanking] = useState(null);
     const [activeTab, setActiveTab] = useState('profil'); // 'profil', 'analyse', 'stats', 'reseau'
     const [analysisSubTab, setAnalysisSubTab] = useState('radar'); // 'radar' ou 'trends'
+    const [isAnalyseExpanded, setIsAnalyseExpanded] = useState(false);
     
     // Définition du contexte actif pour le rendu et les effets
     const contextToUse = selectedContext || rowContext;
@@ -273,20 +275,39 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                     {/* Colonne MILIEU : Analyse */}
                                     <div className={`${activeTab === 'analyse' ? 'block' : 'hidden'} lg:block lg:col-span-5 space-y-10`}>
                                         <div className="space-y-6">
-                                            <h3 className="verge-label-mono text-[#3cffd0] flex items-center gap-3 uppercase text-[11px] tracking-[0.2em] px-2">
-                                                <span className="w-1.5 h-1.5 bg-[#3cffd0]"></span> Analyse Comparative
-                                            </h3>
-                                            <div className="bg-[#131313] border border-white/10 p-2">
-                                                <RecalculationPanelWidget 
-                                                    playerId={playerId}
-                                                    onRecalculated={(newData) => {
-                                                        if (newData && newData.recordToDisplay) {
-                                                            setPlayerData(prev => ({ ...prev, ...newData.recordToDisplay }));
-                                                            setRankingData({ rank: newData.rank, total: newData.populationCount, is_recalculated: true });
-                                                        }
-                                                    }}
-                                                />
-                                            </div>
+                                            <button 
+                                                onClick={() => setIsAnalyseExpanded(!isAnalyseExpanded)}
+                                                className="w-full flex items-center justify-between px-2 hover:opacity-80 transition-opacity"
+                                            >
+                                                <h3 className="verge-label-mono text-[#3cffd0] flex items-center gap-3 uppercase text-[11px] tracking-[0.2em]">
+                                                    <span className={`w-1.5 h-1.5 transition-all duration-500 ${isAnalyseExpanded ? 'bg-[#3cffd0] shadow-[0_0_8px_#3cffd0]' : 'bg-[#949494]'}`}></span> 
+                                                    Analyse Comparative
+                                                </h3>
+                                                <motion.div animate={{ rotate: isAnalyseExpanded ? 180 : 0 }} className={isAnalyseExpanded ? "text-[#3cffd0]" : "text-[#949494]"}>
+                                                    <ChevronDown size={14} />
+                                                </motion.div>
+                                            </button>
+                                            
+                                            <AnimatePresence>
+                                                {isAnalyseExpanded && (
+                                                    <motion.div 
+                                                        initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
+                                                        animate={{ height: 'auto', opacity: 1 }}
+                                                        exit={{ height: 0, opacity: 0 }}
+                                                        className="bg-[#131313] border border-white/10 p-2"
+                                                    >
+                                                        <RecalculationPanelWidget 
+                                                            playerId={playerId}
+                                                            onRecalculated={(newData) => {
+                                                                if (newData && newData.recordToDisplay) {
+                                                                    setPlayerData(prev => ({ ...prev, ...newData.recordToDisplay }));
+                                                                    setRankingData({ rank: newData.rank, total: newData.populationCount, is_recalculated: true });
+                                                                }
+                                                            }}
+                                                        />
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
                                         </div>
                                         
                                         <div className="space-y-6">
