@@ -62,7 +62,7 @@ export const useMetricSelection = () => {
     };
 
     const activeMetrics = useMemo(() => {
-        return selectedMetrics.map(m => m.replace(/_pct$/, ''));
+        return [...selectedMetrics];
     }, [selectedMetrics]);
 
     return {

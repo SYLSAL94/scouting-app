@@ -1,5 +1,5 @@
 // src/components/ui/MetricSelectionPanel.js
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Percent, Hash, Trash2, Info } from 'lucide-react';
 import { TemplateSelector } from './TemplateSelector';
 import { SearchableMultiSelect } from './SearchableMultiSelect';
@@ -30,6 +30,7 @@ export const MetricSelectionPanel = ({
     hideModeSelector = false
 }) => {
     const { theme } = useTheme();
+    const [showTooltip, setShowTooltip] = useState(false);
 
     const renderModeButton = (mode, label, Icon) => {
         const isActive = metricDisplayMode === mode;
@@ -78,10 +79,17 @@ export const MetricSelectionPanel = ({
                             <label className="verge-label-mono text-[10px] text-[#949494] tracking-[0.2em] font-black uppercase">
                                 Type de données
                             </label>
-                            <div className="relative flex items-center">
-                                <div className="group cursor-help p-1">
-                                    <Info size={14} className="text-[#949494] group-hover:text-[#3cffd0] transition-colors" />
-                                    <div className="absolute right-0 bottom-full mb-3 w-72 p-6 bg-[#131313] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none">
+                            <div className="relative">
+                                <button
+                                    type="button"
+                                    className="p-1 cursor-help"
+                                    onMouseEnter={() => setShowTooltip(true)}
+                                    onMouseLeave={() => setShowTooltip(false)}
+                                >
+                                    <Info size={14} className={`transition-colors ${showTooltip ? 'text-[#3cffd0]' : 'text-[#949494]'}`} />
+                                </button>
+                                {showTooltip && (
+                                    <div className="absolute right-0 bottom-full mb-3 w-72 p-6 bg-[#131313] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 pointer-events-none animate-in fade-in duration-200">
                                         <div className="space-y-3">
                                             <p className="verge-label-mono text-[9px] text-[#3cffd0] font-black tracking-[0.2em] uppercase">Guide Analytique</p>
                                             <p className="text-[11px] leading-relaxed text-[#949494]">
@@ -92,7 +100,7 @@ export const MetricSelectionPanel = ({
                                             </p>
                                         </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                         <div className="flex items-center gap-2 p-1 bg-[#131313] border border-white/5 rounded-[2px]">
