@@ -28,6 +28,8 @@ export default function PlayerSlot({ slot, player, onClick }) {
         onClick?.(player);
     };
 
+    const ratingColor = rating !== null ? (rating >= 70 ? '#3cffd0' : rating >= 40 ? '#facc15' : '#f43f5e') : '#949494';
+
     return (
         <div
             onClick={handleClick}
@@ -35,17 +37,17 @@ export default function PlayerSlot({ slot, player, onClick }) {
             style={slot.style}
         >
             <div
-                className={`relative w-16 md:w-32 h-28 md:h-48 flex flex-col items-center justify-start p-1 transition-all duration-500 transform group-hover:-translate-y-2 rounded-[2px] shadow-[0_20px_40px_rgba(0,0,0,0.5)] ${player ? 'bg-[#131313] border border-white/10' : 'bg-[#131313]/50 border border-dashed border-white/5 hover:border-[#3cffd0]/30 hover:bg-[#131313]'
+                className={`relative w-14 md:w-32 flex flex-col items-center justify-start p-1 transition-all duration-500 transform group-hover:-translate-y-2 rounded-[1px] shadow-2xl ${player ? 'bg-[#131313] border border-white/10' : 'bg-[#131313]/30 border border-dashed border-white/5 hover:border-[#3cffd0]/30 hover:bg-[#131313]'
                     }`}
             >
                 {player ? (
                     <>
-                        {/* Technical Role Label */}
-                        <div className="absolute top-0 right-0 bg-[#2d2d2d] border-l border-b border-white/5 px-2 py-1 z-10">
-                            <p className="verge-label-mono text-[6px] md:text-[9px] uppercase text-[#949494] font-black tracking-[0.1em]">{slot.displayRole}</p>
+                        {/* Technical Role Label - Desktop Only */}
+                        <div className="hidden md:block absolute top-0 right-0 bg-[#2d2d2d] border-l border-b border-white/5 px-2 py-1 z-10">
+                            <p className="verge-label-mono text-[9px] uppercase text-[#949494] font-black tracking-[0.1em]">{slot.displayRole}</p>
                         </div>
 
-                        <div className="relative w-full aspect-square md:aspect-[1/1.2] mb-2 overflow-hidden bg-[#2d2d2d]">
+                        <div className="relative w-full aspect-square md:aspect-[1/1.2] overflow-hidden bg-[#2d2d2d]">
                             {(player.image && !imgError) ? (
                                 <img
                                     src={player.image}
@@ -54,21 +56,31 @@ export default function PlayerSlot({ slot, player, onClick }) {
                                     onError={() => setImgError(true)}
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center verge-label-mono text-xl md:text-4xl font-black text-white/20">
+                                <div className="w-full h-full flex items-center justify-center verge-label-mono text-lg md:text-4xl font-black text-white/20">
                                     {initials}
                                 </div>
                             )}
                             
-                            {/* Rating Badge - Sharp */}
+                            {/* Rating Badge - Desktop Only with performance color */}
                             {rating !== null && (
-                                <div className="absolute bottom-0 right-0 bg-[#3cffd0] px-1.5 md:px-2.5 py-1 md:py-1.5 border-t border-l border-black/20 z-20">
-                                    <span className="verge-label-mono text-black font-black text-[9px] md:text-[13px] tabular-nums">{rating.toFixed(1)}</span>
+                                <div 
+                                    className="hidden md:block absolute bottom-0 right-0 px-2.5 py-1.5 border-t border-l border-black/20 z-20"
+                                    style={{ backgroundColor: ratingColor }}
+                                >
+                                    <span className="verge-label-mono text-black font-black text-[13px] tabular-nums leading-none">{rating.toFixed(1)}</span>
                                 </div>
                             )}
                         </div>
 
-                        <div className="flex flex-col items-center w-full min-w-0 px-2 pb-1">
-                            <p className="verge-label-mono font-black text-[7px] md:text-[10px] leading-tight text-white uppercase truncate w-full text-center tracking-tighter" title={dn}>
+                        <div className="flex flex-col items-center w-full min-w-0 px-1 pt-1 pb-1">
+                            {/* Mobile: Show Rating with color / Desktop: Show Name */}
+                            <p 
+                                className="md:hidden verge-label-mono font-black text-[10px] leading-tight uppercase truncate w-full text-center tracking-tighter"
+                                style={{ color: ratingColor }}
+                            >
+                                {rating !== null ? rating.toFixed(1) : '-'}
+                            </p>
+                            <p className="hidden md:block verge-label-mono font-black text-[10px] leading-tight text-white uppercase truncate w-full text-center tracking-tighter" title={dn}>
                                 {dn}
                             </p>
                             <div className="hidden md:flex items-center gap-2 mt-2">
@@ -81,11 +93,10 @@ export default function PlayerSlot({ slot, player, onClick }) {
                         </div>
                     </>
                 ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center gap-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                        <Shirt size={24} className="md:w-10 md:h-10" strokeWidth={1} />
+                    <div className="flex-1 flex flex-col items-center justify-center py-4 md:py-10 gap-2 opacity-20 group-hover:opacity-40 transition-opacity">
+                        <Shirt size={16} className="md:w-10 md:h-10" strokeWidth={1} />
                         <div className="flex flex-col items-center">
-                            <span className="verge-label-mono font-black text-[7px] md:text-[10px] text-white uppercase tracking-[0.2em]">{slot.displayRole}</span>
-                            <span className="verge-label-mono text-[5px] md:text-[7px] text-[#3cffd0] uppercase font-black tracking-widest mt-1">EMPTY_NODE</span>
+                            <span className="verge-label-mono font-black text-[6px] md:text-[10px] text-white uppercase tracking-widest">{slot.displayRole}</span>
                         </div>
                     </div>
                 )}

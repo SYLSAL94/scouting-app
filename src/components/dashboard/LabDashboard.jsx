@@ -129,6 +129,7 @@ export default function LabDashboard({ activeFilters, metricsList, onPlayerClick
                                 metricsList={metricsList}
                                 selectedSortBy="custom_score"
                                 onSortChange={() => {}}
+                                hideSortBar={true}
                             />
                         </div>
                     ) : (

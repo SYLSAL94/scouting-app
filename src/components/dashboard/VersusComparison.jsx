@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { MetricSelectionPanel } from './MetricSelectionPanel';
+import { HeadToHeadContent } from './HeadToHeadContent';
 import { Activity } from 'lucide-react';
 
 const ROW_H = 50; 
@@ -208,7 +209,7 @@ const ComparisonTable = ({ players, metrics, availableMetrics }) => {
     );
 };
 
-import { HeadToHeadContent } from './HeadToHeadContent';
+
 
 export const VersusComparison = ({
     selectedPlayers,
@@ -236,7 +237,7 @@ export const VersusComparison = ({
     return (
         <div className="flex-shrink-0 pt-12 mt-12 border-t border-white/10">
             <div className="flex flex-col xl:flex-row gap-12 items-start">
-                <div className="w-full xl:w-1/4">
+                <div className="hidden xl:block w-full xl:w-1/4">
                     <h2 className="verge-label-mono text-[11px] font-black tracking-[0.3em] text-[#3cffd0] mb-8 flex items-center gap-4">
                         <div className="w-2 h-2 bg-[#3cffd0]" />
                         ANALYSE TACTIQUE (DS)
@@ -263,16 +264,16 @@ export const VersusComparison = ({
                 </div>
                 <div className="w-full xl:w-3/4">
                     {selectedPlayers.length < 2 ? (
-                        <div className="h-[600px] flex flex-col items-center justify-center bg-[#2d2d2d] rounded-[4px] border border-dashed border-white/10">
-                            <div className="p-8 bg-[#131313] border border-white/10 rounded-[2px] mb-8">
-                                <Activity size={56} className="text-[#3cffd0] opacity-50" />
+                        <div className="h-[400px] md:h-[600px] flex flex-col items-center justify-center bg-[#2d2d2d] rounded-[4px] border border-dashed border-white/10">
+                            <div className="p-4 md:p-8 bg-[#131313] border border-white/10 rounded-[2px] mb-4 md:mb-8">
+                                <Activity size={32} className="md:size-[56px] text-[#3cffd0] opacity-50" />
                             </div>
-                            <p className="verge-label-mono text-[12px] font-black text-[#949494] tracking-[0.2em] uppercase">Sélectionnez au moins 2 joueurs pour comparer.</p>
+                            <p className="px-6 text-center verge-label-mono text-[10px] md:text-[12px] font-black text-[#949494] tracking-[0.2em] uppercase">Sélectionnez au moins 2 joueurs.</p>
                         </div>
                     ) : activeMetrics.length > 0 ? (
-                        <div className="bg-[#131313] border border-white/10 rounded-[4px] p-10 relative overflow-hidden">
+                        <div className="bg-[#131313] border border-white/10 rounded-[4px] p-4 md:p-10 relative overflow-hidden">
                              {/* Hazard Corner */}
-                             <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-[#3cffd0]/20" />
+                             <div className="absolute top-0 right-0 w-8 h-8 md:w-16 md:h-16 border-t-2 border-r-2 border-[#3cffd0]/20" />
                              
                             {selectedPlayers.length === 2 ? (
                                 <HeadToHeadContent 

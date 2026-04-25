@@ -61,51 +61,51 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
   }
 
   return (
-    <div className="bg-[#131313] rounded-[4px] p-8 md:p-12 lg:p-16 border border-white/10 space-y-16 relative overflow-hidden">
+    <div className="bg-[#131313] rounded-[4px] p-4 md:p-12 lg:p-16 border border-white/10 space-y-8 md:space-y-16 relative overflow-hidden">
       {/* Editorial Watermark */}
-      <div className="absolute top-0 right-0 w-64 h-64 border-t border-r border-[#3cffd0]/5 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 border-b border-l border-[#5200ff]/5 pointer-events-none" />
+      <div className="hidden md:block absolute top-0 right-0 w-64 h-64 border-t border-r border-[#3cffd0]/5 pointer-events-none" />
+      <div className="hidden md:block absolute bottom-0 left-0 w-64 h-64 border-b border-l border-[#5200ff]/5 pointer-events-none" />
 
       {/* Header Layout */}
-      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 border-b border-white/10 pb-12">
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <span className="w-12 h-[2px] bg-[#3cffd0]" />
-            <span className="verge-kicker text-[#3cffd0]">Analysis Node / Versus System</span>
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 border-b border-white/10 pb-6 md:pb-12">
+        <div className="space-y-3 md:space-y-4">
+          <div className="flex items-center gap-2 md:gap-3">
+            <span className="w-8 md:w-12 h-[2px] bg-[#3cffd0]" />
+            <span className="verge-kicker text-[10px] md:text-[19px] text-[#3cffd0]">Versus System</span>
           </div>
-          <h2 className="verge-h1 text-white m-0">COMPARAISON DIRECTE</h2>
-          <div className="flex items-center gap-6 mt-4">
+          <h2 className="verge-h2 md:verge-h1 text-white text-2xl md:text-6xl m-0">COMPARAISON</h2>
+          <div className="flex flex-wrap items-center gap-4 mt-2 md:mt-4">
              {selectedPlayersToCompare.map((p, i) => (
                <div key={p.id} className="flex items-center gap-2">
-                 <div className="w-3 h-3" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                 <span className="verge-label-mono text-[10px] text-white font-black">{`${p.full_name || p.name}`.toUpperCase()}</span>
+                 <div className="w-2 h-2 md:w-3 md:h-3" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                 <span className="verge-label-mono text-[8px] md:text-[10px] text-white font-black">{`${p.full_name || p.name}`.toUpperCase()}</span>
                </div>
              ))}
           </div>
         </div>
         
-        <div className="flex flex-col items-end gap-2">
+        <div className="hidden md:flex flex-col items-end gap-2">
           <div className="px-6 py-3 bg-[#2d2d2d] border border-white/10 text-white verge-label-mono text-[10px] font-black tracking-[0.3em] rounded-[2px] uppercase">
             ZERO-DISQUE NODE v.4.0
           </div>
-          <span className="verge-label-mono text-[9px] text-[#949494]">LATENCY: 12MS / CORE: CLOUD-NATIVE</span>
+          <span className="verge-label-mono text-[9px] text-[#949494]">LATENCY: 12MS</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 lg:gap-16">
         
         {/* Radar Chart Card */}
-        <div className="bg-[#131313] rounded-[4px] p-10 border border-white/10 relative group flex flex-col h-[600px]">
-          <div className="absolute top-6 left-6 verge-label-mono text-[10px] text-[#3cffd0] font-black tracking-[0.3em] uppercase">
-            01 / RADIAL_INTELLIGENCE
+        <div className="bg-[#131313] rounded-[4px] p-4 md:p-10 border border-white/10 relative group flex flex-col h-[400px] md:h-[600px]">
+          <div className="absolute top-4 left-4 md:top-6 md:left-6 verge-label-mono text-[8px] md:text-[10px] text-[#3cffd0] font-black tracking-[0.3em] uppercase">
+            01 / RADIAL
           </div>
-          <div className="flex-1 mt-12">
+          <div className="flex-1 mt-8 md:mt-12">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
+              <RadarChart cx="50%" cy="50%" outerRadius={window.innerWidth < 768 ? "65%" : "80%"} data={chartData}>
                 <PolarGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
                 <PolarAngleAxis 
                   dataKey="metric" 
-                  tick={{ fill: '#949494', fontSize: 10, fontWeight: '900', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.05em' }} 
+                  tick={{ fill: '#949494', fontSize: 8, fontWeight: '900', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.05em' }} 
                 />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
                 <Tooltip 
@@ -143,20 +143,20 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
         </div>
 
         {/* Bar Chart Card */}
-        <div className="bg-[#131313] rounded-[4px] p-10 border border-white/10 relative group flex flex-col h-[600px]">
-          <div className="absolute top-6 left-6 verge-label-mono text-[10px] text-[#5200ff] font-black tracking-[0.3em] uppercase">
-            02 / METRIC_HEAD_TO_HEAD
+        <div className="bg-[#131313] rounded-[4px] p-4 md:p-10 border border-white/10 relative group flex flex-col h-[400px] md:h-[600px]">
+          <div className="absolute top-4 left-4 md:top-6 md:left-6 verge-label-mono text-[8px] md:text-[10px] text-[#5200ff] font-black tracking-[0.3em] uppercase">
+            02 / BAR_CHART
           </div>
-          <div className="flex-1 mt-12">
+          <div className="flex-1 mt-8 md:mt-12">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} layout="vertical" margin={{ top: 20, right: 40, left: 20, bottom: 20 }}>
+              <BarChart data={chartData} layout="vertical" margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="0" horizontal={false} vertical={true} stroke="rgba(255,255,255,0.05)" />
                 <XAxis type="number" domain={[0, 100]} hide />
                 <YAxis 
                   dataKey="metric" 
                   type="category" 
-                  width={140} 
-                  tick={{ fill: '#ffffff', fontSize: 10, fontWeight: '900', fontFamily: 'JetBrains Mono, monospace' }} 
+                  width={window.innerWidth < 768 ? 80 : 140} 
+                  tick={{ fill: '#ffffff', fontSize: 8, fontWeight: '900', fontFamily: 'JetBrains Mono, monospace' }} 
                   axisLine={false} 
                   tickLine={false} 
                 />
@@ -195,10 +195,10 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
       </div>
 
       {/* Security Footer Note */}
-      <div className="flex items-center justify-center gap-4 py-8 border-t border-white/5 opacity-30">
+      <div className="hidden md:flex items-center justify-center gap-4 py-8 border-t border-white/5 opacity-30">
         <Shield size={12} className="text-[#949494]" />
         <span className="verge-label-mono text-[8px] text-[#949494] tracking-[0.5em] uppercase">
-          Secured Data Feed / High Performance Analysis Node
+          Secured Data Feed / Analysis Node
         </span>
       </div>
     </div>

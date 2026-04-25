@@ -194,17 +194,11 @@ function App() {
                   <ArrowLeft size={14} /> Intelligence Hub
                 </button>
                 <h1 className="verge-h1 text-white">
-                  Player <span className="text-[#3cffd0]">Rankings</span>
+                  {dashboardView === 'TABLE' && <>Player <span className="text-[#3cffd0]">Rankings</span></>}
+                  {dashboardView === 'SCATTER' && <>Scatter <span className="text-[#3cffd0]">Analysis</span></>}
+                  {dashboardView === 'TRENDS' && <>Player <span className="text-[#3cffd0]">Trends</span></>}
+                  {dashboardView === 'VERSUS' && <>Head to <span className="text-[#3cffd0]">Head</span></>}
                 </h1>
-              </div>
-              <div className="flex flex-wrap xl:flex-nowrap items-center gap-2 xl:gap-6">
-                  <div className="flex w-full xl:w-auto gap-1 bg-[#131313] p-1 rounded-[4px] border border-white/10 h-fit shadow-xl">
-                      <button onClick={() => setShowFilters(true)} className={`xl:hidden px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all text-[#949494] hover:text-[#3cffd0] hover:bg-white/5`}>Filtres</button>
-                      <button onClick={() => setDashboardView('TABLE')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'TABLE' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Tableau</button>
-                      <button onClick={() => setDashboardView('SCATTER')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'SCATTER' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Analyse</button>
-                      <button onClick={() => setDashboardView('TRENDS')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'TRENDS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Trends</button>
-                      <button onClick={() => setDashboardView('VERSUS')} disabled={selectedPlayersToCompare.length !== 2} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'VERSUS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : (selectedPlayersToCompare.length === 2 ? 'text-[#3cffd0] hover:text-white hover:bg-[#3cffd0]/5' : 'text-white/10 cursor-not-allowed')}`}>Versus ({selectedPlayersToCompare.length}/2)</button>
-                  </div>
               </div>
             </div>
 

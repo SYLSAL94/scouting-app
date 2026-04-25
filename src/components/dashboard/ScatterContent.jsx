@@ -18,39 +18,39 @@ const ScatterTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-[#131313] p-5 border border-white/20 rounded-[4px] min-w-[220px] shadow-2xl">
-        <div className="flex items-center gap-4 mb-4 pb-4 border-b border-white/10">
-          <div className="w-12 h-12 rounded-[2px] bg-[#2d2d2d] border border-white/10 overflow-hidden">
+      <div className="bg-[#131313] p-3 md:p-5 border border-white/20 rounded-[4px] min-w-[160px] md:min-w-[220px] shadow-2xl">
+        <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4 pb-3 md:pb-4 border-b border-white/10">
+          <div className="w-8 h-8 md:w-12 md:h-12 rounded-[2px] bg-[#2d2d2d] border border-white/10 overflow-hidden shrink-0">
             {data.image ? (
               <img src={data.image} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-white/10 verge-h3 text-xl">
+              <div className="w-full h-full flex items-center justify-center text-white/10 text-base md:text-xl font-black">
                 {data.name?.charAt(0)}
               </div>
             )}
           </div>
           <div className="min-w-0">
-            <div className="verge-h3 text-sm text-white truncate uppercase">{data.name}</div>
-            <div className="verge-label-mono text-[8px] text-[#3cffd0] uppercase truncate">{data.team}</div>
+            <div className="text-base md:text-lg font-black text-white truncate uppercase leading-tight">{data.name}</div>
+            <div className="verge-label-mono text-[7px] md:text-[8px] text-[#3cffd0] uppercase truncate">{data.team}</div>
           </div>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
           <div className="flex justify-between items-center">
-            <span className="verge-label-mono text-[8px] text-[#949494] uppercase">Metric X</span>
-            <span className="verge-label-mono text-[10px] text-white bg-white/5 px-2 py-1 border border-white/10">
+            <span className="verge-label-mono text-[7px] md:text-[8px] text-[#949494] uppercase">X</span>
+            <span className="verge-label-mono text-[8px] md:text-[10px] text-white bg-white/5 px-1.5 md:px-2 py-0.5 md:py-1 border border-white/10">
               {formatNumber(data.x)}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="verge-label-mono text-[8px] text-[#949494] uppercase">Metric Y</span>
-            <span className="verge-label-mono text-[10px] text-[#3cffd0] bg-[#3cffd0]/10 px-2 py-1 border border-[#3cffd0]/20">
+            <span className="verge-label-mono text-[7px] md:text-[8px] text-[#949494] uppercase">Y</span>
+            <span className="verge-label-mono text-[8px] md:text-[10px] text-[#3cffd0] bg-[#3cffd0]/10 px-1.5 md:px-2 py-0.5 md:py-1 border border-[#3cffd0]/20">
               {formatNumber(data.y)}
             </span>
           </div>
         </div>
-        <div className="mt-4 pt-3 border-t border-white/10 text-center">
+        <div className="hidden md:block mt-4 pt-3 border-t border-white/10 text-center">
           <div className="verge-label-mono text-[7px] text-[#949494] uppercase">
-            Click: Focus • Double Click: Profile
+            Click: Focus • 2x Click: Profile
           </div>
         </div>
       </div>
@@ -226,32 +226,32 @@ plt.show()
   );
 
   return (
-    <div className="flex flex-wrap gap-8 items-start p-8 bg-[#2d2d2d] border border-white/5 rounded-[24px] relative z-[60]">
-      <div className="flex items-center gap-4">
-        <div className="flex flex-col">
-          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">X / Y Mapping</span>
-          <div className="flex gap-3">
-            <div className="w-[200px]">
-              <Select 
-                options={metricsList}
-                value={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
-                onChange={(opt) => setXAxis(opt.value)}
-                styles={selectStyles}
-              />
-            </div>
-            <div className="w-[200px]">
-              <Select 
-                options={metricsList}
-                value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
-                onChange={(opt) => setYAxis(opt.value)}
-                styles={selectStyles}
-              />
-            </div>
+    <div className="flex flex-col md:flex-row flex-wrap gap-6 md:gap-8 items-stretch md:items-start p-5 md:p-8 bg-[#2d2d2d] border border-white/5 rounded-[12px] md:rounded-[24px] relative z-[60]">
+      {/* X/Y Mapping */}
+      <div className="flex flex-col gap-4">
+        <span className="verge-label-mono text-[9px] text-[#3cffd0] uppercase">X / Y Mapping</span>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="w-full md:w-[200px]">
+            <Select 
+              options={metricsList}
+              value={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
+              onChange={(opt) => setXAxis(opt.value)}
+              styles={selectStyles}
+            />
+          </div>
+          <div className="w-full md:w-[200px]">
+            <Select 
+              options={metricsList}
+              value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
+              onChange={(opt) => setYAxis(opt.value)}
+              styles={selectStyles}
+            />
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 min-w-[250px]">
+      {/* Subject Focus */}
+      <div className="flex flex-col flex-1 min-w-0">
         <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Subject Focus</span>
         <Select 
           isMulti
@@ -263,9 +263,10 @@ plt.show()
         />
       </div>
 
-      <div className="flex flex-col border-l border-white/10 pl-8 min-w-[150px]">
+      {/* Display Options */}
+      <div className="flex flex-col md:border-l border-white/10 md:pl-8 min-w-0">
         <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Display Options</span>
-        <div className="grid grid-cols-1">
+        <div className="grid grid-cols-2 md:grid-cols-1 gap-x-8">
           <Toggle label="Mean X" checked={showAvgX} onChange={setShowAvgX} />
           <Toggle label="Mean Y" checked={showAvgY} onChange={setShowAvgY} />
           <Toggle label="Quadrant" checked={showQuadrant} onChange={setShowQuadrant} />
@@ -274,12 +275,14 @@ plt.show()
         </div>
       </div>
 
-      <div className="flex items-start gap-8 border-l border-white/10 pl-8">
-        <div className="flex flex-col">
+      {/* Action Bar (Presets & Export) */}
+      <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-stretch sm:items-end md:items-start lg:items-start gap-6 md:gap-8 md:border-l border-white/10 md:pl-8">
+        {/* Presets */}
+        <div className="flex flex-col flex-1">
           <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Presets</span>
           <div className="flex items-center gap-2">
             <select 
-              className="bg-[#131313] border border-white/10 rounded-[4px] px-3 h-[44px] verge-label-mono text-[9px] text-white outline-none focus:border-[#3cffd0] min-w-[140px]"
+              className="flex-1 bg-[#131313] border border-white/10 rounded-[4px] px-3 h-[44px] verge-label-mono text-[9px] text-white outline-none focus:border-[#3cffd0] min-w-[120px]"
               onChange={(e) => {
                 const preset = visualPresets[e.target.value];
                 if (preset) { setXAxis(preset.x); setYAxis(preset.y); }
@@ -293,18 +296,19 @@ plt.show()
             </select>
             <button 
               onClick={() => setShowSave(true)}
-              className="h-[44px] w-[44px] flex items-center justify-center bg-[#131313] border border-white/10 rounded-[4px] text-[#949494] hover:text-[#3cffd0] hover:border-[#3cffd0] transition-all"
+              className="h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-[#131313] border border-white/10 rounded-[4px] text-[#949494] hover:text-[#3cffd0] hover:border-[#3cffd0] transition-all"
             >
               <Save size={16} />
             </button>
           </div>
         </div>
 
+        {/* Export */}
         <div className="flex flex-col">
           <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Export</span>
           <button 
             onClick={handleExportPython}
-            className="h-[44px] px-6 bg-white text-black rounded-[4px] verge-label-mono text-[9px] font-black hover:bg-[#3cffd0] transition-colors flex items-center gap-2"
+            className="h-[44px] px-6 bg-white text-black rounded-[4px] verge-label-mono text-[9px] font-black hover:bg-[#3cffd0] transition-colors flex items-center justify-center gap-2"
           >
             <Activity size={14} /> PYTHON SCRIPT
           </button>
@@ -312,7 +316,7 @@ plt.show()
       </div>
 
       {showSave && (
-        <div className="absolute top-full right-8 mt-4 p-6 bg-[#131313] border border-white/20 rounded-[12px] shadow-2xl z-[70] w-[250px]">
+        <div className="absolute top-full left-0 right-0 md:left-auto md:right-8 mt-4 p-6 bg-[#131313] border border-white/20 rounded-[12px] shadow-2xl z-[70] w-full md:w-[250px]">
           <span className="verge-label-mono text-[8px] text-[#3cffd0] mb-3 block">NEW PRESET NAME</span>
           <input 
             type="text" placeholder="..." 
@@ -346,6 +350,9 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
   const [invertX, setInvertX] = useState(false);
   const [invertY, setInvertY] = useState(false);
   const [focusedPlayerIds, setFocusedPlayerIds] = useState([]);
+  
+  // État pour les onglets mobiles
+  const [activeMobileTab, setActiveMobileTab] = useState('visionnage');
 
   const chartData = useMemo(() => {
     return players.map(p => {
@@ -401,97 +408,114 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
   ), [focusedPlayerIds, onPlayerClick]);
 
   return (
-    <div className="flex flex-col h-full space-y-8">
-      <ScatterControls 
-        metricsList={metricsList}
-        xAxis={xAxis} setXAxis={setXAxis}
-        yAxis={yAxis} setYAxis={setYAxis}
-        playersCount={players.length}
-        chartData={chartData}
-        showAvgX={showAvgX} setShowAvgX={setShowAvgX}
-        showAvgY={showAvgY} setShowAvgY={setShowAvgY}
-        showQuadrant={showQuadrant} setShowQuadrant={setShowQuadrant}
-        invertX={invertX} setInvertX={setInvertX}
-        invertY={invertY} setInvertY={setInvertY}
-        focusedPlayerIds={focusedPlayerIds} setFocusedPlayerIds={setFocusedPlayerIds}
-      />
-
-      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 py-4 border-b border-white/10">
-        {Object.entries(ROLE_COLORS).map(([role, color]) => (
-          <div key={role} className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-[1px]" style={{ backgroundColor: color }} />
-            <span className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-widest">{role}</span>
-          </div>
-        ))}
+    <div className="flex flex-col h-full space-y-4 md:space-y-8">
+      {/* Switch Mobile */}
+      <div className="flex md:hidden bg-[#1a1a1a] p-1 rounded-[4px] border border-white/10 mb-2">
+        <button 
+          onClick={() => setActiveMobileTab('visionnage')}
+          className={`flex-1 py-3 verge-label-mono text-[10px] font-black transition-all ${activeMobileTab === 'visionnage' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+        >
+          Visionnage
+        </button>
+        <button 
+          onClick={() => setActiveMobileTab('parametres')}
+          className={`flex-1 py-3 verge-label-mono text-[10px] font-black transition-all ${activeMobileTab === 'parametres' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+        >
+          Paramètres
+        </button>
       </div>
 
-      <div className="flex-1 min-h-[600px] bg-[#131313] p-10 relative border border-white/10 rounded-[24px] overflow-hidden">
-        {showQuadrant && showAvgX && showAvgY && !isNaN(averages.x) && !isNaN(averages.y) && (
-          <div className="absolute top-10 right-10 z-10 w-56 p-6 bg-[#131313] border border-white/20 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
-            <div className="verge-label-mono text-[9px] text-[#3cffd0] uppercase mb-4 font-black">Quadrant Distribution</div>
-            <div className="space-y-4">
-              {stats.map(item => (
-                <div key={item.label} className="flex flex-col gap-1">
-                  <div className="flex justify-between items-center">
-                    <span className={`verge-label-mono text-[8px] uppercase font-bold ${item.color}`}>{item.label}</span>
-                    <span className="verge-label-mono text-[10px] text-white font-black">{item.count}</span>
-                  </div>
-                  <div className="w-full h-1 bg-white/5">
-                    <div className="h-full bg-white/20" style={{ width: `${item.pct}%` }} />
-                  </div>
-                </div>
-              ))}
+      <div className={`${activeMobileTab === 'parametres' ? 'block' : 'hidden'} md:block`}>
+        <ScatterControls 
+          metricsList={metricsList}
+          xAxis={xAxis} setXAxis={setXAxis}
+          yAxis={yAxis} setYAxis={setYAxis}
+          playersCount={players.length}
+          chartData={chartData}
+          showAvgX={showAvgX} setShowAvgX={setShowAvgX}
+          showAvgY={showAvgY} setShowAvgY={setShowAvgY}
+          showQuadrant={showQuadrant} setShowQuadrant={setShowQuadrant}
+          invertX={invertX} setInvertX={setInvertX}
+          invertY={invertY} setInvertY={setInvertY}
+          focusedPlayerIds={focusedPlayerIds} setFocusedPlayerIds={setFocusedPlayerIds}
+        />
+      </div>
+
+      <div className={`${activeMobileTab === 'visionnage' ? 'block' : 'hidden'} md:block space-y-6 md:space-y-8`}>
+        <div className="hidden md:flex flex-wrap items-center justify-center gap-x-6 gap-y-3 py-4 border-b border-white/10">
+          {Object.entries(ROLE_COLORS).map(([role, color]) => (
+            <div key={role} className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-[1px]" style={{ backgroundColor: color }} />
+              <span className="verge-label-mono text-[8px] text-[#949494] uppercase tracking-wider">{role}</span>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
 
-        <ResponsiveContainer width="100%" height={600}>
-          <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 30 }}>
-            <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.05)" vertical horizontal />
-            <XAxis 
-              type="number" dataKey="x" name={xAxis} 
-              reversed={invertX}
-              stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: 'PolySans Mono' }} 
-              axisLine tickLine={false} domain={['auto', 'auto']}
-            >
-              <Label value={xAxis.replace(/_/g, ' ').toUpperCase()} offset={-25} position="insideBottom" fill="#3cffd0" fontSize={9} fontFamily="PolySans Mono" fontWeight="900" />
-            </XAxis>
-            <YAxis 
-              type="number" dataKey="y" name={yAxis} 
-              reversed={invertY}
-              stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: 'PolySans Mono' }} 
-              axisLine tickLine={false} domain={['auto', 'auto']}
-            >
-              <Label value={yAxis.replace(/_/g, ' ').toUpperCase()} angle={-90} offset={-15} position="insideLeft" fill="#3cffd0" fontSize={9} fontFamily="PolySans Mono" fontWeight="900" />
-            </YAxis>
-            <ZAxis type="number" range={[60, 60]} />
-            <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '4 4', stroke: '#3cffd0', strokeWidth: 1 }} />
-            
-            {showQuadrant && showAvgX && showAvgY && !isNaN(averages.x) && !isNaN(averages.y) && (
-              <>
-                <ReferenceArea x1={averages.x} y1={averages.y} fill="rgba(60, 255, 208, 0.03)" stroke="none" />
-                <ReferenceArea x2={averages.x} y2={averages.y} fill="rgba(239, 68, 68, 0.03)" stroke="none" />
-              </>
-            )}
+        <div className="flex-1 min-h-[500px] md:min-h-[600px] bg-[#131313] p-4 md:p-10 relative border border-white/10 rounded-[12px] md:rounded-[24px] overflow-hidden">
+          {showQuadrant && showAvgX && showAvgY && !isNaN(averages.x) && !isNaN(averages.y) && (
+            <div className="absolute top-2 right-2 md:top-10 md:right-10 z-10 w-28 md:w-56 p-2 md:p-6 bg-[#131313]/90 backdrop-blur-md border border-white/20 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+              <div className="verge-label-mono text-[7px] md:text-[9px] text-[#3cffd0] uppercase mb-2 md:mb-4 font-black">Stats</div>
+              <div className="space-y-2 md:space-y-4">
+                {stats.map(item => (
+                  <div key={item.label} className="flex flex-col gap-0.5 md:gap-1">
+                    <div className="flex justify-between items-center">
+                      <span className={`verge-label-mono text-[6px] md:text-[8px] uppercase font-bold ${item.color}`}>{item.label.split(' ')[0]}</span>
+                      <span className="verge-label-mono text-[8px] md:text-[10px] text-white font-black">{item.count}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-            {showAvgX && !isNaN(averages.x) && (
-              <ReferenceLine x={averages.x} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
-            )}
-            {showAvgY && !isNaN(averages.y) && (
-              <ReferenceLine y={averages.y} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
-            )}
+          <ResponsiveContainer width="100%" height={window.innerWidth < 768 ? 450 : 600}>
+            <ScatterChart margin={{ top: 20, right: 10, bottom: 40, left: 0 }}>
+              <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.05)" vertical horizontal />
+              <XAxis 
+                type="number" dataKey="x" name={xAxis} 
+                reversed={invertX}
+                stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9, fontFamily: 'PolySans Mono' }} 
+                axisLine tickLine={false} domain={['auto', 'auto']}
+              >
+                <Label value={xAxis.replace(/_/g, ' ').toUpperCase()} offset={-25} position="insideBottom" fill="#3cffd0" fontSize={8} fontFamily="PolySans Mono" fontWeight="900" />
+              </XAxis>
+              <YAxis 
+                type="number" dataKey="y" name={yAxis} 
+                reversed={invertY}
+                stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9, fontFamily: 'PolySans Mono' }} 
+                axisLine tickLine={false} domain={['auto', 'auto']}
+              >
+                <Label value={yAxis.replace(/_/g, ' ').toUpperCase()} angle={-90} offset={10} position="insideLeft" fill="#3cffd0" fontSize={8} fontFamily="PolySans Mono" fontWeight="900" />
+              </YAxis>
+              <ZAxis type="number" range={[60, 60]} />
+              <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '4 4', stroke: '#3cffd0', strokeWidth: 1 }} />
+              
+              {showQuadrant && showAvgX && showAvgY && !isNaN(averages.x) && !isNaN(averages.y) && (
+                <>
+                  <ReferenceArea x1={averages.x} y1={averages.y} fill="rgba(60, 255, 208, 0.03)" stroke="none" />
+                  <ReferenceArea x2={averages.x} y2={averages.y} fill="rgba(239, 68, 68, 0.03)" stroke="none" />
+                </>
+              )}
 
-            <Scatter 
-              name="Players" 
-              data={chartData} 
-              shape={renderShape}
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']} />
-              ))}
-            </Scatter>
-          </ScatterChart>
-        </ResponsiveContainer>
+              {showAvgX && !isNaN(averages.x) && (
+                <ReferenceLine x={averages.x} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+              )}
+              {showAvgY && !isNaN(averages.y) && (
+                <ReferenceLine y={averages.y} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
+              )}
+
+              <Scatter 
+                name="Players" 
+                data={chartData} 
+                shape={renderShape}
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']} />
+                ))}
+              </Scatter>
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

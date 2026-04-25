@@ -68,7 +68,7 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
             </div>
 
             {/* Zone Terrain */}
-            <div className={`${activeTab === 'field' ? 'block' : 'hidden'} xl:block flex-[4] h-[calc(100vh-240px)] min-h-[600px] flex relative rounded-[4px] overflow-hidden border border-white/10 bg-[#131313] shadow-[0_30px_60px_rgba(0,0,0,0.4)]`}>
+            <div className={`${activeTab === 'field' ? 'flex' : 'hidden'} xl:flex xl:flex-[4] h-[550px] md:h-[calc(100vh-240px)] md:min-h-[600px] flex-col relative rounded-[4px] overflow-hidden border border-white/10 bg-[#131313] shadow-[0_30px_60px_rgba(0,0,0,0.4)]`}>
                 {loading && (
                     <div className="absolute inset-0 z-50 bg-[#131313]/90 backdrop-blur-md flex flex-col items-center justify-center gap-8">
                         <div className="relative">
@@ -82,25 +82,26 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
                     </div>
                 )}
                 {!loading && bestXI.length === 0 && (
-                    <div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-12 text-center bg-[radial-gradient(circle_at_center,_rgba(60,255,208,0.03)_0%,_transparent_70%)]">
-                        <div className="w-20 h-20 bg-[#2d2d2d] border border-white/10 rounded-[2px] flex items-center justify-center mb-10 shadow-[0_20px_40px_rgba(0,0,0,0.3)] relative group">
-                             <div className="absolute inset-0 bg-[#3cffd0]/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                             <Activity className="w-10 h-10 text-[#3cffd0] opacity-40" />
+                    <div className="absolute inset-0 z-40 flex flex-col items-center justify-center p-6 text-center bg-[#131313]">
+                        <div className="w-12 h-12 md:w-20 md:h-20 bg-[#2d2d2d] border border-white/10 rounded-[2px] flex items-center justify-center mb-6 shadow-xl">
+                             <Activity className="w-6 h-6 md:w-10 md:h-10 text-[#3cffd0] opacity-40" />
                         </div>
-                        <h4 className="verge-label-mono text-3xl font-black text-white uppercase tracking-tighter mb-4">PRÊT POUR L'OPTIMISATION</h4>
-                        <p className="max-w-md verge-label-mono text-[#949494] text-[10px] font-black uppercase tracking-[0.2em] leading-relaxed opacity-60">
+                        <h4 className="verge-label-mono text-lg md:text-3xl font-black text-white uppercase tracking-tighter mb-4">PRÊT POUR L'OPTIMISATION</h4>
+                        <p className="max-w-xs md:max-w-md verge-label-mono text-[#949494] text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] leading-relaxed opacity-60">
                             Configurez votre formation et cliquez sur le bouton pour générer le meilleur XI.
                         </p>
                     </div>
                 )}
-                <Field
-                    formationLayout={formationLayout}
-                    formation={formationForField}
-                    onSlotClick={(slotId) => {
-                        const p = formationForField[slotId];
-                        if (p) onPlayerClick?.(p);
-                    }}
-                />
+                <div className="flex-1 w-full h-full">
+                    <Field
+                        formationLayout={formationLayout}
+                        formation={formationForField}
+                        onSlotClick={(slotId) => {
+                            const p = formationForField[slotId];
+                            if (p) onPlayerClick?.(p);
+                        }}
+                    />
+                </div>
             </div>
 
             {/* Zone Optimisation - Panneau Latéral */}

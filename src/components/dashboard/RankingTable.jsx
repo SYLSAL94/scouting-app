@@ -16,17 +16,17 @@ const findSelectedOption = (value, options = []) => {
 
 const RankBadge = ({ rank }) => {
   if (rank === 1) return (
-    <div className="w-10 h-10 bg-[#3cffd0] text-black flex items-center justify-center text-xs font-black rounded-[4px] shadow-[4px_4px_0px_rgba(60,255,208,0.2)]">
+    <div className="w-8 h-8 md:w-10 md:h-10 bg-[#3cffd0] text-black flex items-center justify-center text-[10px] md:text-xs font-black rounded-[4px] shadow-[3px_3px_0px_rgba(60,255,208,0.2)] md:shadow-[4px_4px_0px_rgba(60,255,208,0.2)]">
       {rank}
     </div>
   );
   if (rank <= 3) return (
-    <div className="w-10 h-10 bg-[#5200ff] text-white flex items-center justify-center text-xs font-black rounded-[4px] shadow-[4px_4px_0px_rgba(82,0,255,0.2)]">
+    <div className="w-8 h-8 md:w-10 md:h-10 bg-[#5200ff] text-white flex items-center justify-center text-[10px] md:text-xs font-black rounded-[4px] shadow-[3px_3px_0px_rgba(82,0,255,0.2)] md:shadow-[4px_4px_0px_rgba(82,0,255,0.2)]">
       {rank}
     </div>
   );
   return (
-    <div className="w-10 h-10 bg-[#2d2d2d] text-[#949494] flex items-center justify-center text-xs font-black rounded-[4px] border border-white/5">
+    <div className="w-8 h-8 md:w-10 md:h-10 bg-[#2d2d2d] text-[#949494] flex items-center justify-center text-[10px] md:text-xs font-black rounded-[4px] border border-white/5">
       {rank}
     </div>
   );
@@ -36,7 +36,7 @@ const RankingTable = ({
   players, loading, error, currentPage, pageSize, totalPlayers, totalPages,
   setCurrentPage, handlePlayerClick, selectedSortBy,
   selectedPlayersToCompare = [], setSelectedPlayersToCompare,
-  metricsList, onSortChange, useSeasonAge
+  metricsList, onSortChange, useSeasonAge, hideSortBar = false
 }) => {
   const handleToggleCompare = (e, player) => {
     e.stopPropagation();
@@ -84,7 +84,8 @@ const RankingTable = ({
   return (
     <div className="flex flex-col gap-0 flex-1 min-h-0 bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
       {/* Control Bar - Sharp Technical Integration */}
-      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-6 bg-[#2d2d2d] p-6 border-b border-white/10 shrink-0">
+      {!hideSortBar && (
+        <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 md:gap-6 bg-[#2d2d2d] p-4 md:p-6 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-6 flex-1">
           <div className="w-1 h-6 bg-[#3cffd0]" />
           <span className="verge-label-mono text-[11px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap">Order By</span>
@@ -163,30 +164,31 @@ const RankingTable = ({
           </div>
         </div>
       </div>
+      )}
 
       <div className="ranking-table-container flex-1 overflow-hidden bg-[#131313] flex flex-col relative">
         {/* Decorative corner markers */}
         <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-white/5 pointer-events-none" />
         
         <div className="flex-1 overflow-auto styled-scrollbar">
-          <table className="ranking-table w-full border-collapse">
+          <table className="ranking-table w-full border-collapse table-fixed">
             <thead>
               <tr className="bg-[#1a1a1a] sticky top-0 z-20 border-b border-white/10">
-                <th className="p-6 w-16 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Vs</th>
-                <th className="p-6 w-20 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Rank</th>
-                <th className="p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Player Profile</th>
-                <th className="hidden md:table-cell p-6 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Season</th>
-                <th className="hidden md:table-cell p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Context</th>
-                <th className="hidden md:table-cell p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Team</th>
-                <th className="hidden md:table-cell p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Position</th>
-                <th className="p-6 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Age</th>
-                <th className="p-6 text-right verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#3cffd0]">
-                  {selectedSortBy === 'custom_score' ? 'LAB SCORE' :
-                   selectedSortBy === 'note_ponderee' ? 'IMPACT SCORE' : 
+                <th className="hidden md:table-cell p-3 w-12 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Vs</th>
+                <th className="p-3 w-16 md:w-20 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Rank</th>
+                <th className="p-3 md:p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494] w-48 md:w-80">Player Profile</th>
+                <th className="hidden lg:table-cell p-6 w-24 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Season</th>
+                <th className="hidden xl:table-cell p-6 w-40 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Context</th>
+                <th className="hidden md:table-cell p-6 w-32 md:w-40 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Team</th>
+                <th className="hidden md:table-cell p-6 w-28 md:w-32 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Position</th>
+                <th className="hidden md:table-cell p-3 md:p-6 w-16 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Age</th>
+                <th className="p-3 md:p-6 text-right verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#3cffd0] w-24 md:w-36">
+                  {selectedSortBy === 'custom_score' ? 'LAB' :
+                   selectedSortBy === 'note_ponderee' ? 'IMPACT' : 
                    selectedSortBy === 'goals' ? 'GOALS' :
                    selectedSortBy === 'assists' ? 'ASSISTS' :
                    selectedSortBy === 'expected_goals' ? 'XG' :
-                   selectedSortBy === 'age' ? 'AGE' : 'METRIC VALUE'}
+                   selectedSortBy === 'age' ? 'AGE' : 'VALUE'}
                 </th>
               </tr>
             </thead>
@@ -215,7 +217,7 @@ const RankingTable = ({
                     onClick={() => handlePlayerClick(player)} 
                     className={`group transition-all duration-300 cursor-pointer ${isSelectedForCompare ? 'bg-[#3cffd0]/5' : 'hover:bg-white/[0.02]'}`}
                   >
-                    <td className="p-6 text-center">
+                    <td className={`hidden md:table-cell p-3 md:p-6 text-center ${isSelectedForCompare ? 'bg-[#3cffd0]/10' : ''}`}>
                       <input 
                         type="checkbox"
                         className="w-4 h-4 rounded-[1px] border-white/10 bg-transparent text-[#3cffd0] focus:ring-0 cursor-pointer accent-[#3cffd0] transition-all"
@@ -224,22 +226,23 @@ const RankingTable = ({
                         onClick={(e) => e.stopPropagation()}
                       />
                     </td>
-                    <td className="p-6">
+                    <td className="p-3 md:p-6">
                       <div className="flex justify-center">
                         <RankBadge rank={rank} />
                       </div>
                     </td>
-                    <td className="p-6">
-                      <div className="flex items-center gap-5">
-                        <div className={`w-12 h-12 rounded-[1px] overflow-hidden border border-white/5 group-hover:border-[#3cffd0]/50 transition-all duration-500`}>
+                    <td className="p-3 md:p-6 min-w-0">
+                      <div className="flex items-center gap-3 md:gap-5">
+                        <div className={`w-8 h-8 md:w-12 md:h-12 shrink-0 rounded-[1px] overflow-hidden border border-white/5 group-hover:border-[#3cffd0]/50 transition-all duration-500`}>
                           {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" /> : <div className="w-full h-full bg-[#1a1a1a]" />}
                         </div>
-                        <div className="flex flex-col min-w-0">
-                          <span className="verge-label-mono text-[13px] font-black leading-none text-white group-hover:text-[#3cffd0] transition-colors truncate uppercase tracking-tight">
+                        <div className="flex flex-col min-w-0 overflow-hidden">
+                          <span className="font-sans md:verge-label-mono text-[12px] md:text-[13px] font-bold md:font-black leading-tight text-white group-hover:text-[#3cffd0] transition-colors truncate uppercase tracking-tight">
                             {player.name || player.full_name || 'Nom inconnu'}
+                            <span className="md:hidden opacity-60 ml-1">({(useSeasonAge ? player.season_age : player.age) || '—'})</span>
                           </span>
-                          <span className="verge-label-mono text-[7px] text-[#949494] mt-1.5 uppercase tracking-[0.2em] truncate opacity-40">
-                            {player.full_name || player.name}
+                          <span className="font-sans md:verge-label-mono text-[9px] md:text-[7px] text-[#949494] mt-0.5 md:mt-1.5 uppercase tracking-wide md:tracking-[0.2em] truncate opacity-60">
+                            {player.season} • {player.competition} • {player.position_category || player.position}
                           </span>
                         </div>
                       </div>
@@ -250,11 +253,11 @@ const RankingTable = ({
                     <td className="hidden md:table-cell p-6">
                       <span className="verge-label-mono text-[8px] font-black px-2 py-1 rounded-[1px] bg-white/5 text-[#949494] border border-white/10 uppercase tracking-widest">{player.position_category || 'N/A'}</span>
                     </td>
-                    <td className="p-6 text-center verge-label-mono text-[11px] font-black text-white tabular-nums">{(useSeasonAge ? player.season_age : player.age) || '—'}</td>
-                    <td className="p-6 text-right">
+                    <td className="hidden md:table-cell p-6 text-center verge-label-mono text-[9px] md:text-[11px] font-black text-white tabular-nums">{(useSeasonAge ? player.season_age : player.age) || '—'}</td>
+                    <td className="p-3 md:p-6 text-right">
                       <div className="flex flex-col items-end">
-                        <span className="verge-label-mono text-xl md:text-2xl font-black text-[#3cffd0] leading-none tracking-tighter tabular-nums">{formattedValue}</span>
-                        <span className="verge-label-mono text-[6px] font-black text-[#3cffd0] mt-1 tracking-widest uppercase opacity-30">PRIMARY_INDEX</span>
+                        <span className="verge-label-mono text-base md:text-2xl font-black text-[#3cffd0] leading-none tracking-tighter tabular-nums">{formattedValue}</span>
+                        <span className="verge-label-mono text-[6px] font-black text-[#3cffd0] mt-1 tracking-widest uppercase opacity-30 hidden md:block">PRIMARY_INDEX</span>
                       </div>
                     </td>
                   </tr>
@@ -265,27 +268,27 @@ const RankingTable = ({
         </div>
 
         {/* Pagination - High Density Industrial Dock */}
-        <div className="px-8 py-6 border-t border-white/5 flex items-center justify-between bg-[#1a1a1a]">
-          <div className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-[0.1em]">
-            SHOWING <span className="text-white">{(currentPage - 1) * pageSize + 1}</span> - <span className="text-white">{Math.min(currentPage * pageSize, totalPlayers)}</span> OF <span className="text-[#3cffd0]">{totalPlayers}</span> ENTRIES
+        <div className="px-4 md:px-8 py-4 md:py-6 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4 bg-[#1a1a1a]">
+          <div className="verge-label-mono text-[8px] md:text-[9px] text-[#949494] uppercase tracking-[0.1em]">
+            <span className="hidden sm:inline">SHOWING </span><span className="text-white">{(currentPage - 1) * pageSize + 1}</span>-<span className="text-white">{Math.min(currentPage * pageSize, totalPlayers)}</span> OF <span className="text-[#3cffd0]">{totalPlayers}</span>
           </div>
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 md:gap-8">
             <button 
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
               disabled={currentPage === 1} 
-              className="verge-label-mono text-[9px] font-black text-white hover:text-[#3cffd0] disabled:opacity-5 transition-colors flex items-center gap-3 uppercase tracking-widest"
+              className="verge-label-mono text-[9px] font-black text-white hover:text-[#3cffd0] disabled:opacity-5 transition-colors flex items-center gap-2 uppercase tracking-widest"
             >
-              <ChevronLeft size={14} /> PREVIOUS
+              <ChevronLeft size={14} /> <span className="hidden sm:inline">PREVIOUS</span>
             </button>
-            <div className="verge-label-mono text-[11px] bg-[#3cffd0] text-black px-5 py-2.5 rounded-[1px] font-black shadow-[0_10px_20px_rgba(60,255,208,0.2)]">
+            <div className="verge-label-mono text-[10px] md:text-[11px] bg-[#3cffd0] text-black px-4 md:px-5 py-2 md:py-2.5 rounded-[1px] font-black shadow-[0_10px_20px_rgba(60,255,208,0.2)]">
               {currentPage} / {totalPages}
             </div>
             <button 
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
               disabled={currentPage >= totalPages} 
-              className="verge-label-mono text-[9px] font-black text-white hover:text-[#3cffd0] disabled:opacity-5 transition-colors flex items-center gap-3 uppercase tracking-widest"
+              className="verge-label-mono text-[9px] font-black text-white hover:text-[#3cffd0] disabled:opacity-5 transition-colors flex items-center gap-2 uppercase tracking-widest"
             >
-              NEXT <ChevronRight size={14} />
+              <span className="hidden sm:inline">NEXT</span> <ChevronRight size={14} />
             </button>
           </div>
         </div>

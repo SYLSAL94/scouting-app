@@ -427,21 +427,21 @@ function RankingModal({ isOpen, onClose, playerId, playerName, competition, seas
 
     return (
         <div className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4">
-            <div className="bg-[#131313] border border-white/20 rounded-[4px] w-full max-w-2xl h-full max-h-[85vh] flex flex-col overflow-hidden">
-                <div className="p-10 border-b border-white/10 flex justify-between items-center bg-[#131313]">
-                    <div>
-                        <h3 className="verge-h3 text-white uppercase italic">{position || 'LEADERBOARD'}</h3>
-                        <p className="verge-label-mono text-[#3cffd0] text-[10px] mt-2 uppercase font-black tracking-widest">{playerName}</p>
+            <div className="bg-[#131313] border border-white/20 rounded-[4px] w-full max-w-2xl h-full max-h-[90vh] md:max-h-[85vh] flex flex-col overflow-hidden">
+                <div className="p-4 md:p-10 border-b border-white/10 flex justify-between items-center bg-[#131313]">
+                    <div className="min-w-0 pr-4">
+                        <h3 className="verge-h3 text-white uppercase italic text-base md:text-2xl truncate">{position || 'LEADERBOARD'}</h3>
+                        <p className="verge-label-mono text-[#3cffd0] text-[9px] md:text-[10px] mt-1 md:mt-2 uppercase font-black tracking-widest truncate">{playerName}</p>
                     </div>
-                    <button onClick={onClose} className="w-10 h-10 flex items-center justify-center bg-[#2d2d2d] text-white hover:bg-white hover:text-black border border-white/10 rounded-[4px]">✕</button>
+                    <button onClick={onClose} className="w-8 h-8 md:w-10 md:h-10 shrink-0 flex items-center justify-center bg-[#2d2d2d] text-white hover:bg-white hover:text-black border border-white/10 rounded-[4px]">✕</button>
                 </div>
 
-                <div className="px-10 py-6 bg-[#131313] border-b border-white/10 flex gap-4">
+                <div className="px-4 md:px-10 py-4 md:py-6 bg-[#131313] border-b border-white/10 flex gap-3 md:gap-4">
                     <button onClick={() => setActiveTab('full')} className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${activeTab === 'full' ? 'bg-[#3cffd0] text-black' : 'bg-[#2d2d2d] text-[#949494]'}`}>GLOBAL</button>
                     <button onClick={() => setActiveTab('focus')} className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${activeTab === 'focus' ? 'bg-[#3cffd0] text-black' : 'bg-[#2d2d2d] text-[#949494]'}`}>FOCUS</button>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-10 space-y-3 styled-scrollbar bg-[#131313]">
+                <div className="flex-1 overflow-y-auto p-4 md:p-10 space-y-2 md:space-y-3 styled-scrollbar bg-[#131313]">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-20 gap-4"><div className="w-8 h-8 border-2 border-[#3cffd0] border-t-transparent animate-spin"></div></div>
                     ) : (
@@ -449,17 +449,22 @@ function RankingModal({ isOpen, onClose, playerId, playerName, competition, seas
                             const realIdx = activeTab === 'focus' ? rankingList.indexOf(item) : idx;
                             const isTarget = item.id === playerId || item.player_id === playerId;
                             return (
-                                <div key={idx} onClick={() => !isTarget && onSelectPlayer(item.id || item.player_id)} className={`flex items-center justify-between p-4 border transition-all cursor-pointer ${isTarget ? 'bg-[#3cffd0] border-[#3cffd0] text-black' : 'bg-[#2d2d2d] border-white/5 hover:border-white/20'}`}>
-                                    <div className="flex items-center gap-6 flex-1 min-w-0">
-                                        <div className={`w-10 h-10 shrink-0 flex items-center justify-center verge-label-mono text-[14px] font-black ${isTarget ? 'bg-black text-[#3cffd0]' : 'bg-[#131313] text-white'}`}>{realIdx + 1}</div>
+                                <div key={idx} onClick={() => !isTarget && onSelectPlayer(item.id || item.player_id)} className={`flex items-center justify-between p-3 md:p-4 border transition-all cursor-pointer ${isTarget ? 'bg-[#3cffd0] border-[#3cffd0] text-black' : 'bg-[#2d2d2d] border-white/5 hover:border-white/20'}`}>
+                                    <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0">
+                                        <div className={`w-8 h-8 md:w-10 md:h-10 shrink-0 flex items-center justify-center verge-label-mono text-[12px] md:text-[14px] font-black ${isTarget ? 'bg-black text-[#3cffd0]' : 'bg-[#131313] text-white'}`}>{realIdx + 1}</div>
                                         <div className="min-w-0">
-                                            <div className={`text-sm font-black uppercase truncate ${isTarget ? 'text-black' : 'text-white'}`}>{item.name || item.player_name}</div>
-                                            <div className={`verge-label-mono text-[8px] uppercase tracking-widest truncate ${isTarget ? 'text-black/60' : 'text-[#949494]'}`}>{item.team || item.current_team_name}</div>
+                                            <div className={`text-xs md:text-sm font-black uppercase truncate ${isTarget ? 'text-black' : 'text-white'}`}>
+                                                {item.name || item.player_name}
+                                                {item.age && <span className="md:hidden opacity-60 ml-1">({item.age})</span>}
+                                            </div>
+                                            <div className={`verge-label-mono text-[7px] md:text-[8px] uppercase tracking-widest truncate ${isTarget ? 'text-black/60' : 'text-[#949494]'}`}>
+                                                {item.team || item.current_team_name} • {item.season} • {item.position || item.position_category}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className="text-right shrink-0">
-                                        <div className={`text-xl font-black ${isTarget ? 'text-black' : 'text-white'}`}>{Number(item.score).toFixed(1)}</div>
-                                        <div className={`verge-label-mono text-[7px] uppercase ${isTarget ? 'text-black/40' : 'text-[#949494]'}`}>PTS</div>
+                                        <div className={`text-lg md:text-xl font-black ${isTarget ? 'text-black' : 'text-white'}`}>{Number(item.score).toFixed(1)}</div>
+                                        <div className={`verge-label-mono text-[6px] md:text-[7px] uppercase ${isTarget ? 'text-black/40' : 'text-[#949494]'}`}>PTS</div>
                                     </div>
                                 </div>
                             );
