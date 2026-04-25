@@ -73,13 +73,18 @@ const ROLE_COLORS = {
 };
 
 const CustomScatterPoint = (props) => {
-  const { cx, cy, fill, payload, focusedPlayerIds = [], setFocusedPlayerIds, labeledPlayerIds = [], onPlayerClick } = props;
+  const { cx, cy, fill, payload, focusedPlayerIds = [], setFocusedPlayerIds, labeledPlayerIds = [], clusterMap = {}, onPlayerClick } = props;
   if (cx == null || cy == null || isNaN(cx) || isNaN(cy)) return null;
 
   const isFocused = focusedPlayerIds.length > 0 ? focusedPlayerIds.includes(payload.id) : false;
   const isLabeled = (labeledPlayerIds && labeledPlayerIds.includes(payload.id)) || isFocused;
   const hasFocusActive = focusedPlayerIds.length > 0;
   
+  // Couleurs de clusters (Palette "Science" saturée)
+  const clusterColors = ['#E11D48', '#2563EB', '#D97706', '#059669', '#7C3AED', '#DB2777', '#0891B2'];
+  const clusterIndex = clusterMap[payload.id];
+  const finalFill = clusterIndex !== undefined ? clusterColors[clusterIndex % clusterColors.length] : fill;
+
   const opacity = hasFocusActive ? (isFocused ? 1 : 0.1) : 0.8;
   const radius = isFocused ? 10 : 6;
   const stroke = isFocused ? "white" : "rgba(255,255,255,0.3)";
@@ -116,7 +121,7 @@ const CustomScatterPoint = (props) => {
     >
       <circle 
         cx={cx} cy={cy} r={radius} 
-        fill={fill} opacity={opacity} 
+        fill={finalFill} opacity={opacity} 
         stroke={stroke} strokeWidth={strokeWidth}
         style={{ transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
       />
@@ -145,7 +150,8 @@ const ScatterControls = ({
   excludeZeroX, setExcludeZeroX, excludeZeroY, setExcludeZeroY,
   isSwarmMode, setIsSwarmMode,
   focusedPlayerIds, setFocusedPlayerIds,
-  labeledPlayerIds, setLabeledPlayerIds
+  labeledPlayerIds, setLabeledPlayerIds,
+  nClusters, setNClusters, onClusterize, isClustering
 }) => {
   const [savedPresets, setSavedPresets] = useState([]);
   const [showSave, setShowSave] = useState(false);
@@ -408,6 +414,27 @@ plt.show()
           <Toggle label="Exclure 0 (Y)" checked={excludeZeroY} onChange={setExcludeZeroY} />
           <Toggle label="Mode Essaim" checked={isSwarmMode} onChange={setIsSwarmMode} />
         </div>
+
+        {/* Moteur IA (K-Means) */}
+        <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="verge-label-mono text-[8px] text-[#949494] uppercase tracking-widest">Nb Profiles (AI)</span>
+            <select 
+              value={nClusters} 
+              onChange={(e) => setNClusters(Number(e.target.value))}
+              className="bg-[#131313] border border-white/10 rounded-[2px] text-[10px] text-white px-2 py-1 outline-none"
+            >
+              {[2,3,4,5,6,7].map(n => <option key={n} value={n}>{n}</option>)}
+            </select>
+          </div>
+          <button 
+            onClick={onClusterize}
+            disabled={isClustering || isSwarmMode}
+            className={`w-full py-2 rounded-[4px] verge-label-mono text-[8px] font-black transition-all ${isClustering ? 'bg-white/10 text-white/30' : 'bg-[#5200ff] text-white hover:bg-[#3cffd0] hover:text-black shadow-[0_0_20px_rgba(82,0,255,0.3)]'}`}
+          >
+            {isClustering ? 'CALCUL EN COURS...' : 'GÉNÉRER PROFILS TYPES'}
+          </button>
+        </div>
       </div>
 
       {/* Action Bar (Presets) */}
@@ -504,9 +531,42 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
   const [excludeZeroY, setExcludeZeroY] = useState(false);
   const [isSwarmMode, setIsSwarmMode] = useState(false);
   const [labeledPlayerIds, setLabeledPlayerIds] = useState([]);
+  const [clusterMap, setClusterMap] = useState({});
+  const [nClusters, setNClusters] = useState(4);
+  const [isClustering, setIsClustering] = useState(false);
   
   // État pour les onglets mobiles
   const [activeMobileTab, setActiveMobileTab] = useState('visionnage');
+
+  // Réinitialiser les clusters si les axes changent (éviter le conflit visuel avec d'anciennes données)
+  useEffect(() => {
+    setClusterMap({});
+  }, [xAxis, yAxis]);
+
+  const handleClusterize = async () => {
+    if (!chartData.length) return;
+    setIsClustering(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/scatter/clusterize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          player_ids: chartData.map(p => p.id),
+          metric_x: xAxis,
+          metric_y: yAxis,
+          n_clusters: nClusters
+        })
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setClusterMap(data);
+      }
+    } catch (error) {
+      console.error("❌ Error during clustering:", error);
+    } finally {
+      setIsClustering(false);
+    }
+  };
 
   const chartData = useMemo(() => {
     const rawData = players.map(p => {
@@ -629,6 +689,8 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
           isSwarmMode={isSwarmMode} setIsSwarmMode={setIsSwarmMode}
           focusedPlayerIds={focusedPlayerIds} setFocusedPlayerIds={setFocusedPlayerIds}
           labeledPlayerIds={labeledPlayerIds} setLabeledPlayerIds={setLabeledPlayerIds}
+          nClusters={nClusters} setNClusters={setNClusters}
+          onClusterize={handleClusterize} isClustering={isClustering}
         />
       </div>
 
@@ -698,7 +760,16 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
               <Scatter 
                 name="Players" 
                 data={chartData} 
-                shape={renderShape}
+                shape={(props) => (
+                  <CustomScatterPoint 
+                    {...props} 
+                    clusterMap={clusterMap}
+                    focusedPlayerIds={focusedPlayerIds} 
+                    setFocusedPlayerIds={setFocusedPlayerIds}
+                    labeledPlayerIds={labeledPlayerIds}
+                    onPlayerClick={onPlayerClick} 
+                  />
+                )}
               >
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']} />
