@@ -342,6 +342,13 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                                 </AnimatePresence>
                                             </div>
                                         </div>
+
+                                        <SimilarPlayersWidget 
+                                            playerId={playerId} 
+                                            competition={contextToUse?.competition}
+                                            season={contextToUse?.season}
+                                            onSelectPlayer={onSwitchPlayer}
+                                        />
                                     </div>
 
                                     {/* Colonne DROITE : Stats & Voisinage */}
@@ -361,13 +368,6 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                                     onSelectPlayer={onSwitchPlayer}
                                                 />
                                             )}
-                                            
-                                            <SimilarPlayersWidget 
-                                                playerId={playerId} 
-                                                competition={contextToUse?.competition}
-                                                season={contextToUse?.season}
-                                                onSelectPlayer={onSwitchPlayer}
-                                            />
                                         </div>
                                     </div>
                                 </div>
