@@ -36,10 +36,13 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
         context_data: {
           filters: activeFilters,
           visible_players_count: players?.length,
-          sample_players: players?.slice(0, 5).map(p => ({ 
+          sample_players: players?.slice(0, 25).map(p => ({ 
             name: p.name, 
             team: p.last_club_name, 
-            score: p.note_ponderee 
+            position: p.position_category,
+            age: p.season_age || p.age,
+            score: p.note_ponderee,
+            minutes: p.minutes_on_field
           }))
         },
         player_info: selectedPlayer ? {

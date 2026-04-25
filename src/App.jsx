@@ -163,6 +163,7 @@ function App() {
         ) : view === 'EXPLORATION' ? (
           <ExplorationPath key="exploration" 
             onSelectPath={(p) => {
+               setPlayers([]);
                if (p === 'SCATTER') { setView('DASHBOARD'); setDashboardView('SCATTER'); }
                else if (p === 'DASHBOARD') { setView('DASHBOARD'); setDashboardView('TABLE'); }
                else if (p === 'TRENDS') { setView('DASHBOARD'); setDashboardView('TRENDS'); }
@@ -225,11 +226,27 @@ function App() {
                   />
                 )}
                 {dashboardView === 'SCATTER' && (
-                  <ScatterContent 
-                    players={players} 
-                    metricsList={metricsList} 
-                    onPlayerClick={handlePlayerClick} 
-                  />
+                  loading ? (
+                    <div className="flex-1 flex flex-col items-center justify-center gap-8 bg-[#131313] border border-white/5 rounded-[24px] min-h-[600px] relative overflow-hidden">
+                       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+                       <div className="relative">
+                          <div className="w-16 h-16 border-2 border-[#3cffd0]/20 border-t-[#3cffd0] animate-spin rounded-full"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                             <div className="w-2 h-2 bg-[#3cffd0] rounded-full animate-pulse"></div>
+                          </div>
+                       </div>
+                       <div className="text-center space-y-2">
+                          <p className="verge-label-mono text-[#3cffd0] text-[10px] uppercase tracking-[0.4em] font-black">Analyse Multi-Dimensionnelle</p>
+                          <p className="verge-label-mono text-[#949494] text-[8px] uppercase tracking-[0.2em] font-black opacity-60">Synchronisation des 200 profils les plus performants...</p>
+                       </div>
+                    </div>
+                  ) : (
+                    <ScatterContent 
+                      players={players} 
+                      metricsList={metricsList} 
+                      onPlayerClick={handlePlayerClick} 
+                    />
+                  )
                 )}
                 {dashboardView === 'TRENDS' && (
                   <TrendsDashboard metricsList={metricsList} />

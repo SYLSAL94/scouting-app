@@ -1,10 +1,11 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { API_BASE_URL } from '../../config';
 import { 
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, ZAxis, Cell, Label, ReferenceLine,
   ReferenceArea
 } from 'recharts';
-import { Activity, Target, Save, Users, Download } from 'lucide-react';
+import { Activity, Target, Save, Users, Download, Trash2, X as CloseIcon } from 'lucide-react';
 import Select from 'react-select';
 
 // Utilitaire de formatage
@@ -140,19 +141,87 @@ const ScatterControls = ({
   invertX, setInvertX, invertY, setInvertY,
   focusedPlayerIds, setFocusedPlayerIds
 }) => {
-  const [visualPresets, setVisualPresets] = useState([
-    { name: "Volume vs Efficacité", x: "minutes_on_field", y: "note_ponderee" },
-    { name: "Création vs xG", x: "xg_assist_avg", y: "xg_shot_avg" },
-    { name: "Duels vs Physique", x: "duels_avg", y: "weight" }
-  ]);
+  const [savedPresets, setSavedPresets] = useState([]);
   const [showSave, setShowSave] = useState(false);
   const [newPresetName, setNewPresetName] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const fetchPresets = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/scatter-profiles`);
+      if (response.ok) {
+        const data = await response.json();
+        setSavedPresets(data);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching scatter profiles:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPresets();
+  }, [fetchPresets]);
+
+  const handleSave = async () => {
+    if (!newPresetName.trim()) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/scatter-profiles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profile_name: newPresetName,
+          axes_config: { x: xAxis, y: yAxis }
+        })
+      });
+      if (response.ok) {
+        setNewPresetName("");
+        setShowSave(false);
+        fetchPresets();
+      }
+    } catch (error) {
+      console.error("❌ Error saving scatter profile:", error);
+    }
+  };
+
+  const handleDelete = async (profileId) => {
+    if (!window.confirm("Supprimer ce preset définitivement ?")) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/scatter-profiles/${profileId}`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        fetchPresets();
+      }
+    } catch (error) {
+      console.error("❌ Error deleting scatter profile:", error);
+    }
+  };
+
+  const findMetricLabel = (value) => {
+    for (const group of metricsList) {
+      const found = group.options?.find(o => o.value === value);
+      if (found) return found.label;
+    }
+    return value;
+  };
+
+  const labelX = findMetricLabel(xAxis);
+  const labelY = findMetricLabel(yAxis);
 
   const handleExportPython = () => {
     const pythonScript = `
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import numpy as np
+
+# Config Style Verge
+plt.rcParams['font.family'] = 'monospace'
+plt.rcParams['text.color'] = '#949494'
+plt.rcParams['axes.labelcolor'] = '#949494'
+plt.rcParams['xtick.color'] = '#444444'
+plt.rcParams['ytick.color'] = '#444444'
+plt.rcParams['axes.edgecolor'] = '#333333'
 
 data = ${JSON.stringify(chartData.map(p => ({
   name: p.name,
@@ -163,11 +232,48 @@ data = ${JSON.stringify(chartData.map(p => ({
 })), null, 2)}
 
 df = pd.DataFrame(data)
-plt.style.use('dark_background')
-plt.figure(figsize=(14, 10))
-sns.scatterplot(data=df, x='x', y='y', hue='role', s=100)
-if ${invertX}: plt.gca().invert_xaxis()
-if ${invertY}: plt.gca().invert_yaxis()
+
+# Create Figure
+fig, ax = plt.subplots(figsize=(16, 11), facecolor='#0d0d0d')
+ax.set_facecolor('#0d0d0d')
+
+# Grid & Spines
+ax.grid(color='#3cffd0', linestyle='--', alpha=0.05, linewidth=0.5)
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['left'].set_color('#222222')
+ax.spines['bottom'].set_color('#222222')
+
+# Scatter Plot
+palette = ['#3cffd0', '#5200ff', '#facc15', '#f43f5e', '#ffffff']
+scatter = sns.scatterplot(
+    data=df, x='x', y='y', hue='role', 
+    palette=palette[:len(df['role'].unique())],
+    s=200, edgecolor='#0d0d0d', linewidth=1.5, alpha=0.9, ax=ax
+)
+
+# Inversions
+if ${invertX ? 'True' : 'False'}: ax.invert_xaxis()
+if ${invertY ? 'True' : 'False'}: ax.invert_yaxis()
+
+# Labels & Title
+plt.title("THE ANALYST // SCATTER INTELLIGENCE", pad=30, loc='left', 
+          fontdict={'fontsize': 14, 'fontweight': 'black', 'color': '#ffffff'})
+plt.xlabel("${labelX.toUpperCase()}", labelpad=20, fontsize=9, fontweight='black')
+plt.ylabel("${labelY.toUpperCase()}", labelpad=20, fontsize=9, fontweight='black')
+
+# Annotations (Top 5 names)
+for i, row in df.sort_values(by=['x', 'y'], ascending=False).head(5).iterrows():
+    ax.text(row['x'], row['y']+0.2, row['name'].upper(), 
+            fontsize=7, fontweight='black', color='white', 
+            ha='center', va='bottom', alpha=0.7)
+
+# Legend
+legend = ax.legend(frameon=True, facecolor='#1a1a1a', edgecolor='#333333', 
+                   fontsize=8, borderpad=1, labelcolor='#949494')
+plt.setp(legend.get_title(), color='#3cffd0', fontsize=8, fontweight='black')
+
+plt.tight_layout(pad=5)
 plt.show()
 `;
     const blob = new Blob([pythonScript], { type: 'text/x-python' });
@@ -284,16 +390,26 @@ plt.show()
             <select 
               className="flex-1 bg-[#131313] border border-white/10 rounded-[4px] px-3 h-[44px] verge-label-mono text-[9px] text-white outline-none focus:border-[#3cffd0] min-w-[120px]"
               onChange={(e) => {
-                const preset = visualPresets[e.target.value];
-                if (preset) { setXAxis(preset.x); setYAxis(preset.y); }
+                const preset = savedPresets.find(p => String(p.id) === e.target.value);
+                if (preset && preset.axes_config) { 
+                  setXAxis(preset.axes_config.x); 
+                  setYAxis(preset.axes_config.y); 
+                }
               }}
-              defaultValue=""
+              value=""
             >
               <option value="" disabled>Load Preset</option>
-              {visualPresets.map((p, i) => (
-                <option key={i} value={i}>{p.name}</option>
+              {savedPresets.map((p) => (
+                <option key={p.id} value={p.id}>{p.profile_name}</option>
               ))}
             </select>
+            <button 
+              onClick={() => setIsDeleting(!isDeleting)}
+              className={`h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-[#131313] border border-white/10 rounded-[4px] transition-all ${isDeleting ? 'text-red-500 border-red-500/50' : 'text-[#949494] hover:text-red-500'}`}
+              title="Gérer les presets"
+            >
+              <Trash2 size={16} />
+            </button>
             <button 
               onClick={() => setShowSave(true)}
               className="h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-[#131313] border border-white/10 rounded-[4px] text-[#949494] hover:text-[#3cffd0] hover:border-[#3cffd0] transition-all"
@@ -301,6 +417,18 @@ plt.show()
               <Save size={16} />
             </button>
           </div>
+          {isDeleting && savedPresets.length > 0 && (
+            <div className="mt-3 space-y-1">
+              {savedPresets.map(p => (
+                <div key={p.id} className="flex items-center justify-between bg-black/40 p-2 rounded-[2px] border border-white/5">
+                  <span className="verge-label-mono text-[8px] text-white truncate">{p.profile_name}</span>
+                  <button onClick={() => handleDelete(p.id)} className="text-[#949494] hover:text-red-500 p-1">
+                    <CloseIcon size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Export */}
@@ -325,13 +453,7 @@ plt.show()
             onChange={(e) => setNewPresetName(e.target.value)}
           />
           <div className="flex gap-2">
-            <button onClick={() => {
-              if (newPresetName.trim()) {
-                setVisualPresets([...visualPresets, { name: newPresetName, x: xAxis, y: yAxis }]);
-                setNewPresetName("");
-                setShowSave(false);
-              }
-            }} className="flex-1 bg-[#3cffd0] text-black verge-label-mono text-[9px] font-black py-3 rounded-[4px]">SAVE</button>
+            <button onClick={handleSave} className="flex-1 bg-[#3cffd0] text-black verge-label-mono text-[9px] font-black py-3 rounded-[4px]">SAVE</button>
             <button onClick={() => setShowSave(false)} className="flex-1 bg-white/5 text-[#949494] verge-label-mono text-[9px] py-3 rounded-[4px]">CANCEL</button>
           </div>
         </div>
