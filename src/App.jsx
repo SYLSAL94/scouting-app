@@ -199,7 +199,7 @@ function App() {
               </div>
               <div className="flex flex-wrap xl:flex-nowrap items-center gap-2 xl:gap-6">
                   <div className="flex w-full xl:w-auto gap-1 bg-[#131313] p-1 rounded-[4px] border border-white/10 h-fit shadow-xl">
-                      <button onClick={() => setDashboardView('FILTERS')} className={`xl:hidden px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'FILTERS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Filtres</button>
+                      <button onClick={() => setShowFilters(true)} className={`xl:hidden px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all text-[#949494] hover:text-[#3cffd0] hover:bg-white/5`}>Filtres</button>
                       <button onClick={() => setDashboardView('TABLE')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'TABLE' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Tableau</button>
                       <button onClick={() => setDashboardView('SCATTER')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'SCATTER' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Analyse</button>
                       <button onClick={() => setDashboardView('TRENDS')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'TRENDS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Trends</button>
@@ -270,20 +270,26 @@ function App() {
             </div>
           </motion.div>
         ) : view === 'RADAR' ? (
-          <div key="radar" className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
-             <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8"><ArrowLeft size={14} /> Intelligence Hub</button>
+          <div key="radar" className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
+             <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-8 group self-start">
+               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
+             </button>
              <RadarDashboard players={players} metricsList={metricsList} activeFilters={activeFilters} initialSelectedPlayer={selectedPlayer || (selectedPlayersToCompare.length > 0 ? selectedPlayersToCompare[0] : null)} />
           </div>
         ) : view === 'TEAMBUILDER' ? (
           <div key="teambuilder" className="w-full px-4 md:px-8 min-h-screen flex flex-col">
              <div className="max-w-[1700px] mx-auto w-full flex flex-col flex-1">
-                <button onClick={() => setView('EXPLORATION')} className="btn-back mt-8 mb-4 md:mb-8"><ArrowLeft size={14} /> Intelligence Hub</button>
+                <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mt-8 mb-4 md:mb-8 group self-start">
+                  <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
+                </button>
                 <TeamBuilderDashboard activeFilters={activeFilters} onPlayerClick={handlePlayerClick} filterProps={{ openSection, setOpenSection, pendingFilters, setPendingFilters, competitionsList, positionsList, teamsList, seasonsList, metricsList, handleResetFilters, handleApplyFilters, hasChanges: JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters) }} />
              </div>
           </div>
         ) : view === 'LAB' ? (
-          <div key="lab" className="p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
-             <button onClick={() => setView('EXPLORATION')} className="btn-back mb-8"><ArrowLeft size={14} /> Back</button>
+          <div key="lab" className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
+             <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-8 group self-start">
+               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
+             </button>
              <LabDashboard activeFilters={activeFilters} metricsList={metricsList} onPlayerClick={handlePlayerClick} activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
         ) : null}
@@ -315,10 +321,10 @@ function App() {
               animate={{ x: 0 }} 
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed top-0 left-0 h-full w-[420px] max-w-[90vw] z-[201] shadow-[20px_0_50px_rgba(0,0,0,0.5)]"
+              className="fixed top-0 left-0 h-full w-full md:w-[420px] z-[201] shadow-[20px_0_50px_rgba(0,0,0,0.5)]"
             >
               <div className="h-full bg-[#131313] border-r border-white/10 flex flex-col">
-                 <div className="flex justify-between items-center p-6 border-b border-white/10">
+                 <div className="flex justify-between items-center p-4 border-b border-white/10">
                     <span className="verge-label-mono text-[10px] text-[#3cffd0] font-black uppercase tracking-widest">Configuration Globale</span>
                     <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors text-[#949494] hover:text-white">
                        <X size={20} />

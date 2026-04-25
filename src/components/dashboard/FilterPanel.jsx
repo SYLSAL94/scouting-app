@@ -56,7 +56,7 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
   };
 
   return (
-    <div className="mb-8 p-6 bg-[#2d2d2d] border border-white/5 rounded-[4px] overflow-hidden">
+    <div className="mb-4 md:mb-8 p-4 md:p-6 bg-[#2d2d2d] border border-white/5 rounded-[4px] overflow-hidden">
       <div className="flex items-center justify-between mb-4 px-1">
         <label className="verge-label-mono text-[9px] text-[#3cffd0] uppercase tracking-widest font-black">Analyse Presets</label>
         {showConfirm && <span className="verge-label-mono text-[9px] text-[#3cffd0] animate-pulse">SAVED</span>}
@@ -169,11 +169,11 @@ const FilterPanel = ({
   };
 
   return (
-    <aside className="sidebar-filters w-full xl:w-[420px] shrink-0 xl:sticky xl:top-8 h-[700px] xl:h-[calc(100vh-6rem)] flex flex-col bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden transition-all duration-500">
+    <aside className="w-full h-full flex flex-col bg-[#131313] overflow-hidden">
       
       {/* Header Section */}
-      <div className="p-10 pb-6 border-b border-white/10">
-        <div className="flex items-center justify-between mb-10">
+      <div className="p-4 md:p-10 pb-4 md:pb-6 border-b border-white/10">
+        <div className="flex items-center justify-between mb-6 md:mb-10">
           <div className="flex flex-col">
             <h3 className="verge-h3 text-white flex items-center gap-4">
               <Zap size={22} className="text-[#3cffd0]" />
@@ -199,7 +199,7 @@ const FilterPanel = ({
       </div>
 
       {/* Content Section */}
-      <div className="flex-1 overflow-y-auto p-10 pt-6 space-y-4 styled-scrollbar">
+      <div className="flex-1 overflow-y-auto p-4 md:p-10 pt-4 md:pt-6 space-y-4 styled-scrollbar">
         <AccordionSection 
           id="periode" title="Période" icon={<Calendar size={18} />}
           isOpen={openSection === 'periode'} onToggle={() => setOpenSection(openSection === 'periode' ? null : 'periode')}
@@ -352,11 +352,11 @@ const FilterPanel = ({
       </div>
 
       {/* Footer Section */}
-      <div className="p-10 bg-[#131313] border-t border-white/10">
+      <div className="p-4 md:p-10 bg-[#131313] border-t border-white/10">
         <button 
           onClick={handleApplyFilters} 
           disabled={!hasChanges} 
-          className={`w-full py-6 rounded-[4px] flex items-center justify-center gap-4 transition-all duration-500 relative group overflow-hidden ${
+          className={`w-full py-4 md:py-6 rounded-[4px] flex items-center justify-center gap-4 transition-all duration-500 relative group overflow-hidden ${
             hasChanges 
             ? 'bg-[#3cffd0] text-black hover:bg-white' 
             : 'bg-white/5 text-[#949494] cursor-not-allowed border border-white/5'

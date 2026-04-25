@@ -99,21 +99,21 @@ export const RadarDashboard = ({
             <div className="flex xl:hidden bg-[#2d2d2d] p-1 rounded-[4px] border border-white/5 mb-2">
                 <button 
                     onClick={() => setActiveTab('CHART')}
-                    className={`flex-1 py-4 rounded-[2px] verge-label-mono text-[9px] font-black uppercase tracking-widest transition-all ${activeTab === 'CHART' ? 'bg-[#3cffd0] text-black' : 'text-[#949494]'}`}
+                    className={`flex-1 px-4 py-3 md:px-6 md:py-4 rounded-[2px] verge-label-mono text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${activeTab === 'CHART' ? 'bg-[#3cffd0] text-black' : 'text-[#949494]'}`}
                 >
                     Visualisation
                 </button>
                 <button 
                     onClick={() => setActiveTab('CONFIG')}
-                    className={`flex-1 py-4 rounded-[2px] verge-label-mono text-[9px] font-black uppercase tracking-widest transition-all ${activeTab === 'CONFIG' ? 'bg-[#3cffd0] text-black' : 'text-[#949494]'}`}
+                    className={`flex-1 px-4 py-3 md:px-6 md:py-4 rounded-[2px] verge-label-mono text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 ${activeTab === 'CONFIG' ? 'bg-[#3cffd0] text-black' : 'text-[#949494]'}`}
                 >
                     Configuration
                 </button>
             </div>
 
-            <div className="flex flex-col xl:flex-row gap-8 h-full">
+            <div className="flex flex-col xl:flex-row gap-8 h-auto xl:h-full min-h-screen xl:min-h-0">
                 {/* LEFT PANEL: Control Panel */}
-                <div className={`w-full xl:w-[480px] flex flex-col h-full bg-[#131313] rounded-[4px] border border-white/10 overflow-hidden flex-shrink-0 ${activeTab === 'CONFIG' ? 'flex' : 'hidden xl:flex'}`}>
+                <div className={`w-full xl:w-[480px] flex flex-col h-auto xl:h-full bg-[#131313] rounded-[4px] border border-white/10 overflow-hidden flex-shrink-0 ${activeTab === 'CONFIG' ? 'flex' : 'hidden xl:flex'}`}>
                 <div className="p-8 flex-shrink-0 border-b border-white/10 bg-[#131313]">
                     <div className="flex items-center">
                         <div className="mr-6 p-4 rounded-[4px] bg-[#3cffd0]/10 border border-[#3cffd0]/20">
@@ -202,11 +202,12 @@ export const RadarDashboard = ({
             </div>
 
                 {/* RIGHT PANEL: Visualization */}
-                <div className={`flex-1 bg-[#131313] border border-white/10 rounded-[4px] flex flex-col p-6 md:p-10 min-h-[600px] md:min-h-[700px] relative overflow-hidden ${activeTab === 'CHART' ? 'flex' : 'hidden lg:flex'}`}>
+                <div className={`flex-grow xl:flex-1 bg-[#131313] border border-white/10 rounded-[4px] flex flex-col p-4 md:p-10 min-h-[500px] md:min-h-[700px] min-w-0 relative overflow-hidden ${activeTab === 'CHART' ? 'flex' : 'hidden xl:flex'}`}>
                  <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
                  
                  {appliedConfig ? (
                      <RadarChartVisualization
+                        key={activeTab}
                         selectedEntities={appliedConfig.entities}
                         metrics={appliedConfig.metrics}
                         compareWithMedian={appliedConfig.compareWithMedian}

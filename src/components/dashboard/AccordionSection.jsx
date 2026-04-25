@@ -7,7 +7,7 @@ const AccordionSection = ({ id, title, children, icon, isOpen, onToggle, badge, 
     <div className="border-b border-white/10 last:border-0">
       <button 
         onClick={onToggle}
-        className="w-full flex items-center justify-between py-5 text-left transition-colors group"
+        className="w-full flex items-center justify-between py-4 md:py-5 text-left transition-colors group"
       >
         <div className="flex items-center gap-4">
           <span className={isOpen ? "text-[#3cffd0]" : "text-[#949494] group-hover:text-white"}>{icon}</span>

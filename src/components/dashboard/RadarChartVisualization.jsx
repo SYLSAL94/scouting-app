@@ -104,7 +104,7 @@ export const RadarChartVisualization = ({
             ) : (
                 <>
                     {/* --- Bandeau tuiles --- */}
-                    <div className="px-6 pb-6">
+                    <div className="p-4 md:px-6 md:pb-6">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {entitiesInfo.map((ent, idx) => {
                                 const color = entityColors?.[idx % entityColors.length] || { stroke: '#3cffd0', fill: '#3cffd0' };
@@ -116,7 +116,7 @@ export const RadarChartVisualization = ({
                                 return (
                                     <div
                                         key={`tile-${idx}`}
-                                        className={`relative flex items-center gap-5 p-4 rounded-[2px] border transition-all duration-500 group overflow-hidden ${
+                                        className={`relative flex items-center gap-3 md:gap-5 p-3 md:p-4 rounded-[2px] border transition-all duration-500 group overflow-hidden ${
                                             clickable ? 'cursor-pointer' : ''
                                         }`}
                                         style={{
@@ -141,7 +141,7 @@ export const RadarChartVisualization = ({
                                         {/* Avatar Wrapper */}
                                         <div className="relative shrink-0">
                                             <div
-                                                className="w-14 h-14 rounded-full border border-white/10 bg-black/40 overflow-hidden transition-all duration-500 flex items-center justify-center"
+                                                className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-white/10 bg-black/40 overflow-hidden transition-all duration-500 flex items-center justify-center"
                                                 style={{ 
                                                     borderColor: isHovered ? strokeColor : 'rgba(255,255,255,0.1)',
                                                     boxShadow: isHovered ? `0 0 20px ${strokeColor}20` : 'none'
@@ -158,10 +158,10 @@ export const RadarChartVisualization = ({
                                         </div>
 
                                         {/* Info Wrapper */}
-                                        <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
-                                            <div className="flex justify-between items-center gap-2">
-                                                <span 
-                                                    className={`verge-label-mono text-[11px] font-black truncate transition-colors uppercase tracking-widest ${
+                                            <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+                                                <div className="flex justify-between items-center gap-2">
+                                                    <span 
+                                                        className={`verge-label-mono text-[9px] md:text-[11px] font-black truncate transition-colors uppercase tracking-widest ${
                                                         isHovered ? 'text-white' : 'text-white/80'
                                                     }`} 
                                                     style={{ color: isHovered ? '#fff' : undefined }}
@@ -190,9 +190,9 @@ export const RadarChartVisualization = ({
                     </div>
 
                     {/* --- Radar --- */}
-                    <div className="flex-1 min-h-[400px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
-                            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarChartData.radarData}>
+                    <div className="w-full h-[350px] sm:h-[450px] md:h-full md:flex-1 min-h-[300px]">
+                        <ResponsiveContainer width="100%" aspect={window.innerWidth < 768 ? 1 : undefined} debounce={100}>
+                            <RadarChart cx="50%" cy="50%" outerRadius={window.innerWidth < 768 ? "60%" : "75%"} data={radarChartData.radarData}>
                                 <PolarGrid gridType="circle" stroke={gridStroke} />
                                 <PolarAngleAxis
                                     dataKey="subject"

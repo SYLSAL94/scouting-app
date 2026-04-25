@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { 
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, ZAxis, Cell, Label, ReferenceLine,
   ReferenceArea
 } from 'recharts';
-import { Search, Activity, Target, Save } from 'lucide-react';
+import { Activity, Target, Save, Users, Download } from 'lucide-react';
 import Select from 'react-select';
 
 // Utilitaire de formatage
@@ -61,8 +61,8 @@ const ScatterTooltip = ({ active, payload }) => {
 
 const ROLE_COLORS = {
   'Gardien': '#facc15',
-  'Defenseurs centraux': '#3cffd0', // Jelly Mint
-  'Latéraux': '#5200ff', // Ultraviolet
+  'Defenseurs centraux': '#3cffd0',
+  'Latéraux': '#5200ff',
   'Milieux defensifs': '#22c55e',
   'Milieux centraux': '#10b981',
   'Milieux offensifs': '#a855f7',
@@ -71,9 +71,72 @@ const ROLE_COLORS = {
   'Autres': '#94a3b8'
 };
 
+const CustomScatterPoint = (props) => {
+  const { cx, cy, fill, payload, focusedPlayerIds = [], setFocusedPlayerIds, onPlayerClick } = props;
+  if (cx == null || cy == null || isNaN(cx) || isNaN(cy)) return null;
+
+  const isFocused = Array.isArray(focusedPlayerIds) && payload && focusedPlayerIds.includes(payload.id);
+  const hasFocusActive = Array.isArray(focusedPlayerIds) && focusedPlayerIds.length > 0;
+  
+  const opacity = hasFocusActive ? (isFocused ? 1 : 0.1) : 0.8;
+  const radius = isFocused ? 10 : 6;
+  const stroke = isFocused ? "white" : "none";
+  const strokeWidth = 2;
+
+  return (
+    <g 
+      cursor="pointer"
+      onClick={(e) => {
+        e.stopPropagation();
+        
+        const target = e.currentTarget;
+        const now = Date.now();
+        const lastClick = target._lastClick || 0;
+        target._lastClick = now;
+
+        if (now - lastClick < 300) {
+          // Double Click
+          if (onPlayerClick && payload?.originalPlayer) {
+            onPlayerClick(payload.originalPlayer);
+          }
+          target._lastClick = 0;
+        } else {
+          // Single Click - wait to see if it's a double
+          setTimeout(() => {
+            if (target && target._lastClick === now) {
+              if (setFocusedPlayerIds && payload) {
+                setFocusedPlayerIds(prev => 
+                  prev.includes(payload.id) ? prev.filter(id => id !== payload.id) : [...prev, payload.id]
+                );
+              }
+            }
+          }, 300);
+        }
+      }}
+    >
+      <circle 
+        cx={cx} cy={cy} r={radius} 
+        fill={fill} opacity={opacity} 
+        stroke={stroke} strokeWidth={strokeWidth}
+        style={{ transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
+      />
+      {isFocused && payload && (
+        <text 
+          x={cx} y={cy - 16} 
+          textAnchor="middle" 
+          className="verge-label-mono text-[10px] fill-white pointer-events-none uppercase font-black"
+        >
+          {payload.name}
+        </text>
+      )}
+    </g>
+  );
+};
+
 const ScatterControls = ({ 
   metricsList, xAxis, setXAxis, yAxis, setYAxis, playersCount, chartData,
   showAvgX, setShowAvgX, showAvgY, setShowAvgY,
+  showQuadrant, setShowQuadrant,
   invertX, setInvertX, invertY, setInvertY,
   focusedPlayerIds, setFocusedPlayerIds
 }) => {
@@ -91,7 +154,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-# Data exported from Scouting App (Verge UI)
 data = ${JSON.stringify(chartData.map(p => ({
   name: p.name,
   team: p.team,
@@ -114,13 +176,6 @@ plt.show()
     a.href = url;
     a.download = `verge_export_${new Date().getTime()}.py`;
     a.click();
-  };
-
-  const handleSavePreset = () => {
-    if (!newPresetName.trim()) return;
-    setVisualPresets([...visualPresets, { name: newPresetName, x: xAxis, y: yAxis }]);
-    setNewPresetName("");
-    setShowSave(false);
   };
 
   const selectStyles = {
@@ -182,7 +237,6 @@ plt.show()
                 value={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
                 onChange={(opt) => setXAxis(opt.value)}
                 styles={selectStyles}
-                isSearchable
               />
             </div>
             <div className="w-[200px]">
@@ -191,7 +245,6 @@ plt.show()
                 value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
                 onChange={(opt) => setYAxis(opt.value)}
                 styles={selectStyles}
-                isSearchable
               />
             </div>
           </div>
@@ -215,6 +268,7 @@ plt.show()
         <div className="grid grid-cols-1">
           <Toggle label="Mean X" checked={showAvgX} onChange={setShowAvgX} />
           <Toggle label="Mean Y" checked={showAvgY} onChange={setShowAvgY} />
+          <Toggle label="Quadrant" checked={showQuadrant} onChange={setShowQuadrant} />
           <Toggle label="Invert X" checked={invertX} onChange={setInvertX} />
           <Toggle label="Invert Y" checked={invertY} onChange={setInvertY} />
         </div>
@@ -267,7 +321,13 @@ plt.show()
             onChange={(e) => setNewPresetName(e.target.value)}
           />
           <div className="flex gap-2">
-            <button onClick={handleSavePreset} className="flex-1 bg-[#3cffd0] text-black verge-label-mono text-[9px] font-black py-3 rounded-[4px]">SAVE</button>
+            <button onClick={() => {
+              if (newPresetName.trim()) {
+                setVisualPresets([...visualPresets, { name: newPresetName, x: xAxis, y: yAxis }]);
+                setNewPresetName("");
+                setShowSave(false);
+              }
+            }} className="flex-1 bg-[#3cffd0] text-black verge-label-mono text-[9px] font-black py-3 rounded-[4px]">SAVE</button>
             <button onClick={() => setShowSave(false)} className="flex-1 bg-white/5 text-[#949494] verge-label-mono text-[9px] py-3 rounded-[4px]">CANCEL</button>
           </div>
         </div>
@@ -276,75 +336,32 @@ plt.show()
   );
 };
 
-const CustomScatterPoint = (props) => {
-  const { cx, cy, fill, payload, focusedPlayerIds, setFocusedPlayerIds, onPlayerClick } = props;
-  if (cx == null || cy == null) return null;
-
-  const isFocused = focusedPlayerIds.includes(payload.id);
-  const hasFocusActive = focusedPlayerIds.length > 0;
-  
-  const opacity = hasFocusActive ? (isFocused ? 1 : 0.1) : 0.8;
-  const radius = isFocused ? 10 : 6;
-  const stroke = isFocused ? "white" : "none";
-  const strokeWidth = 2;
-
-  const handleClick = (e) => {
-    e.stopPropagation();
-    if (e.detail === 2) {
-      onPlayerClick(payload.originalPlayer);
-    } else {
-      setTimeout(() => {
-        if (e.detail === 1) {
-           setFocusedPlayerIds(prev => 
-            prev.includes(payload.id) ? prev.filter(id => id !== payload.id) : [...prev, payload.id]
-          );
-        }
-      }, 200);
-    }
-  };
-
-  return (
-    <g onClick={handleClick} cursor="pointer">
-      <circle 
-        cx={cx} cy={cy} r={radius} 
-        fill={fill} opacity={opacity} 
-        stroke={stroke} strokeWidth={strokeWidth}
-        style={{ transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
-      />
-      {isFocused && (
-        <text 
-          x={cx} y={cy - 16} 
-          textAnchor="middle" 
-          className="verge-label-mono text-[10px] fill-white pointer-events-none uppercase font-black"
-        >
-          {payload.name}
-        </text>
-      )}
-    </g>
-  );
-};
-
-const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
+const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
   const [xAxis, setXAxis] = useState('minutes_on_field');
   const [yAxis, setYAxis] = useState('note_ponderee');
 
   const [showAvgX, setShowAvgX] = useState(true);
   const [showAvgY, setShowAvgY] = useState(true);
+  const [showQuadrant, setShowQuadrant] = useState(true);
   const [invertX, setInvertX] = useState(false);
   const [invertY, setInvertY] = useState(false);
   const [focusedPlayerIds, setFocusedPlayerIds] = useState([]);
 
   const chartData = useMemo(() => {
-    return players.map(p => ({
-      x: Number(p[xAxis]) || 0,
-      y: Number(p[yAxis]) || 0,
-      name: p.name || p.full_name,
-      team: p.last_club_name,
-      image: p.image,
-      id: p.wyId || p.id,
-      position_category: p.position_category,
-      originalPlayer: p
-    }));
+    return players.map(p => {
+      const xVal = p[xAxis];
+      const yVal = p[yAxis];
+      return {
+        x: (xVal !== undefined && xVal !== null) ? Number(String(xVal).replace(',', '.')) || 0 : 0,
+        y: (yVal !== undefined && yVal !== null) ? Number(String(yVal).replace(',', '.')) || 0 : 0,
+        name: p.name || p.full_name,
+        team: p.last_club_name,
+        image: p.image,
+        id: p.wyId || p.id,
+        position_category: p.position_category,
+        originalPlayer: p
+      };
+    });
   }, [players, xAxis, yAxis]);
 
   const { averages, stats } = useMemo(() => {
@@ -374,6 +391,15 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
     };
   }, [chartData]);
 
+  const renderShape = useCallback((props) => (
+    <CustomScatterPoint 
+      {...props} 
+      focusedPlayerIds={focusedPlayerIds} 
+      setFocusedPlayerIds={setFocusedPlayerIds} 
+      onPlayerClick={onPlayerClick} 
+    />
+  ), [focusedPlayerIds, onPlayerClick]);
+
   return (
     <div className="flex flex-col h-full space-y-8">
       <ScatterControls 
@@ -384,6 +410,7 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
         chartData={chartData}
         showAvgX={showAvgX} setShowAvgX={setShowAvgX}
         showAvgY={showAvgY} setShowAvgY={setShowAvgY}
+        showQuadrant={showQuadrant} setShowQuadrant={setShowQuadrant}
         invertX={invertX} setInvertX={setInvertX}
         invertY={invertY} setInvertY={setInvertY}
         focusedPlayerIds={focusedPlayerIds} setFocusedPlayerIds={setFocusedPlayerIds}
@@ -399,8 +426,8 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
       </div>
 
       <div className="flex-1 min-h-[600px] bg-[#131313] p-10 relative border border-white/10 rounded-[24px] overflow-hidden">
-        {showAvgX && showAvgY && (
-          <div className="absolute top-10 right-10 z-10 w-56 p-6 bg-[#131313] border border-white/20 shadow-2xl">
+        {showQuadrant && showAvgX && showAvgY && !isNaN(averages.x) && !isNaN(averages.y) && (
+          <div className="absolute top-10 right-10 z-10 w-56 p-6 bg-[#131313] border border-white/20 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
             <div className="verge-label-mono text-[9px] text-[#3cffd0] uppercase mb-4 font-black">Quadrant Distribution</div>
             <div className="space-y-4">
               {stats.map(item => (
@@ -418,14 +445,14 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
           </div>
         )}
 
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={600}>
           <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 30 }}>
-            <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.05)" vertical={true} horizontal={true} />
+            <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.05)" vertical horizontal />
             <XAxis 
               type="number" dataKey="x" name={xAxis} 
               reversed={invertX}
               stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: 'PolySans Mono' }} 
-              axisLine={true} tickLine={false} domain={['auto', 'auto']}
+              axisLine tickLine={false} domain={['auto', 'auto']}
             >
               <Label value={xAxis.replace(/_/g, ' ').toUpperCase()} offset={-25} position="insideBottom" fill="#3cffd0" fontSize={9} fontFamily="PolySans Mono" fontWeight="900" />
             </XAxis>
@@ -433,34 +460,31 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
               type="number" dataKey="y" name={yAxis} 
               reversed={invertY}
               stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: 'PolySans Mono' }} 
-              axisLine={true} tickLine={false} domain={['auto', 'auto']}
+              axisLine tickLine={false} domain={['auto', 'auto']}
             >
               <Label value={yAxis.replace(/_/g, ' ').toUpperCase()} angle={-90} offset={-15} position="insideLeft" fill="#3cffd0" fontSize={9} fontFamily="PolySans Mono" fontWeight="900" />
             </YAxis>
             <ZAxis type="number" range={[60, 60]} />
             <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '4 4', stroke: '#3cffd0', strokeWidth: 1 }} />
             
-            {showAvgX && showAvgY && averages.x && averages.y && (
+            {showQuadrant && showAvgX && showAvgY && !isNaN(averages.x) && !isNaN(averages.y) && (
               <>
                 <ReferenceArea x1={averages.x} y1={averages.y} fill="rgba(60, 255, 208, 0.03)" stroke="none" />
                 <ReferenceArea x2={averages.x} y2={averages.y} fill="rgba(239, 68, 68, 0.03)" stroke="none" />
               </>
             )}
 
-            {showAvgX && averages.x && (
+            {showAvgX && !isNaN(averages.x) && (
               <ReferenceLine x={averages.x} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
             )}
-            {showAvgY && averages.y && (
+            {showAvgY && !isNaN(averages.y) && (
               <ReferenceLine y={averages.y} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
             )}
 
             <Scatter 
-              name="Players" data={chartData} 
-              shape={<CustomScatterPoint 
-                focusedPlayerIds={focusedPlayerIds} 
-                setFocusedPlayerIds={setFocusedPlayerIds}
-                onPlayerClick={onPlayerClick}
-              />}
+              name="Players" 
+              data={chartData} 
+              shape={renderShape}
             >
               {chartData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={ROLE_COLORS[entry.position_category] || ROLE_COLORS['Autres']} />
