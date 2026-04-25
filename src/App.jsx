@@ -198,12 +198,12 @@ function App() {
                 </h1>
               </div>
               <div className="flex flex-wrap xl:flex-nowrap items-center gap-2 xl:gap-6">
-                  <div className="flex w-full xl:w-auto gap-2 bg-[#2d2d2d] p-1.5 rounded-full border border-white/10 h-fit">
-                      <button onClick={() => setDashboardView('FILTERS')} className={`xl:hidden px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'FILTERS' ? 'bg-[#3cffd0] text-black' : 'text-[#949494] hover:text-white'}`}>Filtres</button>
-                      <button onClick={() => setDashboardView('TABLE')} className={`px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'TABLE' ? 'bg-[#3cffd0] text-black' : 'text-[#949494] hover:text-white'}`}>Tableau</button>
-                      <button onClick={() => setDashboardView('SCATTER')} className={`px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'SCATTER' ? 'bg-[#3cffd0] text-black' : 'text-[#949494] hover:text-white'}`}>Analyse</button>
-                      <button onClick={() => setDashboardView('TRENDS')} className={`px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'TRENDS' ? 'bg-[#3cffd0] text-black' : 'text-[#949494] hover:text-white'}`}>Trends</button>
-                      <button onClick={() => setDashboardView('VERSUS')} disabled={selectedPlayersToCompare.length !== 2} className={`px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'VERSUS' ? 'bg-[#3cffd0] text-black' : (selectedPlayersToCompare.length === 2 ? 'text-[#3cffd0] hover:text-white' : 'text-white/10 cursor-not-allowed')}`}>Versus ({selectedPlayersToCompare.length}/2)</button>
+                  <div className="flex w-full xl:w-auto gap-1 bg-[#131313] p-1 rounded-[4px] border border-white/10 h-fit shadow-xl">
+                      <button onClick={() => setDashboardView('FILTERS')} className={`xl:hidden px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'FILTERS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Filtres</button>
+                      <button onClick={() => setDashboardView('TABLE')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'TABLE' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Tableau</button>
+                      <button onClick={() => setDashboardView('SCATTER')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'SCATTER' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Analyse</button>
+                      <button onClick={() => setDashboardView('TRENDS')} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'TRENDS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494] hover:text-white hover:bg-white/5'}`}>Trends</button>
+                      <button onClick={() => setDashboardView('VERSUS')} disabled={selectedPlayersToCompare.length !== 2} className={`px-6 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${dashboardView === 'VERSUS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : (selectedPlayersToCompare.length === 2 ? 'text-[#3cffd0] hover:text-white hover:bg-[#3cffd0]/5' : 'text-white/10 cursor-not-allowed')}`}>Versus ({selectedPlayersToCompare.length}/2)</button>
                   </div>
               </div>
             </div>
@@ -252,15 +252,29 @@ function App() {
                   <TrendsDashboard metricsList={metricsList} />
                 )}
                 {dashboardView === 'VERSUS' && (
-                  <div className="flex-1 bg-slate-900/50 rounded-3xl border border-white/5 p-8 flex flex-col items-center justify-center gap-6">
-                    <div className="w-20 h-20 bg-sky-500/20 rounded-full flex items-center justify-center">
-                       <Users className="text-sky-400" size={40} />
+                  <div className="flex-1 bg-[#131313] border border-white/10 rounded-[4px] p-20 flex flex-col items-center justify-center gap-12 relative overflow-hidden">
+                    {/* Background Texture */}
+                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+                    
+                    <div className="relative group">
+                      <div className="absolute -inset-8 bg-[#3cffd0]/10 blur-[40px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="w-24 h-24 bg-[#131313] border border-[#3cffd0]/30 flex items-center justify-center relative z-10">
+                         <Users className="text-[#3cffd0]" size={48} />
+                      </div>
                     </div>
-                    <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Mode Versus Activé</h2>
+
+                    <div className="text-center space-y-4">
+                      <span className="verge-kicker text-[#3cffd0] block">Ready for analysis</span>
+                      <h2 className="verge-h1 text-white">MODE VERSUS ACTIVÉ</h2>
+                      <p className="verge-label-mono text-[#949494] text-[10px] tracking-[0.3em]">DEUX JOUEURS SÉLECTIONNÉS POUR COMPARAISON</p>
+                    </div>
+
                     <button 
                       onClick={() => setView('MATCHUP')}
-                      className="px-10 py-4 bg-sky-500 text-white rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-sky-500/20 hover:scale-105 transition-all"
-                    > Lancer la comparaison </button>
+                      className="btn-verge-primary px-16 py-6 text-base shadow-[0_0_50px_rgba(60,255,208,0.2)]"
+                    > 
+                      Lancer la comparaison 
+                    </button>
                   </div>
                 )}
               </main>

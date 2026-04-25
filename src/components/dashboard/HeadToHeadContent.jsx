@@ -3,9 +3,9 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from 'recharts';
-import { Activity } from 'lucide-react';
+import { Activity, Zap, Shield, Target } from 'lucide-react';
 
-const COLORS = ['#3cffd0', '#5200ff', '#f43f5e', '#ffffff', '#949494'];
+const COLORS = ['#3cffd0', '#5200ff', '#ffffff', '#ff3366', '#949494'];
 
 export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetrics = [] }) => {
   const chartData = useMemo(() => {
@@ -38,137 +38,162 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
 
   if (selectedPlayersToCompare.length < 2) {
     return (
-      <div className="h-[600px] flex flex-col items-center justify-center bg-[#2d2d2d] rounded-[4px] border border-dashed border-white/10">
-        <div className="p-8 bg-[#131313] border border-white/10 rounded-[2px] mb-8">
-          <Activity size={56} className="text-[#3cffd0] opacity-50" />
+      <div className="h-[600px] flex flex-col items-center justify-center bg-[#131313] rounded-[4px] border border-dashed border-white/10 relative overflow-hidden">
+        {/* Background Texture */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        
+        <div className="p-10 bg-[#131313] border border-[#3cffd0]/20 rounded-[2px] mb-8 relative group">
+          <div className="absolute -inset-4 bg-[#3cffd0]/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Activity size={64} className="text-[#3cffd0] relative z-10" />
         </div>
-        <p className="verge-label-mono text-[12px] font-black text-[#949494] tracking-[0.2em] uppercase text-center max-w-md px-6">Sélectionnez au moins 2 joueurs pour la comparaison Head-to-Head.</p>
-        <p className="verge-label-mono text-[9px] mt-4 text-[#3cffd0]/50 tracking-[0.1em] uppercase">Architecture Zero-Calcul (Cloud-Native)</p>
+        <h3 className="verge-h3 text-white mb-4">SÉLECTION INSUFFISANTE</h3>
+        <p className="verge-label-mono text-[11px] font-black text-[#949494] tracking-[0.2em] uppercase text-center max-w-sm px-6 leading-relaxed">
+          Veuillez sélectionner au moins <span className="text-[#3cffd0]">deux joueurs</span> dans le tableau pour activer la comparaison directe.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#131313] rounded-[4px] p-10 border border-white/10 space-y-12 relative overflow-hidden">
-      {/* Hazard Corner */}
-      <div className="absolute top-0 right-0 w-24 h-24 border-t-4 border-r-4 border-[#3cffd0]/10" />
+    <div className="bg-[#131313] rounded-[4px] p-8 md:p-12 lg:p-16 border border-white/10 space-y-16 relative overflow-hidden">
+      {/* Editorial Watermark */}
+      <div className="absolute top-0 right-0 w-64 h-64 border-t border-r border-[#3cffd0]/5 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-64 h-64 border-b border-l border-[#5200ff]/5 pointer-events-none" />
 
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-white/5 pb-8">
-        <div className="flex items-center gap-4">
-          <div className="w-2 h-8 bg-[#3cffd0]" />
-          <h2 className="verge-label-mono text-xl font-black tracking-[0.2em] text-white uppercase">
-            Comparaison Versus
-          </h2>
+      {/* Header Layout */}
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-8 border-b border-white/10 pb-12">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <span className="w-12 h-[2px] bg-[#3cffd0]" />
+            <span className="verge-kicker text-[#3cffd0]">Analysis Node / Versus System</span>
+          </div>
+          <h2 className="verge-h1 text-white m-0">COMPARAISON DIRECTE</h2>
+          <div className="flex items-center gap-6 mt-4">
+             {selectedPlayersToCompare.map((p, i) => (
+               <div key={p.id} className="flex items-center gap-2">
+                 <div className="w-3 h-3" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
+                 <span className="verge-label-mono text-[10px] text-white font-black">{`${p.full_name || p.name}`.toUpperCase()}</span>
+               </div>
+             ))}
+          </div>
         </div>
-        <div className="px-5 py-2 bg-[#2d2d2d] border border-[#3cffd0]/30 text-[#3cffd0] verge-label-mono text-[9px] font-black tracking-[0.3em] rounded-[1px] uppercase">
-          Zero-Disque Node
+        
+        <div className="flex flex-col items-end gap-2">
+          <div className="px-6 py-3 bg-[#2d2d2d] border border-white/10 text-white verge-label-mono text-[10px] font-black tracking-[0.3em] rounded-[2px] uppercase">
+            ZERO-DISQUE NODE v.4.0
+          </div>
+          <span className="verge-label-mono text-[9px] text-[#949494]">LATENCY: 12MS / CORE: CLOUD-NATIVE</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 lg:gap-16">
         
-        {/* Radar Chart */}
-        <div className="h-[500px] bg-[#2d2d2d] rounded-[4px] p-8 border border-white/5 relative group">
-          <div className="absolute top-4 left-4 verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.3em] uppercase opacity-50">01 / RADIAL_MAPPING</div>
-          <h3 className="text-center verge-label-mono text-[11px] font-black uppercase tracking-[0.4em] mb-10 text-[#3cffd0]">
-            SUPERPOSITION RADIALE
-          </h3>
-          <ResponsiveContainer width="100%" height="90%">
-            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
-              <PolarGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="0" />
-              <PolarAngleAxis 
-                dataKey="metric" 
-                tick={{ fill: '#949494', fontSize: 9, fontWeight: 'black', fontFamily: 'PolySans Mono, monospace' }} 
-              />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#666', fontSize: 8, fontFamily: 'PolySans Mono, monospace' }} axisLine={false} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#131313', 
-                  border: '1px solid rgba(60, 255, 208, 0.3)', 
-                  borderRadius: '2px', 
-                  color: '#fff',
-                  fontFamily: 'PolySans Mono, monospace',
-                  fontSize: '11px',
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
-                }}
-                itemStyle={{ padding: '2px 0' }}
-              />
-              <Legend 
-                wrapperStyle={{ paddingTop: '30px', fontSize: '10px', fontWeight: 'black', fontFamily: 'PolySans Mono, monospace', letterSpacing: '0.1em' }} 
-                iconType="square" 
-                iconSize={8}
-              />
-              {selectedPlayersToCompare.map((p, i) => {
-                const name = `${p.full_name || p.name || 'Inconnu'}`.toUpperCase();
-                return (
+        {/* Radar Chart Card */}
+        <div className="bg-[#131313] rounded-[4px] p-10 border border-white/10 relative group flex flex-col h-[600px]">
+          <div className="absolute top-6 left-6 verge-label-mono text-[10px] text-[#3cffd0] font-black tracking-[0.3em] uppercase">
+            01 / RADIAL_INTELLIGENCE
+          </div>
+          <div className="flex-1 mt-12">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart cx="50%" cy="50%" outerRadius="80%" data={chartData}>
+                <PolarGrid stroke="rgba(255,255,255,0.08)" strokeDasharray="3 3" />
+                <PolarAngleAxis 
+                  dataKey="metric" 
+                  tick={{ fill: '#949494', fontSize: 10, fontWeight: '900', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.05em' }} 
+                />
+                <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                <Tooltip 
+                  cursor={{ stroke: '#3cffd0', strokeWidth: 1 }}
+                  contentStyle={{ 
+                    backgroundColor: '#131313', 
+                    border: '1px solid rgba(255, 255, 255, 0.1)', 
+                    borderRadius: '2px', 
+                    color: '#fff',
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '11px',
+                    boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+                    padding: '12px'
+                  }}
+                />
+                {selectedPlayersToCompare.map((p, i) => (
                   <Radar
                     key={p.id || i}
-                    name={name}
+                    name={`${p.full_name || p.name}`.toUpperCase()}
                     dataKey={`${p.full_name || p.name || 'Inconnu'}`}
                     stroke={COLORS[i % COLORS.length]}
-                    strokeWidth={2}
+                    strokeWidth={3}
                     fill={COLORS[i % COLORS.length]}
-                    fillOpacity={0.2}
-                    activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
+                    fillOpacity={0.15}
+                    activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
                   />
-                );
-              })}
-            </RadarChart>
-          </ResponsiveContainer>
+                ))}
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-center">
+            <span className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-widest">Performance Radar Mapping</span>
+            <Target size={14} className="text-[#3cffd0] opacity-50" />
+          </div>
         </div>
 
-        {/* Bar Chart */}
-        <div className="h-[500px] bg-[#2d2d2d] rounded-[4px] p-8 border border-white/5 relative group">
-          <div className="absolute top-4 left-4 verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.3em] uppercase opacity-50">02 / DIRECT_FACE_OFF</div>
-          <h3 className="text-center verge-label-mono text-[11px] font-black uppercase tracking-[0.4em] mb-10 text-[#3cffd0]">
-            FACE À FACE DIRECT
-          </h3>
-          <ResponsiveContainer width="100%" height="90%">
-            <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="0" horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
-              <XAxis type="number" domain={[0, 100]} hide />
-              <YAxis 
-                dataKey="metric" 
-                type="category" 
-                width={120} 
-                tick={{ fill: '#949494', fontSize: 9, fontWeight: 'black', fontFamily: 'PolySans Mono, monospace' }} 
-                axisLine={false} 
-                tickLine={false} 
-              />
-              <Tooltip 
-                cursor={{ fill: 'rgba(255, 255, 255, 0.02)' }}
-                contentStyle={{ 
-                  backgroundColor: '#131313', 
-                  border: '1px solid rgba(60, 255, 208, 0.3)', 
-                  borderRadius: '2px', 
-                  color: '#fff',
-                  fontFamily: 'PolySans Mono, monospace',
-                  fontSize: '11px'
-                }}
-              />
-              <Legend 
-                wrapperStyle={{ paddingTop: '30px', fontSize: '10px', fontWeight: 'black', fontFamily: 'PolySans Mono, monospace', letterSpacing: '0.1em' }} 
-                iconType="square" 
-                iconSize={8}
-              />
-              {selectedPlayersToCompare.map((p, i) => {
-                const name = `${p.full_name || p.name || 'Inconnu'}`.toUpperCase();
-                return (
+        {/* Bar Chart Card */}
+        <div className="bg-[#131313] rounded-[4px] p-10 border border-white/10 relative group flex flex-col h-[600px]">
+          <div className="absolute top-6 left-6 verge-label-mono text-[10px] text-[#5200ff] font-black tracking-[0.3em] uppercase">
+            02 / METRIC_HEAD_TO_HEAD
+          </div>
+          <div className="flex-1 mt-12">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} layout="vertical" margin={{ top: 20, right: 40, left: 20, bottom: 20 }}>
+                <CartesianGrid strokeDasharray="0" horizontal={false} vertical={true} stroke="rgba(255,255,255,0.05)" />
+                <XAxis type="number" domain={[0, 100]} hide />
+                <YAxis 
+                  dataKey="metric" 
+                  type="category" 
+                  width={140} 
+                  tick={{ fill: '#ffffff', fontSize: 10, fontWeight: '900', fontFamily: 'JetBrains Mono, monospace' }} 
+                  axisLine={false} 
+                  tickLine={false} 
+                />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(255, 255, 255, 0.03)' }}
+                  contentStyle={{ 
+                    backgroundColor: '#131313', 
+                    border: '1px solid rgba(255, 255, 255, 0.1)', 
+                    borderRadius: '2px', 
+                    color: '#fff',
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: '11px',
+                    padding: '12px'
+                  }}
+                />
+                {selectedPlayersToCompare.map((p, i) => (
                   <Bar 
                     key={p.id || i}
-                    name={name}
+                    name={`${p.full_name || p.name}`.toUpperCase()}
                     dataKey={`${p.full_name || p.name || 'Inconnu'}`} 
                     fill={COLORS[i % COLORS.length]} 
                     radius={[0, 2, 2, 0]}
-                    barSize={10}
+                    barSize={12}
                     animationDuration={1500}
                   />
-                );
-              })}
-            </BarChart>
-          </ResponsiveContainer>
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-center">
+            <span className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-widest">Comparative Bar Analysis</span>
+            <Zap size={14} className="text-[#5200ff] opacity-50" />
+          </div>
         </div>
 
+      </div>
+
+      {/* Security Footer Note */}
+      <div className="flex items-center justify-center gap-4 py-8 border-t border-white/5 opacity-30">
+        <Shield size={12} className="text-[#949494]" />
+        <span className="verge-label-mono text-[8px] text-[#949494] tracking-[0.5em] uppercase">
+          Secured Data Feed / High Performance Analysis Node
+        </span>
       </div>
     </div>
   );
