@@ -3,7 +3,7 @@ import { API_BASE_URL } from '../../config';
 import { 
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, ZAxis, Cell, Label, ReferenceLine,
-  ReferenceArea
+  ReferenceArea, LabelList
 } from 'recharts';
 import { Activity, Target, Save, Users, Download, Trash2, X as CloseIcon } from 'lucide-react';
 import Select from 'react-select';
@@ -73,36 +73,35 @@ const ROLE_COLORS = {
 };
 
 const CustomScatterPoint = (props) => {
-  const { cx, cy, fill, payload, focusedPlayerIds = [], setFocusedPlayerIds, onPlayerClick } = props;
+  const { cx, cy, fill, payload, focusedPlayerIds = [], setFocusedPlayerIds, labeledPlayerIds = [], onPlayerClick } = props;
   if (cx == null || cy == null || isNaN(cx) || isNaN(cy)) return null;
 
-  const isFocused = Array.isArray(focusedPlayerIds) && payload && focusedPlayerIds.includes(payload.id);
-  const hasFocusActive = Array.isArray(focusedPlayerIds) && focusedPlayerIds.length > 0;
+  const isFocused = focusedPlayerIds.length > 0 ? focusedPlayerIds.includes(payload.id) : false;
+  const isLabeled = (labeledPlayerIds && labeledPlayerIds.includes(payload.id)) || isFocused;
+  const hasFocusActive = focusedPlayerIds.length > 0;
   
   const opacity = hasFocusActive ? (isFocused ? 1 : 0.1) : 0.8;
   const radius = isFocused ? 10 : 6;
-  const stroke = isFocused ? "white" : "none";
-  const strokeWidth = 2;
+  const stroke = isFocused ? "white" : "rgba(255,255,255,0.3)";
+  const strokeWidth = isFocused ? 2 : 1;
 
   return (
     <g 
-      cursor="pointer"
+      style={{ cursor: 'pointer' }}
       onClick={(e) => {
-        e.stopPropagation();
-        
         const target = e.currentTarget;
         const now = Date.now();
         const lastClick = target._lastClick || 0;
         target._lastClick = now;
 
         if (now - lastClick < 300) {
-          // Double Click
+          // Double Click : Navigation vers le profil
           if (onPlayerClick && payload?.originalPlayer) {
             onPlayerClick(payload.originalPlayer);
           }
           target._lastClick = 0;
         } else {
-          // Single Click - wait to see if it's a double
+          // Single Click : Toggle focus
           setTimeout(() => {
             if (target && target._lastClick === now) {
               if (setFocusedPlayerIds && payload) {
@@ -121,13 +120,17 @@ const CustomScatterPoint = (props) => {
         stroke={stroke} strokeWidth={strokeWidth}
         style={{ transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
       />
-      {isFocused && payload && (
+      {isLabeled && payload && (
         <text 
-          x={cx} y={cy - 16} 
+          x={cx} y={cy - (radius + 8)} 
           textAnchor="middle" 
-          className="verge-label-mono text-[10px] fill-white pointer-events-none uppercase font-black"
+          fill="white"
+          fontSize={10}
+          fontFamily="PolySans Mono"
+          fontWeight="900"
+          style={{ pointerEvents: 'none', textShadow: '0 2px 8px rgba(0,0,0,1)' }}
         >
-          {payload.name}
+          {payload.name.toUpperCase()}
         </text>
       )}
     </g>
@@ -139,7 +142,10 @@ const ScatterControls = ({
   showAvgX, setShowAvgX, showAvgY, setShowAvgY,
   showQuadrant, setShowQuadrant,
   invertX, setInvertX, invertY, setInvertY,
-  focusedPlayerIds, setFocusedPlayerIds
+  excludeZeroX, setExcludeZeroX, excludeZeroY, setExcludeZeroY,
+  isSwarmMode, setIsSwarmMode,
+  focusedPlayerIds, setFocusedPlayerIds,
+  labeledPlayerIds, setLabeledPlayerIds
 }) => {
   const [savedPresets, setSavedPresets] = useState([]);
   const [showSave, setShowSave] = useState(false);
@@ -316,7 +322,13 @@ plt.show()
     multiValueLabel: (base) => ({ ...base, color: 'black', fontSize: '9px', fontWeight: '900' }),
     multiValueRemove: (base) => ({ ...base, color: 'black', ':hover': { background: 'black', color: '#3cffd0' } }),
     input: (base) => ({ ...base, color: 'white' }),
-    placeholder: (base) => ({ ...base, color: 'rgba(255,255,255,0.2)' })
+    placeholder: (base) => ({ ...base, color: 'rgba(255,255,255,0.2)' }),
+    valueContainer: (base) => ({
+      ...base,
+      maxHeight: '100px',
+      overflowY: 'auto',
+      padding: '2px 8px'
+    })
   };
 
   const Toggle = ({ label, checked, onChange }) => (
@@ -351,41 +363,58 @@ plt.show()
               value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
               onChange={(opt) => setYAxis(opt.value)}
               styles={selectStyles}
+              isDisabled={isSwarmMode}
             />
           </div>
         </div>
       </div>
 
-      {/* Subject Focus */}
-      <div className="flex flex-col flex-1 min-w-0">
-        <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Subject Focus</span>
-        <Select 
-          isMulti
-          options={chartData.map(p => ({ value: p.id, label: p.name }))}
-          value={chartData.filter(p => focusedPlayerIds.includes(p.id)).map(p => ({ value: p.id, label: p.name }))}
-          onChange={(opts) => setFocusedPlayerIds(opts ? opts.map(o => o.value) : [])}
-          styles={selectStyles}
-          placeholder="Select profiles..."
-        />
+      {/* Subject Focus & Labels */}
+      <div className="flex flex-col gap-4 min-w-0 md:w-[280px]">
+        <div className="flex flex-col">
+          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Subject Focus (Highlight)</span>
+          <Select 
+            isMulti
+            options={chartData.map(p => ({ value: p.id, label: p.name }))}
+            value={chartData.filter(p => focusedPlayerIds.includes(p.id)).map(p => ({ value: p.id, label: p.name }))}
+            onChange={(opts) => setFocusedPlayerIds(opts ? opts.map(o => o.value) : [])}
+            styles={selectStyles}
+            placeholder="Select focused..."
+          />
+        </div>
+        <div className="flex flex-col">
+          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Subject Name (Labels)</span>
+          <Select 
+            isMulti
+            options={chartData.map(p => ({ value: p.id, label: p.name }))}
+            value={chartData.filter(p => labeledPlayerIds.includes(p.id)).map(p => ({ value: p.id, label: p.name }))}
+            onChange={(opts) => setLabeledPlayerIds(opts ? opts.map(o => o.value) : [])}
+            styles={selectStyles}
+            placeholder="Display names..."
+          />
+        </div>
       </div>
 
       {/* Display Options */}
       <div className="flex flex-col md:border-l border-white/10 md:pl-8 min-w-0">
         <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Display Options</span>
-        <div className="grid grid-cols-2 md:grid-cols-1 gap-x-8">
+        <div className="grid grid-cols-2 gap-x-8">
           <Toggle label="Mean X" checked={showAvgX} onChange={setShowAvgX} />
           <Toggle label="Mean Y" checked={showAvgY} onChange={setShowAvgY} />
           <Toggle label="Quadrant" checked={showQuadrant} onChange={setShowQuadrant} />
           <Toggle label="Invert X" checked={invertX} onChange={setInvertX} />
           <Toggle label="Invert Y" checked={invertY} onChange={setInvertY} />
+          <Toggle label="Exclure 0 (X)" checked={excludeZeroX} onChange={setExcludeZeroX} />
+          <Toggle label="Exclure 0 (Y)" checked={excludeZeroY} onChange={setExcludeZeroY} />
+          <Toggle label="Mode Essaim" checked={isSwarmMode} onChange={setIsSwarmMode} />
         </div>
       </div>
 
-      {/* Action Bar (Presets & Export) */}
-      <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row items-stretch sm:items-end md:items-start lg:items-start gap-6 md:gap-8 md:border-l border-white/10 md:pl-8">
+      {/* Action Bar (Presets) */}
+      <div className="flex flex-col md:border-l border-white/10 md:pl-8 min-w-[250px]">
         {/* Presets */}
         <div className="flex flex-col flex-1">
-          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Presets</span>
+          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Presets & Export</span>
           <div className="flex items-center gap-2">
             <select 
               className="flex-1 bg-[#131313] border border-white/10 rounded-[4px] px-3 h-[44px] verge-label-mono text-[9px] text-white outline-none focus:border-[#3cffd0] min-w-[120px]"
@@ -417,6 +446,7 @@ plt.show()
               <Save size={16} />
             </button>
           </div>
+          
           {isDeleting && savedPresets.length > 0 && (
             <div className="mt-3 space-y-1">
               {savedPresets.map(p => (
@@ -429,14 +459,11 @@ plt.show()
               ))}
             </div>
           )}
-        </div>
 
-        {/* Export */}
-        <div className="flex flex-col">
-          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Export</span>
+          {/* Python Export Button - Moved under Presets */}
           <button 
             onClick={handleExportPython}
-            className="h-[44px] px-6 bg-white text-black rounded-[4px] verge-label-mono text-[9px] font-black hover:bg-[#3cffd0] transition-colors flex items-center justify-center gap-2"
+            className="mt-4 h-[44px] w-full bg-white text-black rounded-[4px] verge-label-mono text-[9px] font-black hover:bg-[#3cffd0] transition-colors flex items-center justify-center gap-2"
           >
             <Activity size={14} /> PYTHON SCRIPT
           </button>
@@ -473,11 +500,16 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
   const [invertY, setInvertY] = useState(false);
   const [focusedPlayerIds, setFocusedPlayerIds] = useState([]);
   
+  const [excludeZeroX, setExcludeZeroX] = useState(false);
+  const [excludeZeroY, setExcludeZeroY] = useState(false);
+  const [isSwarmMode, setIsSwarmMode] = useState(false);
+  const [labeledPlayerIds, setLabeledPlayerIds] = useState([]);
+  
   // État pour les onglets mobiles
   const [activeMobileTab, setActiveMobileTab] = useState('visionnage');
 
   const chartData = useMemo(() => {
-    return players.map(p => {
+    const rawData = players.map(p => {
       const xVal = p[xAxis];
       const yVal = p[yAxis];
       return {
@@ -491,7 +523,39 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
         originalPlayer: p
       };
     });
-  }, [players, xAxis, yAxis]);
+
+    if (!isSwarmMode) return rawData;
+
+    // Logique d'Essaim Structuré (Beeswarm)
+    // On trie pour traiter les points de gauche à droite
+    const sorted = [...rawData].sort((a, b) => a.x - b.x);
+    
+    // On définit une "largeur de collision" basée sur l'étendue des données
+    const xMin = Math.min(...sorted.map(p => p.x));
+    const xMax = Math.max(...sorted.map(p => p.x));
+    const xRange = xMax - xMin;
+    const binWidth = xRange > 0 ? xRange / 60 : 1; // 60 slots sur l'axe X
+
+    const bins = {};
+    
+    return sorted.map(p => {
+      const binIndex = Math.floor(p.x / binWidth);
+      if (!bins[binIndex]) bins[binIndex] = 0;
+      
+      const count = bins[binIndex];
+      bins[binIndex]++;
+
+      // Calcul de la position Y : Centre de gravité à 50
+      // 0 -> 50
+      // 1 -> 50 + 8
+      // 2 -> 50 - 8
+      // 3 -> 50 + 16...
+      const direction = count % 2 === 0 ? 1 : -1;
+      const offset = Math.ceil(count / 2) * 9 * direction;
+      
+      return { ...p, y: 50 + offset };
+    });
+  }, [players, xAxis, yAxis, isSwarmMode]);
 
   const { averages, stats } = useMemo(() => {
     if (!chartData.length) return { averages: { x: 0, y: 0 }, stats: [] };
@@ -524,10 +588,11 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
     <CustomScatterPoint 
       {...props} 
       focusedPlayerIds={focusedPlayerIds} 
+      labeledPlayerIds={labeledPlayerIds}
       setFocusedPlayerIds={setFocusedPlayerIds} 
       onPlayerClick={onPlayerClick} 
     />
-  ), [focusedPlayerIds, onPlayerClick]);
+  ), [focusedPlayerIds, labeledPlayerIds, onPlayerClick]);
 
   return (
     <div className="flex flex-col h-full space-y-4 md:space-y-8">
@@ -559,7 +624,11 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
           showQuadrant={showQuadrant} setShowQuadrant={setShowQuadrant}
           invertX={invertX} setInvertX={setInvertX}
           invertY={invertY} setInvertY={setInvertY}
+          excludeZeroX={excludeZeroX} setExcludeZeroX={setExcludeZeroX}
+          excludeZeroY={excludeZeroY} setExcludeZeroY={setExcludeZeroY}
+          isSwarmMode={isSwarmMode} setIsSwarmMode={setIsSwarmMode}
           focusedPlayerIds={focusedPlayerIds} setFocusedPlayerIds={setFocusedPlayerIds}
+          labeledPlayerIds={labeledPlayerIds} setLabeledPlayerIds={setLabeledPlayerIds}
         />
       </div>
 
@@ -597,17 +666,17 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
                 type="number" dataKey="x" name={xAxis} 
                 reversed={invertX}
                 stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9, fontFamily: 'PolySans Mono' }} 
-                axisLine tickLine={false} domain={['auto', 'auto']}
+                axisLine tickLine={false} domain={excludeZeroX ? ['dataMin', 'dataMax'] : [0, 'auto']}
               >
                 <Label value={xAxis.replace(/_/g, ' ').toUpperCase()} offset={-25} position="insideBottom" fill="#3cffd0" fontSize={8} fontFamily="PolySans Mono" fontWeight="900" />
               </XAxis>
               <YAxis 
-                type="number" dataKey="y" name={yAxis} 
+                type="number" dataKey="y" name={isSwarmMode ? "Distribution" : yAxis} 
                 reversed={invertY}
-                stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 9, fontFamily: 'PolySans Mono' }} 
-                axisLine tickLine={false} domain={['auto', 'auto']}
+                stroke="rgba(255,255,255,0.2)" tick={{ fill: isSwarmMode ? 'transparent' : 'rgba(255,255,255,0.4)', fontSize: 9, fontFamily: 'PolySans Mono' }} 
+                axisLine={!isSwarmMode} tickLine={false} domain={isSwarmMode ? [0, 100] : (excludeZeroY ? ['dataMin', 'dataMax'] : [0, 'auto'])}
               >
-                <Label value={yAxis.replace(/_/g, ' ').toUpperCase()} angle={-90} offset={10} position="insideLeft" fill="#3cffd0" fontSize={8} fontFamily="PolySans Mono" fontWeight="900" />
+                <Label value={isSwarmMode ? "DENSITÉ (ESSAIM)" : yAxis.replace(/_/g, ' ').toUpperCase()} angle={-90} offset={10} position="insideLeft" fill="#3cffd0" fontSize={8} fontFamily="PolySans Mono" fontWeight="900" />
               </YAxis>
               <ZAxis type="number" range={[60, 60]} />
               <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '4 4', stroke: '#3cffd0', strokeWidth: 1 }} />
