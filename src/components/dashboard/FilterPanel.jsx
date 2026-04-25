@@ -227,31 +227,50 @@ const FilterPanel = ({
           badge={getSectionStats('morphologie').count}
           subtitle={getSectionStats('morphologie').subtitle}
         >
-          <div className="space-y-10">
+          <div className="space-y-12">
             <DualRangeSlider label="Tranche d'Âge" min={15} max={45} currentMin={pendingFilters.minAge} currentMax={pendingFilters.maxAge} onChange={(min, max) => setPendingFilters(prev => ({ ...prev, minAge: min, maxAge: max }))} />
 
-            <div className="flex items-center justify-between p-6 bg-[#2d2d2d] rounded-[4px] border border-white/5">
-              <div className="flex flex-col">
-                <span className="verge-label-mono text-[10px] text-[#3cffd0] uppercase font-black">Âge de Saison</span>
-                <span className="verge-label-mono text-[8px] text-[#949494] mt-1 uppercase">Basé sur l'année de saison</span>
+            <div className="p-8 bg-[#2d2d2d]/50 border border-white/5 rounded-[4px] relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#3cffd0]/10" />
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex flex-col">
+                  <span className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Âge de Saison</span>
+                  <span className="verge-label-mono text-[8px] text-[#949494] mt-1.5 uppercase tracking-wider">Basé sur l'année de saison</span>
+                </div>
+                <button 
+                  onClick={() => updateFilters('useSeasonAge', !pendingFilters.useSeasonAge)} 
+                  className={`w-12 h-6 rounded-full p-1 transition-all duration-500 relative ${pendingFilters.useSeasonAge ? 'bg-[#3cffd0]' : 'bg-[#131313]'}`}
+                >
+                  <div className={`w-4 h-4 rounded-full transition-transform duration-500 shadow-xl ${pendingFilters.useSeasonAge ? 'translate-x-6 bg-white' : 'translate-x-0 bg-[#2d2d2d]'}`} />
+                </button>
               </div>
-              <button onClick={() => updateFilters('useSeasonAge', !pendingFilters.useSeasonAge)} className={`w-10 h-5 rounded-full p-0.5 transition-all duration-300 ${pendingFilters.useSeasonAge ? 'bg-[#3cffd0]' : 'bg-[#131313]'}`}>
-                <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 ${pendingFilters.useSeasonAge ? 'translate-x-5' : 'translate-x-0'}`} />
-              </button>
             </div>
 
             <div className="filter-group">
-              <label className="verge-label-mono text-[9px] text-[#949494] mb-4 block uppercase tracking-widest">Préférence Latérale</label>
-              <div className="grid grid-cols-4 gap-3">
-                {['all', 'right', 'left', 'both'].map((f) => (
-                  <button key={f} onClick={() => updateFilters('foot', f)} className={`py-4 rounded-[2px] verge-label-mono text-[9px] font-black uppercase transition-all duration-300 ${pendingFilters.foot === f ? 'bg-[#3cffd0] text-black' : 'bg-[#2d2d2d] text-[#949494] hover:text-white border border-white/5'}`}>
-                    {f === 'all' ? 'All' : f === 'right' ? 'R' : f === 'left' ? 'L' : '2P'}
+              <label className="verge-label-mono text-[10px] text-[#949494] mb-6 block uppercase tracking-[0.2em] font-black">Préférence Latérale</label>
+              <div className="grid grid-cols-4 gap-4">
+                {[
+                  { id: 'all', label: 'ALL' },
+                  { id: 'right', label: 'R' },
+                  { id: 'left', label: 'L' },
+                  { id: 'both', label: '2P' }
+                ].map((f) => (
+                  <button 
+                    key={f.id} 
+                    onClick={() => updateFilters('foot', f.id)} 
+                    className={`aspect-square rounded-[2px] verge-label-mono text-[11px] font-black uppercase transition-all duration-300 border ${
+                      pendingFilters.foot === f.id 
+                      ? 'bg-[#3cffd0] text-black border-[#3cffd0] shadow-[0_0_20px_rgba(60,255,208,0.3)]' 
+                      : 'bg-[#2d2d2d] text-[#949494] border-white/5 hover:border-white/20 hover:text-white'
+                    }`}
+                  >
+                    {f.label}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-12 pt-4">
+            <div className="space-y-12 pt-4">
               <DualRangeSlider label="Taille (cm)" min={140} max={210} currentMin={pendingFilters.height?.min || 140} currentMax={pendingFilters.height?.max || 210} onChange={(min, max) => updateFilters('height', { min, max })} unit="cm" />
               <DualRangeSlider label="Poids (kg)" min={50} max={110} currentMin={pendingFilters.weight?.min || 50} currentMax={pendingFilters.weight?.max || 110} onChange={(min, max) => updateFilters('weight', { min, max })} unit="kg" />
             </div>
@@ -264,28 +283,46 @@ const FilterPanel = ({
           badge={getSectionStats('performance').count}
           subtitle={getSectionStats('performance').subtitle}
         >
-          <div className="mb-10">
-            <TacticalPositionPicker 
-              selectedPositions={pendingFilters.positions}
-              onChange={(val) => updateFilters('positions', val)}
-            />
-          </div>
-          <MultiSelectWithChips label="Postes" options={positionsList} selected={pendingFilters.positions} onChange={(val) => updateFilters('positions', val)} placeholder="Rôles tactiques..." />
-          
-          <div className="space-y-10 mt-12 p-8 bg-[#2d2d2d] rounded-[4px] border border-white/5">
-            <div className="filter-group">
-               <label className="verge-label-mono text-[9px] text-white flex justify-between mb-4 uppercase font-black">
-                 <span>Temps de Jeu (%)</span>
-                 <span className="text-[#3cffd0]">{(pendingFilters.playtime?.min || 0)}%+</span>
-               </label>
-               <input type="range" min="0" max="100" step="5" value={pendingFilters.playtime?.min || 0} onChange={e => updateFilters('playtime', { ...(pendingFilters.playtime || {}), min: Number(e.target.value) })} className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" />
+          <div className="space-y-10">
+            <div className="mb-6">
+              <TacticalPositionPicker 
+                selectedPositions={pendingFilters.positions}
+                onChange={(val) => updateFilters('positions', val)}
+              />
             </div>
-            <div className="filter-group">
-               <label className="verge-label-mono text-[9px] text-white flex justify-between mb-4 uppercase font-black">
-                 <span>Matchs Min</span>
-                 <span className="text-[#3cffd0]">{pendingFilters.minMatches}+</span>
-               </label>
-               <input type="range" min="0" max="60" step="1" value={pendingFilters.minMatches} onChange={e => updateFilters('minMatches', Number(e.target.value))} className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" />
+            
+            <div className="p-10 bg-[#2d2d2d]/50 border border-white/5 rounded-[4px] space-y-12 relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-12 h-12 border-t border-l border-[#3cffd0]/10" />
+               
+               <div className="filter-group">
+                  <div className="flex justify-between items-center mb-6">
+                    <label className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Temps de Jeu (%)</label>
+                    <span className="verge-label-mono text-[11px] text-[#3cffd0] font-black">{(pendingFilters.playtime?.min || 0)}%+</span>
+                  </div>
+                  <input 
+                    type="range" min="0" max="100" step="5" 
+                    value={pendingFilters.playtime?.min || 0} 
+                    onChange={e => updateFilters('playtime', { ...(pendingFilters.playtime || {}), min: Number(e.target.value) })} 
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" 
+                  />
+               </div>
+
+               <div className="filter-group">
+                  <div className="flex justify-between items-center mb-6">
+                    <label className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Matchs Min</label>
+                    <span className="verge-label-mono text-[11px] text-[#3cffd0] font-black">{pendingFilters.minMatches}+</span>
+                  </div>
+                  <input 
+                    type="range" min="0" max="60" step="1" 
+                    value={pendingFilters.minMatches} 
+                    onChange={e => updateFilters('minMatches', Number(e.target.value))} 
+                    className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" 
+                  />
+               </div>
+            </div>
+
+            <div className="pt-4">
+              <MultiSelectWithChips label="Postes Additionnels" options={positionsList} selected={pendingFilters.positions} onChange={(val) => updateFilters('positions', val)} placeholder="Rechercher..." />
             </div>
           </div>
         </AccordionSection>

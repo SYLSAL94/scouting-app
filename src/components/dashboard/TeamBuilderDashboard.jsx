@@ -40,42 +40,16 @@ export default function TeamBuilderDashboard({ activeFilters, onPlayerClick, fil
                         )}
                         <span className="md:hidden">Custom</span><span className="hidden md:inline">Composition Manuelle</span>
                     </button>
-                    
-                    <button
-                        onClick={() => setActiveTab('filters')}
-                        className={`lg:hidden relative flex-1 min-w-[100px] px-4 py-4 verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all ${
-                            activeTab === 'filters' ? 'text-black' : 'text-[#949494] hover:text-white'
-                        }`}
-                    >
-                        {activeTab === 'filters' && (
-                            <motion.div
-                                layoutId="activeTabTeam"
-                                className="absolute inset-0 bg-[#3cffd0] -z-10 shadow-[0_0_20px_rgba(60,255,208,0.2)]"
-                            />
-                        )}
-                        Filtres
-                    </button>
                 </div>
             </div>
 
-            {/* Content Area - Layout à deux colonnes sur PC */}
-            <div className="flex-1 flex flex-col lg:flex-row gap-6 md:gap-10 min-h-0">
-                
-                {/* Panneau Filtres - Latéral sur PC */}
-                <aside className="hidden lg:block w-[420px] shrink-0 overflow-y-auto no-scrollbar pb-8">
-                    <FilterPanel {...filterProps} />
-                </aside>
-
-                {/* Zone de Contenu Principale (Terrain/XI) */}
+            {/* Content Area */}
+            <div className="flex-1 flex flex-col min-h-0">
                 <main className="flex-1 flex flex-col min-h-0 min-w-0">
                     {activeTab === 'bestXI' ? (
                         <BestXI activeFilters={activeFilters} onPlayerClick={onPlayerClick} />
-                    ) : activeTab === 'monXI' ? (
-                        <MonXI activeFilters={activeFilters} onPlayerClick={onPlayerClick} />
                     ) : (
-                        <div className="lg:hidden animate-in slide-in-from-bottom-4 duration-300 w-full">
-                            <FilterPanel {...filterProps} fullWidth={true} />
-                        </div>
+                        <MonXI activeFilters={activeFilters} onPlayerClick={onPlayerClick} />
                     )}
                 </main>
             </div>

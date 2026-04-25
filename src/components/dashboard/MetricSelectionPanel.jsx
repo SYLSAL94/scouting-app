@@ -78,17 +78,19 @@ export const MetricSelectionPanel = ({
                             <label className="verge-label-mono text-[10px] text-[#949494] tracking-[0.2em] font-black uppercase">
                                 Type de données
                             </label>
-                            <div className="group relative">
-                                <Info size={14} className="text-[#949494] hover:text-[#3cffd0] cursor-help transition-colors" />
-                                <div className="absolute right-0 bottom-full mb-3 w-72 p-6 bg-[#131313] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                                    <div className="space-y-3">
-                                        <p className="verge-label-mono text-[9px] text-[#3cffd0] font-black tracking-[0.2em] uppercase">Guide Analytique</p>
-                                        <p className="text-[11px] leading-relaxed text-[#949494]">
-                                            <strong className="text-white">PERCENTILES :</strong> Compare les joueurs dynamiquement au sein de votre population filtrée actuelle.
-                                        </p>
-                                        <p className="text-[11px] leading-relaxed text-[#949494]">
-                                            <strong className="text-white">VALEURS BRUTES :</strong> Affiche les statistiques réelles (par 90 min) sans aucune transformation.
-                                        </p>
+                            <div className="relative flex items-center">
+                                <div className="group cursor-help p-1">
+                                    <Info size={14} className="text-[#949494] group-hover:text-[#3cffd0] transition-colors" />
+                                    <div className="absolute right-0 bottom-full mb-3 w-72 p-6 bg-[#131313] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 pointer-events-none">
+                                        <div className="space-y-3">
+                                            <p className="verge-label-mono text-[9px] text-[#3cffd0] font-black tracking-[0.2em] uppercase">Guide Analytique</p>
+                                            <p className="text-[11px] leading-relaxed text-[#949494]">
+                                                <strong className="text-white">PERCENTILES :</strong> Compare les joueurs dynamiquement au sein de votre population filtrée actuelle.
+                                            </p>
+                                            <p className="text-[11px] leading-relaxed text-[#949494]">
+                                                <strong className="text-white">VALEURS BRUTES :</strong> Affiche les statistiques réelles (par 90 min) sans aucune transformation.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

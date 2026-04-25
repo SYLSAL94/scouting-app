@@ -104,57 +104,84 @@ export const RadarChartVisualization = ({
             ) : (
                 <>
                     {/* --- Bandeau tuiles --- */}
-                    <div className="px-4 pb-3 flex flex-col gap-3">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="px-6 pb-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {entitiesInfo.map((ent, idx) => {
-                                const color = entityColors?.[idx % entityColors.length] || { stroke: '#38bdf8', fill: '#38bdf8' };
-                                const strokeColor = color.stroke || '#38bdf8';
+                                const color = entityColors?.[idx % entityColors.length] || { stroke: '#3cffd0', fill: '#3cffd0' };
+                                const strokeColor = color.stroke || '#3cffd0';
                                 const label = ent.label || `Entité ${idx + 1}`;
-                                const init = initialOf(label);
                                 const clickable = !ent.isMedian;
                                 const isHovered = hoveredEntityIndex === idx;
 
                                 return (
                                     <div
                                         key={`tile-${idx}`}
-                                        className={`relative flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 group ${clickable ? 'cursor-pointer hover:-translate-y-1 hover:shadow-lg' : ''
-                                            } ${isHovered ? 'ring-2 ring-offset-2 ring-sky-400' : ''}`}
+                                        className={`relative flex items-center gap-5 p-4 rounded-[2px] border transition-all duration-500 group overflow-hidden ${
+                                            clickable ? 'cursor-pointer' : ''
+                                        }`}
                                         style={{
-                                            backgroundColor: 'rgba(30, 41, 59, 0.7)',
-                                            borderColor: isHovered ? strokeColor : `${strokeColor}40`,
-                                            boxShadow: (clickable || isHovered) ? `0 4px 20px -12px ${strokeColor}60` : 'none',
-                                            transform: isHovered ? 'translateY(-2px)' : 'none'
+                                            backgroundColor: '#131313',
+                                            borderColor: isHovered ? strokeColor : 'rgba(255,255,255,0.05)',
+                                            boxShadow: isHovered ? `0 0 30px ${strokeColor}15` : 'none',
                                         }}
                                         onClick={() => clickable && onPlayerSelect && onPlayerSelect(ent)}
                                         onMouseEnter={() => setHoveredEntityIndex(idx)}
                                         onMouseLeave={() => setHoveredEntityIndex(null)}
                                     >
+                                        {/* Accent Bar */}
                                         <div
-                                            className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full transition-all duration-300"
-                                            style={{ backgroundColor: strokeColor, width: isHovered ? '6px' : '4px' }}
+                                            className="absolute left-0 top-0 bottom-0 w-[3px] transition-all duration-500"
+                                            style={{ 
+                                                backgroundColor: strokeColor, 
+                                                boxShadow: isHovered ? `0 0 15px ${strokeColor}` : 'none',
+                                                opacity: isHovered ? 1 : 0.6
+                                            }}
                                         ></div>
-                                        <div className="relative pl-2">
+
+                                        {/* Avatar Wrapper */}
+                                        <div className="relative shrink-0">
                                             <div
-                                                className="w-14 h-14 rounded-full border-2 bg-slate-800 overflow-hidden shadow-sm flex-shrink-0 transition-all duration-300"
-                                                style={{ borderColor: strokeColor, transform: isHovered ? 'scale(1.05)' : 'none' }}
+                                                className="w-14 h-14 rounded-full border border-white/10 bg-black/40 overflow-hidden transition-all duration-500 flex items-center justify-center"
+                                                style={{ 
+                                                    borderColor: isHovered ? strokeColor : 'rgba(255,255,255,0.1)',
+                                                    boxShadow: isHovered ? `0 0 20px ${strokeColor}20` : 'none'
+                                                }}
                                             >
                                                 {ent.image ? (
-                                                    <img src={ent.image} alt={label} className="w-full h-full object-contain bg-white" />
+                                                    <img src={ent.image} alt={label} className="w-full h-full object-contain bg-transparent" />
                                                 ) : (
-                                                    <div className="w-full h-full bg-slate-800 grid place-items-center text-white font-bold text-lg">{init}</div>
+                                                    <div className="verge-label-mono text-[14px] font-black text-white/20">
+                                                        {label.charAt(0)}
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5">
+
+                                        {/* Info Wrapper */}
+                                        <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
                                             <div className="flex justify-between items-center gap-2">
-                                                <span className={`text-sm font-bold truncate transition-colors ${clickable ? (isHovered ? 'text-sky-400' : 'text-slate-100') : 'text-slate-300'}`} title={label}>{label}</span>
+                                                <span 
+                                                    className={`verge-label-mono text-[11px] font-black truncate transition-colors uppercase tracking-widest ${
+                                                        isHovered ? 'text-white' : 'text-white/80'
+                                                    }`} 
+                                                    style={{ color: isHovered ? '#fff' : undefined }}
+                                                    title={label}
+                                                >
+                                                    {label}
+                                                </span>
                                             </div>
-                                            <div className="text-xs text-slate-400 truncate flex items-center gap-1">
-                                                <span className="font-medium text-slate-300">{ent.team || '—'}</span>
-                                                {(ent.team && ent.position) && <span className="text-slate-600">•</span>}
-                                                <span>{ent.position}</span>
+                                            
+                                            <div className="flex flex-col gap-0.5">
+                                                <div className="verge-label-mono text-[9px] font-black uppercase tracking-wider text-[#3cffd0]/80 truncate">
+                                                    {ent.team || '—'}
+                                                </div>
+                                                <div className="verge-label-mono text-[9px] font-black uppercase tracking-widest text-white/40 truncate">
+                                                    {ent.position}
+                                                </div>
+                                                <div className="verge-label-mono text-[8px] font-black uppercase tracking-[0.2em] text-white/20 mt-1">
+                                                    {ent.season || '—'} {ent.competition ? `• ${ent.competition}` : ''}
+                                                </div>
                                             </div>
-                                            <div className="text-[10px] text-slate-500 truncate">{ent.season || '—'} {ent.competition ? `| ${ent.competition}` : ''}</div>
                                         </div>
                                     </div>
                                 );
@@ -200,27 +227,39 @@ export const RadarChartVisualization = ({
                                     content={({ active, payload, label }) => {
                                         if (!active || !payload || !payload.length) return null;
                                         return (
-                                            <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700 rounded-xl shadow-xl p-3 min-w-[200px]">
-                                                <div className="mb-2 pb-2 border-b border-slate-800"><h4 className="font-bold text-slate-100 text-sm text-center">{label}</h4></div>
-                                                <div className="space-y-2">
+                                            <div className="bg-[#131313]/95 backdrop-blur-xl border border-white/10 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 min-w-[220px] animate-in fade-in zoom-in-95 duration-200">
+                                                <div className="mb-4 pb-3 border-b border-white/5">
+                                                    <h4 className="verge-label-mono text-[10px] font-black text-white text-center uppercase tracking-[0.2em]">{label}</h4>
+                                                </div>
+                                                <div className="space-y-3">
                                                     {payload
                                                         .slice()
                                                         .sort((a, b) => b.value - a.value)
-                                                        .map((entry, _) => {
+                                                        .map((entry, idx) => {
                                                             const entityIdx = String(entry.dataKey).replace('entity', '');
                                                             const rawValue = entry.payload[`entity${entityIdx}_raw`];
                                                             const plotValue = entry.value;
                                                             const valueToDisplay = metricDisplayMode === 'standard' ? rawValue : plotValue;
+                                                            
                                                             return (
-                                                                <div key={entry.dataKey || _} className="flex items-center justify-between gap-4 text-xs">
-                                                                    <div className="flex items-center gap-2 min-w-0">
-                                                                        <div className="w-2.5 h-2.5 rounded-full shadow-sm flex-shrink-0" style={{ backgroundColor: entry.color }} />
-                                                                        <span className="text-slate-300 font-medium truncate" title={entry.name}>{entry.name}</span>
+                                                                <div key={entry.dataKey || idx} className="flex items-center justify-between gap-6">
+                                                                    <div className="flex items-center gap-3 min-w-0">
+                                                                        <div 
+                                                                            className="w-2 h-2 rounded-full shadow-[0_0_10px_rgba(60,255,208,0.2)] flex-shrink-0" 
+                                                                            style={{ backgroundColor: entry.color }} 
+                                                                        />
+                                                                        <span className="verge-label-mono text-[9px] font-black text-white/70 uppercase truncate tracking-wider" title={entry.name}>
+                                                                            {entry.name}
+                                                                        </span>
                                                                     </div>
-                                                                    <span className="font-mono font-bold text-white bg-slate-800 px-1.5 py-0.5 rounded">
-                                                                        {Number.isFinite(+valueToDisplay) ? (+valueToDisplay).toFixed(2) : valueToDisplay}
-                                                                        {metricDisplayMode === 'percentile' && <span className="text-[10px] ml-0.5">%</span>}
-                                                                    </span>
+                                                                    <div className="flex items-baseline gap-1 bg-white/5 px-2 py-1 rounded-[1px] border border-white/5">
+                                                                        <span className="verge-label-mono text-[10px] font-black text-[#3cffd0]">
+                                                                            {Number.isFinite(+valueToDisplay) ? (+valueToDisplay).toFixed(2) : valueToDisplay}
+                                                                        </span>
+                                                                        {metricDisplayMode === 'percentile' && (
+                                                                            <span className="verge-label-mono text-[7px] text-white/30 font-black">%</span>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             );
                                                         })}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Activity, Users, ArrowLeft, BarChart2, X } from 'lucide-react';
+import { Search, Activity, Users, ArrowLeft, BarChart2, X, SlidersHorizontal } from 'lucide-react';
 
 // Import des composants factorisés
 import LandingPage from './components/layout/LandingPage';
@@ -208,18 +208,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex flex-col xl:flex-row gap-6 xl:gap-10">
-              <div className={`xl:block xl:w-[420px] shrink-0 ${dashboardView === 'FILTERS' ? 'block' : 'hidden'}`}>
-                <FilterPanel 
-                  openSection={openSection} setOpenSection={setOpenSection}
-                  pendingFilters={pendingFilters} setPendingFilters={setPendingFilters}
-                  competitionsList={competitionsList} positionsList={positionsList} teamsList={teamsList} seasonsList={seasonsList} metricsList={metricsList}
-                  profiles={profiles} loadProfile={loadProfile} onProfileSaved={(newP) => setProfiles(prev => [newP, ...prev])} 
-                  onProfileDeleted={(id) => setProfiles(prev => prev.filter(p => p.id !== id))}
-                  handleResetFilters={handleResetFilters} handleApplyFilters={() => { handleApplyFilters(); if (window.innerWidth < 1280) setDashboardView('TABLE'); }}
-                  hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
-                />
-              </div>
+            <div className="flex flex-col gap-6">
 
               <main className="ranking-content-panel flex-1 flex flex-col gap-4 min-w-0">
                 {dashboardView === 'TABLE' && (
@@ -309,6 +298,66 @@ function App() {
       <ContextualChatBot selectedPlayer={selectedPlayer} players={players} activeFilters={activeFilters} />
 
       <AnimatePresence>
+        {showFilters && (
+          <>
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              onClick={() => setShowFilters(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+            />
+            
+            {/* Drawer */}
+            <motion.div 
+              initial={{ x: '-100%' }} 
+              animate={{ x: 0 }} 
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 h-full w-[420px] max-w-[90vw] z-[201] shadow-[20px_0_50px_rgba(0,0,0,0.5)]"
+            >
+              <div className="h-full bg-[#131313] border-r border-white/10 flex flex-col">
+                 <div className="flex justify-between items-center p-6 border-b border-white/10">
+                    <span className="verge-label-mono text-[10px] text-[#3cffd0] font-black uppercase tracking-widest">Configuration Globale</span>
+                    <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors text-[#949494] hover:text-white">
+                       <X size={20} />
+                    </button>
+                 </div>
+                 <div className="flex-1 overflow-hidden">
+                    <FilterPanel 
+                      openSection={openSection} setOpenSection={setOpenSection}
+                      pendingFilters={pendingFilters} setPendingFilters={setPendingFilters}
+                      competitionsList={competitionsList} positionsList={positionsList} teamsList={teamsList} seasonsList={seasonsList} metricsList={metricsList}
+                      profiles={profiles} loadProfile={loadProfile} onProfileSaved={(newP) => setProfiles(prev => [newP, ...prev])} 
+                      onProfileDeleted={(id) => setProfiles(prev => prev.filter(p => p.id !== id))}
+                      handleResetFilters={handleResetFilters} 
+                      handleApplyFilters={() => { handleApplyFilters(); setShowFilters(false); }}
+                      hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
+                    />
+                 </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Toggle Button - Visible in all views except Landing */}
+      {view !== 'LANDING' && (
+        <motion.button
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          onClick={() => setShowFilters(true)}
+          className="fixed bottom-10 left-10 z-[150] w-14 h-14 bg-black border border-[#3cffd0]/30 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(60,255,208,0.2)] hover:scale-110 hover:border-[#3cffd0] transition-all group"
+        >
+           <SlidersHorizontal size={22} className="text-[#3cffd0] group-hover:rotate-90 transition-transform duration-500" />
+           {JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters) && (
+              <span className="absolute top-0 right-0 w-4 h-4 bg-[#f43f5e] border-2 border-black rounded-full" />
+           )}
+        </motion.button>
+      )}
+
+      <AnimatePresence>
         {selectedPlayer && (
             <PlayerDashboard 
               playerId={selectedPlayer.id} 
@@ -341,7 +390,7 @@ function App() {
                 .then(() => setProfiles(prev => prev.filter(p => p.id !== id)))
                 .catch(err => console.error(err));
             }}
-            onPlayerClick={handlePlayerClick}
+            onPlayerClick={handlePlayerSelect}
           />
         )}
       </AnimatePresence>

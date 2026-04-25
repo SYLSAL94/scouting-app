@@ -121,6 +121,11 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
                   onClick={() => onSelectPath('MATCHUP')} 
                 />
                 <PathCard 
+                  icon={<Activity />} title="Advanced Radar" 
+                  desc="Multi-player visualization with custom population-based normalization." 
+                  onClick={() => onSelectPath('RADAR')} 
+                />
+                <PathCard 
                   icon={<Shield />} title="Squad Mapping" 
                   desc="Analyze your team composition against target league averages." 
                   onClick={() => onSelectPath('TEAMBUILDER')} 
