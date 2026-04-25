@@ -118,32 +118,32 @@ export const SearchableMultiSelect = ({
 
     return (
         <div className="relative group" ref={wrapperRef}>
-            {label ? <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">{label}</label> : null}
+            {label ? <label className="verge-label-mono text-[10px] font-black text-[#949494] tracking-[0.2em] mb-3 block">{label}</label> : null}
 
             <div className={`
-                relative rounded-xl border transition-all duration-300
+                relative rounded-[2px] border transition-all duration-200
                 ${isOpen
-                    ? 'bg-white dark:bg-slate-800 border-sky-500/50 ring-1 ring-sky-500/20 shadow-lg'
-                    : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:bg-white dark:hover:bg-slate-800/80'
+                    ? 'bg-[#2d2d2d] border-[#3cffd0]/50 shadow-[0_0_20px_rgba(60,255,208,0.1)]'
+                    : 'bg-[#131313] border-white/10 hover:border-white/20'
                 }
             `}>
                 {/* Selected Chips */}
                 {selectedValues.length > 0 && (
-                    <div className="flex flex-wrap gap-2 p-2 border-b border-slate-200 dark:border-white/5 max-h-32 overflow-y-auto styled-scrollbar">
+                    <div className="flex flex-wrap gap-2 p-3 border-b border-white/5 max-h-40 overflow-y-auto styled-scrollbar">
                         {selectedValues.map((val) => {
                             const opt = optionByValue.get(val);
                             const text = displayOf(opt) || String(val);
                             return (
                                 <span
                                     key={val}
-                                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-500/20 shadow-sm"
+                                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[1px] verge-label-mono text-[10px] font-black bg-[#3cffd0] text-black shadow-[0_0_10px_rgba(60,255,208,0.2)]"
                                     title={text}
                                 >
-                                    {text}
+                                    {text.toUpperCase()}
                                     <button
                                         type="button"
                                         onClick={() => handleRemove(val)}
-                                        className="p-0.5 rounded-md hover:bg-sky-500/20 hover:text-sky-700 dark:hover:text-sky-300 transition-colors"
+                                        className="p-0.5 hover:bg-black/20 transition-colors"
                                         aria-label={`Retirer ${text}`}
                                     >
                                         <IconX size={12} strokeWidth={3} />
@@ -155,12 +155,12 @@ export const SearchableMultiSelect = ({
                 )}
 
                 {/* Search Input */}
-                <div className="relative flex items-center px-3 py-2.5">
-                    <Search size={16} className={`mr-2 transition-colors ${isOpen ? 'text-sky-500 dark:text-sky-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                <div className="relative flex items-center px-4 py-3">
+                    <Search size={16} className={`mr-3 transition-colors ${isOpen ? 'text-[#3cffd0]' : 'text-[#949494]'}`} />
                     <input
                         ref={inputRef}
-                        className="w-full bg-transparent text-sm font-medium text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
-                        placeholder={selectedValues.length === 0 ? placeholder : "Ajouter..."}
+                        className="w-full bg-transparent verge-label-mono text-[11px] font-black text-white placeholder-[#949494]/40 focus:outline-none uppercase tracking-tight"
+                        placeholder={selectedValues.length === 0 ? placeholder.toUpperCase() : "AJOUTER..."}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onFocus={() => setIsOpen(true)}
@@ -172,7 +172,7 @@ export const SearchableMultiSelect = ({
             {isOpen && createPortal(
                 <div
                     ref={menuRef}
-                    className="fixed z-[100000] mt-2 max-h-80 overflow-auto rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl ring-1 ring-black/5 dark:ring-black/50 styled-scrollbar animate-in fade-in zoom-in-95 duration-100"
+                    className="fixed z-[100000] mt-2 max-h-80 overflow-auto rounded-[2px] border border-[#3cffd0]/30 bg-[#2d2d2d] shadow-[0_30px_90px_rgba(0,0,0,0.8)] styled-scrollbar"
                     style={{
                         left: menuRect.left,
                         top: menuRect.top,
@@ -180,13 +180,13 @@ export const SearchableMultiSelect = ({
                     }}
                 >
                     {searchTerm.length < MIN_CHARS_TO_SEARCH ? (
-                        <div className="px-4 py-3 text-xs text-slate-500 text-center italic">
-                            Tapez au moins {MIN_CHARS_TO_SEARCH} caractère(s)…
+                        <div className="px-5 py-4 verge-label-mono text-[10px] text-[#949494] text-center italic tracking-widest">
+                            TAPEZ AU MOINS {MIN_CHARS_TO_SEARCH} CARACTÈRE(S)…
                         </div>
                     ) : filteredOptions.length === 0 ? (
-                        <div className="px-4 py-3 text-xs text-slate-500 text-center italic">Aucun résultat trouvé</div>
+                        <div className="px-5 py-4 verge-label-mono text-[10px] text-[#949494] text-center italic tracking-widest">AUCUN RÉSULTAT TROUVÉ</div>
                     ) : (
-                        <div className="p-1.5 space-y-0.5">
+                        <div className="p-2 space-y-1">
                             {filteredOptions.map((opt) => {
                                 const text = displayOf(opt);
                                 return (
@@ -195,11 +195,11 @@ export const SearchableMultiSelect = ({
                                         type="button"
                                         onMouseDown={(e) => e.preventDefault()}
                                         onClick={() => handleToggle(opt.value)}
-                                        className="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-all duration-150 hover:bg-sky-50 dark:hover:bg-sky-500/10 hover:text-sky-600 dark:hover:text-sky-400 text-slate-600 dark:text-slate-300 flex items-center justify-between group/item"
+                                        className="w-full text-left px-4 py-3 verge-label-mono text-[10px] font-black rounded-[1px] transition-all hover:bg-[#3cffd0] hover:text-black text-[#949494] flex items-center justify-between group/item uppercase"
                                         title={text}
                                     >
                                         <span className="truncate">{text}</span>
-                                        <span className="opacity-0 group-hover/item:opacity-100 transition-opacity text-sky-500">
+                                        <span className="opacity-0 group-hover/item:opacity-100 transition-opacity">
                                             <Check size={14} />
                                         </span>
                                     </button>

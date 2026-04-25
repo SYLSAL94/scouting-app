@@ -12,6 +12,22 @@ export default function DetailsPanelWidget({ player, onSelectProfile }) {
         { label: 'Valeur', value: player.market_value || '0', unit: '€' }
     ];
 
+    const topPercentiles = React.useMemo(() => {
+        if (!player) return [];
+        return Object.entries(player)
+            .filter(([key, value]) => (key.endsWith('_percentile') || key.endsWith('_pct')) && value != null)
+            .map(([key, value]) => {
+                const metricKey = key.replace('_percentile', '').replace('_pct', '');
+                return {
+                    label: metricKey.replace(/_/g, ' '),
+                    percentile: parseFloat(value),
+                    rawValue: player[metricKey]
+                };
+            })
+            .sort((a, b) => b.percentile - a.percentile)
+            .slice(0, 4);
+    }, [player]);
+
     const affinityProfiles = React.useMemo(() => {
         if (!player) return [];
         return Object.entries(player)
@@ -25,43 +41,63 @@ export default function DetailsPanelWidget({ player, onSelectProfile }) {
     }, [player]);
 
     return (
-        <div className="bg-white/5 border border-white/10 rounded-xl p-5 shadow-lg backdrop-blur-md">
-            <h3 className="text-sm font-black uppercase tracking-widest text-sky-400 mb-5 flex items-center gap-2">
-                <span className="w-2 h-2 bg-sky-400 rounded-full animate-pulse"></span> Details & Contexte
+        <div className="bg-[#131313] border border-white/10 rounded-[4px] p-6">
+            <h3 className="verge-label-mono text-[#3cffd0] mb-6 flex items-center gap-2">
+                <span className="w-1 h-3 bg-[#3cffd0]"></span> Details & Contexte
             </h3>
             
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-2 gap-3 mb-8">
                 {infoItems.map((item, idx) => (
-                    <div key={idx} className="bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 hover:border-sky-500/30 transition-all">
-                        <div className="text-[10px] uppercase font-black text-slate-500 mb-1 tracking-tighter">{item.label}</div>
-                        <div className="text-sm font-black text-white">{item.value || 'N/A'} <span className="text-[10px] text-slate-400 font-medium">{item.unit}</span></div>
+                    <div key={idx} className="bg-[#2d2d2d] p-4 border border-white/5 hover:border-[#3cffd0] transition-all duration-300 group rounded-[2px]">
+                        <div className="verge-label-mono text-[8px] mb-2 text-[#949494] group-hover:text-[#3cffd0] transition-colors uppercase tracking-widest">{item.label}</div>
+                        <div className="text-sm font-black text-white flex items-baseline gap-1">
+                            {item.value || '—'} 
+                            <span className="verge-label-mono text-[8px] text-[#949494] uppercase">{item.unit}</span>
+                        </div>
                     </div>
                 ))}
             </div>
 
+            <div className="space-y-4 mb-8">
+                <div className="verge-label-mono text-[9px] text-white/40 border-b border-white/10 pb-2 uppercase tracking-widest">Points Forts — Stats Brutes</div>
+                <div className="grid grid-cols-2 gap-3">
+                    {topPercentiles.map((stat, idx) => (
+                        <div key={idx} className="bg-[#131313] p-3 border border-white/10 group hover:border-[#3cffd0] transition-all rounded-[2px]">
+                            <div className="verge-label-mono text-[7px] text-[#949494] mb-1 truncate uppercase" title={stat.label}>{stat.label}</div>
+                            <div className="flex items-baseline justify-between">
+                                <div className="text-[11px] font-black text-white">
+                                    {typeof stat.rawValue === 'number' ? stat.rawValue.toFixed(2) : stat.rawValue || '—'}
+                                </div>
+                                <div className="verge-label-mono text-[8px] text-[#3cffd0]">P{Math.round(stat.percentile)}</div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
             <div className="space-y-4">
-                <div className="text-[10px] uppercase font-black text-slate-400 tracking-widest border-b border-white/5 pb-2">Profils du poste — Affinité</div>
-                <div className="flex flex-wrap gap-2">
+                <div className="verge-label-mono text-[9px] text-white/40 border-b border-white/10 pb-2 uppercase tracking-widest">Profils du poste — Affinité</div>
+                <div className="grid grid-cols-3 gap-3">
                     {affinityProfiles.length > 0 ? (
                         affinityProfiles.map((profile, i) => (
                             <div 
                                 key={profile.role} 
                                 onClick={() => onSelectProfile && onSelectProfile(profile.role)}
-                                className={`flex-1 min-w-[80px] bg-slate-800/60 p-2 rounded-lg border cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 ${
-                                    i===0?'border-yellow-500/50 hover:bg-yellow-500/10':
-                                    i===1?'border-slate-400/50 hover:bg-slate-400/10':
-                                    'border-orange-500/50 hover:bg-orange-500/10'
-                                } text-center shadow-inner`}
+                                className={`bg-[#2d2d2d] p-3 border cursor-pointer transition-all duration-300 hover:bg-[#3cffd0] hover:text-black group rounded-[2px] ${
+                                    i===0?'border-[#3cffd0]':
+                                    i===1?'border-white/20':
+                                    'border-[#5200ff]'
+                                } text-center flex flex-col justify-between h-[80px]`}
                             >
-                                <div className={`text-[8px] font-black uppercase ${i===0?'text-yellow-500':i===1?'text-slate-300':'text-orange-400'}`}>
-                                    {i===0?'🥇 OR':i===1?'🥈 ARGENT':'🥉 BRONZE'}
+                                <div className={`verge-label-mono text-[7px] ${i===0?'text-[#3cffd0]':i===1?'text-[#949494]':'text-[#5200ff]'} group-hover:text-black`}>
+                                    {i===0?'01':i===1?'02':'03'}
                                 </div>
-                                <div className="text-[10px] font-black truncate mt-1 text-white" title={profile.role}>{profile.role}</div>
-                                <div className="text-[9px] font-bold text-slate-500">{profile.pct.toFixed(1)}%</div>
+                                <div className="text-[9px] font-black truncate mt-1 group-hover:text-black uppercase leading-tight" title={profile.role}>{profile.role}</div>
+                                <div className="verge-label-mono text-[8px] text-[#949494] group-hover:text-black font-black">{profile.pct.toFixed(1)}%</div>
                             </div>
                         ))
                     ) : (
-                        <div className="w-full text-center py-2 text-[10px] text-slate-500 italic">Aucune affinité calculée pour ce profil.</div>
+                        <div className="col-span-full text-center py-2 verge-label-mono text-[9px] italic">Aucune affinité calculée.</div>
                     )}
                 </div>
             </div>

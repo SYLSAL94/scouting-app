@@ -50,10 +50,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     useEffect(() => {
         if (!playerId) return;
         setLoading(true);
-        // On ne reset plus playerData ici car c'est fait dans le useEffect de Reset ci-dessus
         
-        // Fetch 1: Profil complet avec propagation du contexte
-        // Priorité : selectedContext (Switcher) > rowContext (Clic liste) > activeFilters (Sidebar)
         let profileUrl = `${API_BASE_URL}/api/players/${playerId}?`;
         const queryParams = [];
 
@@ -73,20 +70,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                 return res.json();
             })
             .then(data => {
-                console.log("🚨 DEBUG PAYLOAD API :", data);
-                
-                // Désarchivage multi-niveaux (items, recordToDisplay ou root)
-                let cleanData = null;
-                if (data && data.recordToDisplay) {
-                    cleanData = data.recordToDisplay;
-                } else if (data && data.items && Array.isArray(data.items)) {
-                    cleanData = data.items[0];
-                } else if (Array.isArray(data)) {
-                    cleanData = data[0];
-                } else {
-                    cleanData = data;
-                }
-
+                let cleanData = data.recordToDisplay || (data.items && data.items[0]) || (Array.isArray(data) ? data[0] : data);
                 setPlayerData(cleanData || null);
                 setLoading(false);
             })
@@ -113,28 +97,25 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     if (!playerId) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-md flex items-center justify-center md:p-6 overflow-hidden">
-            <div className="w-full h-full md:max-w-7xl md:max-h-[90vh] bg-slate-900 border-t border-slate-700 md:border md:rounded-2xl flex flex-col relative overflow-hidden">
+        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center md:p-6 overflow-hidden">
+            <div className="w-full h-full md:max-w-7xl md:max-h-[95vh] bg-[#131313] border-t border-white md:border md:border-white/20 flex flex-col relative overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)]">
                 
                 {/* Header Actions */}
-                <div className="absolute top-4 right-4 z-20 flex gap-3">
-                    {/* Context Switcher - ÉLÉGANT */}
+                <div className="absolute top-8 right-8 z-20 flex gap-4">
+                    {/* Context Switcher - VERGE STYLE */}
                     {availableContexts.length > 1 && (
-                        <div className="flex items-center gap-2 bg-slate-800/80 border border-slate-700 rounded-full px-3 py-1 shadow-lg">
-                            <span className="text-[9px] font-black uppercase text-sky-400 tracking-tighter">Contexte</span>
+                        <div className="flex items-center gap-3 bg-[#2d2d2d] border border-white/10 rounded-[4px] px-4 py-2">
+                            <span className="verge-label-mono text-[9px] text-[#3cffd0] uppercase">Contexte</span>
                             <select 
-                                className="bg-transparent text-white text-[11px] font-bold outline-none cursor-pointer"
+                                className="bg-transparent text-white text-[11px] font-black outline-none cursor-pointer verge-label-mono"
                                 value={availableContexts.findIndex(c => 
                                     c.competition === (selectedContext?.competition || rowContext?.competition) && 
                                     c.season === (selectedContext?.season || rowContext?.season)
                                 )}
-                                onChange={(e) => {
-                                    const idx = e.target.value;
-                                    setSelectedContext(availableContexts[idx]);
-                                }}
+                                onChange={(e) => setSelectedContext(availableContexts[e.target.value])}
                             >
                                 {availableContexts.map((ctx, idx) => (
-                                    <option key={idx} value={idx} className="bg-slate-900 text-white">
+                                    <option key={idx} value={idx} className="bg-[#131313] text-white">
                                         {ctx.competition} ({ctx.season})
                                     </option>
                                 ))}
@@ -143,95 +124,108 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                     )}
                     <button 
                         onClick={onClose} 
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors border border-slate-700 shadow-lg"
+                        className="w-10 h-10 flex items-center justify-center bg-[#2d2d2d] text-white hover:bg-white hover:text-black transition-all border border-white/10 rounded-[4px]"
                     >
                         ✕
                     </button>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto styled-scrollbar p-6">
+                <div className="flex-1 overflow-y-auto styled-scrollbar p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center h-full flex-col gap-4">
-                            <div className="w-12 h-12 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-                            <p className="text-slate-400 font-medium">Chargement du profil Cloud-Native...</p>
+                        <div className="flex items-center justify-center h-full flex-col gap-6 bg-[#131313]">
+                            <div className="w-12 h-12 border-2 border-[#3cffd0] border-t-transparent animate-spin"></div>
+                            <p className="verge-label-mono text-[#949494] text-xs uppercase tracking-widest">Initialisation Cloud-Native...</p>
                         </div>
                     ) : error ? (
-                        <div className="flex items-center justify-center h-full flex-col gap-2">
-                            <div className="text-red-500 text-4xl">⚠️</div>
-                            <p className="text-slate-300 font-bold text-lg">{error}</p>
-                            <button onClick={onClose} className="mt-4 px-6 py-2 bg-slate-800 rounded-lg text-white font-medium hover:bg-slate-700">Retour</button>
+                        <div className="flex items-center justify-center h-full flex-col gap-4 bg-[#131313]">
+                            <p className="verge-h3 text-white">ERREUR DE CHARGEMENT</p>
+                            <button onClick={onClose} className="px-8 py-3 bg-white text-black verge-label-mono text-[10px] font-black">RETOUR</button>
                         </div>
                     ) : playerData ? (
-                        <div className="space-y-8">
+                        <div className="space-y-0">
                             
-                            {/* En-tête du joueur - PREMIUM LAYOUT */}
-                            <div className="flex flex-col md:flex-row items-center gap-6 p-4 md:p-8 bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 rounded-2xl shadow-inner relative overflow-hidden">
-                                {playerData.image ? (
-                                    <img src={playerData.image} alt={playerData.name} className="w-28 h-28 rounded-full object-cover border-4 border-slate-700 shadow-2xl bg-slate-800 relative z-10" />
-                                ) : (
-                                    <div className="w-28 h-28 rounded-full bg-slate-800 border-4 border-slate-700 flex items-center justify-center text-4xl font-black text-slate-600 relative z-10">
-                                        {playerData?.name ? String(playerData.name).charAt(0) : '?'}
-                                    </div>
-                                )}
+                            {/* En-tête du joueur - THE VERGE STRUCTURED LAYOUT */}
+                            <div className="flex flex-col lg:grid lg:grid-cols-12 items-center lg:items-start gap-12 p-10 md:p-16 lg:p-24 bg-[#131313] border-b border-white/10 relative overflow-hidden">
                                 
-                                <div className="text-center md:text-left flex-1 min-w-0 relative z-10">
-                                    <div className="flex flex-col md:flex-row items-center md:items-end gap-4 mb-4">
-                                        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-none">{playerData.name || playerData.full_name}</h2>
-                                        <div className="shrink-0">
-                                            <FavoriteToggle 
-                                                playerId={playerId} 
-                                                season={playerData.season}
-                                                competition={playerData.competition}
-                                                user={user} 
-                                                onUpdateUser={onUpdateUser} 
-                                            />
+                                {/* Colonne 1: Photo - Fixed Width */}
+                                <div className="lg:col-span-3 flex justify-center lg:justify-start">
+                                    <div className="relative group">
+                                        <div className="absolute -inset-1 bg-[#3cffd0] opacity-10 group-hover:opacity-30 blur-[2px] transition-all duration-500 rounded-[2px]" />
+                                        <div className="relative w-48 h-48 md:w-64 md:h-64 bg-[#2d2d2d] border border-white/20 rounded-[2px] overflow-hidden p-1.5">
+                                            {playerData.image ? (
+                                                <img src={playerData.image} alt={playerData.name} className="w-full h-full object-cover rounded-[1px]" />
+                                            ) : (
+                                                <div className="w-full h-full bg-[#131313] flex items-center justify-center text-8xl font-black text-[#2d2d2d]">
+                                                    {playerData?.name ? String(playerData.name).charAt(0) : '?'}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="absolute -top-2 -left-2 w-6 h-6 border-t-2 border-l-2 border-[#3cffd0]" />
+                                    </div>
+                                </div>
+                                
+                                {/* Colonne 2: Identity - Flexible */}
+                                <div className="lg:col-span-5 text-center lg:text-left flex flex-col justify-center h-full min-w-0">
+                                    <div className="flex flex-col gap-2 mb-6">
+                                        <span className="verge-kicker">{playerData.position_category}</span>
+                                        <div className="flex items-center justify-center lg:justify-start gap-6">
+                                            <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase leading-[0.85] tracking-tighter break-words">
+                                                {playerData.name || playerData.full_name}
+                                            </h2>
+                                            <div className="shrink-0">
+                                                <FavoriteToggle 
+                                                    playerId={playerId} 
+                                                    season={playerData.season}
+                                                    competition={playerData.competition}
+                                                    user={user} 
+                                                    onUpdateUser={onUpdateUser} 
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-2 text-xs font-bold uppercase tracking-widest text-slate-400">
-                                        <span className="px-3 py-1 bg-sky-500 text-white rounded-md shadow-lg shadow-sky-500/20">{playerData.position_category}</span>
-                                        <span className="opacity-30 text-lg">•</span>
-                                        <span className="text-slate-200">{playerData.last_club_name}</span>
-                                        <span className="opacity-30 text-lg">•</span>
-                                        <span>{playerData.season}</span>
-                                        <span className="opacity-30 text-lg">•</span>
-                                        <span className="truncate text-sky-400">{playerData.competition}</span>
-                                    </div>
-                                    <div className="flex gap-4 mt-6 justify-center md:justify-start">
-                                        <div className="px-4 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-[11px] font-black text-slate-300 shadow-sm">{playerData.season_age || playerData.age} ANS</div>
-                                        <div className="px-4 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-[11px] font-black text-slate-300 shadow-sm">PIED {playerData?.foot ? String(playerData.foot).toUpperCase() : 'DROIT'}</div>
+                                    
+                                    <div className="space-y-6">
+                                        <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 verge-label-mono text-[9px] md:text-[10px] uppercase font-black tracking-[0.15em]">
+                                            <span className="text-[#3cffd0] bg-[#3cffd0]/10 px-3 py-1.5 border border-[#3cffd0]/20">{playerData.last_club_name}</span>
+                                            <span className="text-white/20">/</span>
+                                            <span className="text-[#949494]">{playerData.season}</span>
+                                            <span className="text-white/20">/</span>
+                                            <span className="text-white truncate max-w-[200px]">{playerData.competition}</span>
+                                        </div>
+
+                                        <div className="flex gap-3 justify-center lg:justify-start">
+                                            <div className="bg-[#2d2d2d] px-5 py-2.5 verge-label-mono text-[10px] text-white border border-white/5 rounded-[2px] font-black">{playerData.season_age || playerData.age} ANS</div>
+                                            <div className="bg-[#2d2d2d] px-5 py-2.5 verge-label-mono text-[10px] text-white border border-white/5 rounded-[2px] font-black uppercase">PIED {playerData?.foot || 'DROIT'}</div>
+                                        </div>
                                     </div>
                                 </div>
 
-                                {/* Classement & Stats - Haut Droite */}
-                                <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-8 relative z-10">
-                                    {/* Classement Spécifique - INTERACTIF */}
+                                {/* Colonne 3: Analytics - Ranking & Scores */}
+                                <div className="lg:col-span-4 w-full flex flex-col gap-10 lg:items-end justify-center">
+                                    {/* Ranking Section Moved Here to avoid collision */}
                                     <div 
                                         onClick={() => setIsRankingModalOpen(true)}
-                                        className="text-right cursor-pointer hover:bg-white/10 transition-all duration-300 rounded-xl p-3 border border-transparent hover:border-white/10 group"
+                                        className="cursor-pointer group flex flex-col lg:items-end w-full lg:w-auto"
                                     >
-                                        <div className="flex items-center justify-end gap-2 mb-1">
-                                            <div className="text-[10px] font-black uppercase text-slate-500 tracking-widest group-hover:text-sky-400 transition-colors">Classement</div>
-                                            {rankingData?.is_top_1 && (
-                                                <span className="px-2 py-0.5 bg-yellow-500 text-black text-[9px] font-black rounded shadow-lg shadow-yellow-500/20 uppercase">Top 1%</span>
-                                            )}
-                                        </div>
-                                        <div className="text-4xl font-black text-white flex items-baseline justify-end group-hover:scale-105 transition-transform origin-right">
-                                            {rankingData?.rank || '-'}<span className="text-slate-600 text-xl ml-1">/ {rankingData?.total || '-'}</span>
+                                        <div className="verge-label-mono text-[10px] group-hover:text-[#3cffd0] transition-colors mb-4 uppercase text-[#949494] tracking-[0.2em] font-black">Classement Population</div>
+                                        <div className="text-6xl lg:text-7xl font-black text-white flex items-baseline gap-3 group-hover:text-[#3cffd0] transition-all">
+                                            {(rankingData?.rank && rankingData.rank > 0) ? rankingData.rank : '-'}<span className="text-[#949494] text-2xl opacity-30 font-black">/ {rankingData?.total || '-'}</span>
                                         </div>
                                     </div>
 
                                     {/* Score Tiles */}
-                                    <div className="flex gap-3 md:gap-4">
-                                        <div className="bg-slate-800/80 border border-white/5 rounded-2xl p-3 md:p-5 text-center min-w-[80px] md:min-w-[130px] shadow-2xl backdrop-blur-md">
-                                            <div className="text-[8px] md:text-[10px] font-black uppercase text-slate-500 tracking-widest mb-1">Note Globale</div>
-                                            <div className="text-3xl md:text-5xl font-black text-white leading-none tracking-tighter">
+                                    <div className="grid grid-cols-2 lg:flex lg:flex-row gap-4 w-full lg:w-auto">
+                                        <div className="bg-[#131313] border border-white/10 p-8 flex-1 lg:min-w-[150px] text-center rounded-[4px]">
+                                            <div className="verge-label-mono text-[9px] mb-4 text-[#949494] uppercase tracking-widest font-black opacity-60">Note Globale</div>
+                                            <div className="text-6xl font-black text-white leading-none tracking-tighter">
                                                 {Math.round(playerData.note_globale || 64)}
                                             </div>
                                         </div>
-                                        <div className="bg-sky-500 border border-sky-400 rounded-2xl p-3 md:p-5 text-center min-w-[80px] md:min-w-[130px] shadow-2xl shadow-sky-500/20">
-                                            <div className="text-[8px] md:text-[10px] font-black uppercase text-white/80 tracking-widest mb-1">Note Pondérée</div>
-                                            <div className="text-3xl md:text-5xl font-black text-white leading-none tracking-tighter">
+                                        
+                                        <div className="bg-[#3cffd0] p-8 flex-1 lg:min-w-[150px] text-center rounded-[4px] shadow-[0_0_40px_rgba(60,255,208,0.1)]">
+                                            <div className="verge-label-mono text-[9px] text-black/60 mb-4 uppercase tracking-widest font-black">Note Pondérée</div>
+                                            <div className="text-6xl font-black text-black leading-none tracking-tighter">
                                                 {Math.round(playerData.note_ponderee || 75)}
                                             </div>
                                         </div>
@@ -239,154 +233,121 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                 </div>
                             </div>
 
-                            {/* Grille principale - Triple Colonne */}
-                            <div className="lg:hidden flex bg-slate-900/80 backdrop-blur-xl p-1 rounded-xl border border-white/5 sticky top-0 z-40 shadow-2xl mb-4 overflow-x-auto scrollbar-hide">
+                            {/* Navigation Mobile */}
+                            <div className="lg:hidden flex bg-[#131313] p-4 border-b border-white/10 sticky top-0 z-40 overflow-x-auto scrollbar-hide gap-3">
                                 {[
-                                    { id: 'profil', label: 'Profil', icon: '👤' },
-                                    { id: 'analyse', label: 'Analyse', icon: '📊' },
-                                    { id: 'stats', label: 'Stats', icon: '🔢' },
-                                    { id: 'reseau', label: 'Réseau', icon: '🤝' }
+                                    { id: 'profil', label: 'PROFIL' },
+                                    { id: 'analyse', label: 'ANALYSE' },
+                                    { id: 'stats', label: 'STATS' },
+                                    { id: 'reseau', label: 'VOISINAGE' }
                                 ].map(tab => (
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all ${
-                                            activeTab === tab.id 
-                                            ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' 
-                                            : 'text-slate-500 hover:text-slate-300'
+                                        className={`shrink-0 px-6 py-3 verge-label-mono text-[10px] font-black transition-all ${
+                                            activeTab === tab.id ? 'bg-[#3cffd0] text-black' : 'text-[#949494] bg-[#2d2d2d]'
                                         }`}
                                     >
-                                        <span>{tab.icon}</span>
                                         {tab.label}
                                     </button>
                                 ))}
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8 items-start">
-                                
-                                {/* Colonne GAUCHE : Profil (Onglet 'profil' sur mobile) */}
-                                <div className={`${activeTab === 'profil' ? 'block' : 'hidden'} lg:block lg:col-span-3 space-y-6 md:space-y-8`}>
-                                    <DetailsPanelWidget 
-                                        player={playerData} 
-                                        onSelectProfile={(role) => {
-                                            setSelectedPositionForRanking(role);
-                                            setIsRankingModalOpen(true);
-                                        }}
-                                    />
-                                    <PositionDistributionWidget 
-                                        player={playerData} 
-                                        onSelectPosition={(pos) => {
-                                            setSelectedPositionForRanking(pos);
-                                            setIsRankingModalOpen(true);
-                                        }}
-                                    />
-                                    <PerformancePanelWidget 
-                                        player={playerData} 
-                                        onSelectIndex={(indexLabel) => {
-                                            setSelectedPositionForRanking(indexLabel);
-                                            setIsRankingModalOpen(true);
-                                        }}
-                                    />
-                                </div>
 
-                                {/* Colonne MILIEU : Analyse (Onglet 'analyse' sur mobile) */}
-                                <div className={`${activeTab === 'analyse' ? 'block' : 'hidden'} lg:block lg:col-span-5 space-y-6 md:space-y-8`}>
-                                    <div className="space-y-4">
-                                        <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2 px-2">
-                                            <span className="w-2 h-2 bg-sky-400 rounded-full"></span> Analyse Comparative
-                                        </h3>
-                                        <RecalculationPanelWidget 
-                                            playerId={playerId}
-                                            onRecalculated={(newData) => {
-                                                if (newData && newData.recordToDisplay) {
-                                                    // Fusion des données pour préserver les métadonnées initiales (nom, photo)
-                                                    setPlayerData(prev => ({
-                                                        ...prev,
-                                                        ...newData.recordToDisplay
-                                                    }));
-                                                    // Mise à jour du classement dans le header
-                                                    setRankingData({
-                                                        rank: newData.rank,
-                                                        total: newData.populationCount,
-                                                        is_recalculated: true
-                                                    });
-                                                }
+                            {/* Grille principale - Triple Colonne */}
+                            <div className="p-8 md:p-12">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 items-start">
+                                    
+                                    {/* Colonne GAUCHE : Profil */}
+                                    <div className={`${activeTab === 'profil' ? 'block' : 'hidden'} lg:block lg:col-span-3 space-y-10`}>
+                                        <DetailsPanelWidget 
+                                            player={playerData} 
+                                            onSelectProfile={(role) => {
+                                                setSelectedPositionForRanking(role);
+                                                setIsRankingModalOpen(true);
                                             }}
                                         />
+                                        <PositionDistributionWidget player={playerData} />
+                                        <PerformancePanelWidget player={playerData} />
                                     </div>
-                                    
-                                    
-                                    <div className="space-y-4">
-                                        <div className="flex justify-between items-end px-2">
-                                            <h3 className="text-xs md:text-sm font-black uppercase tracking-widest text-sky-400 flex items-center gap-2">
-                                                <span className="w-2 h-2 bg-sky-400 rounded-full"></span> 
-                                                {analysisSubTab === 'radar' ? 'Tactical Radar' : 'Career Evolution'}
+
+                                    {/* Colonne MILIEU : Analyse */}
+                                    <div className={`${activeTab === 'analyse' ? 'block' : 'hidden'} lg:block lg:col-span-5 space-y-10`}>
+                                        <div className="space-y-6">
+                                            <h3 className="verge-label-mono text-[#3cffd0] flex items-center gap-3 uppercase text-[11px] tracking-[0.2em] px-2">
+                                                <span className="w-1.5 h-1.5 bg-[#3cffd0]"></span> Analyse Comparative
                                             </h3>
-                                            <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 shadow-inner">
-                                                <button 
-                                                    onClick={() => setAnalysisSubTab('radar')}
-                                                    className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all duration-300 ${analysisSubTab === 'radar' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-slate-500 hover:text-slate-300'}`}
-                                                > RADAR </button>
-                                                <button 
-                                                    onClick={() => setAnalysisSubTab('trends')}
-                                                    className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all duration-300 ${analysisSubTab === 'trends' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-slate-500 hover:text-slate-300'}`}
-                                                > TRENDS </button>
+                                            <div className="bg-[#131313] border border-white/10 p-2">
+                                                <RecalculationPanelWidget 
+                                                    playerId={playerId}
+                                                    onRecalculated={(newData) => {
+                                                        if (newData && newData.recordToDisplay) {
+                                                            setPlayerData(prev => ({ ...prev, ...newData.recordToDisplay }));
+                                                            setRankingData({ rank: newData.rank, total: newData.populationCount, is_recalculated: true });
+                                                        }
+                                                    }}
+                                                />
                                             </div>
                                         </div>
                                         
-                                        <div className="min-h-[400px]">
-                                            <AnimatePresence mode="wait">
-                                                {analysisSubTab === 'radar' ? (
-                                                    <motion.div 
-                                                        key="radar" 
-                                                        initial={{ opacity: 0, x: -20 }} 
-                                                        animate={{ opacity: 1, x: 0 }} 
-                                                        exit={{ opacity: 0, x: 20 }}
-                                                        transition={{ duration: 0.3 }}
-                                                    >
-                                                        <PlayerRadar player={playerData} />
-                                                    </motion.div>
-                                                ) : (
-                                                    <motion.div 
-                                                        key="trends" 
-                                                        initial={{ opacity: 0, x: 20 }} 
-                                                        animate={{ opacity: 1, x: 0 }} 
-                                                        exit={{ opacity: 0, x: -20 }}
-                                                        transition={{ duration: 0.3 }}
-                                                    >
-                                                        <PlayerTrends player={playerData} metricsList={metricsList} />
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+                                        <div className="space-y-6">
+                                            <div className="flex justify-between items-center px-2">
+                                                <h3 className="verge-label-mono text-[#3cffd0] flex items-center gap-3 uppercase text-[11px] tracking-[0.2em]">
+                                                    <span className="w-1.5 h-1.5 bg-[#3cffd0]"></span> 
+                                                    Tactical Metrics
+                                                </h3>
+                                                <div className="flex bg-[#2d2d2d] p-1 rounded-[2px]">
+                                                    <button 
+                                                        onClick={() => setAnalysisSubTab('radar')}
+                                                        className={`px-5 py-2 verge-label-mono text-[9px] font-black tracking-widest transition-all rounded-[1px] ${analysisSubTab === 'radar' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.2)]' : 'text-[#949494] hover:text-white'}`}
+                                                    > RADAR </button>
+                                                    <button 
+                                                        onClick={() => setAnalysisSubTab('trends')}
+                                                        className={`px-5 py-2 verge-label-mono text-[9px] font-black tracking-widest transition-all rounded-[1px] ${analysisSubTab === 'trends' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.2)]' : 'text-[#949494] hover:text-white'}`}
+                                                    > TRENDS </button>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="min-h-[450px] bg-[#131313] border border-white/10 p-8 flex items-center justify-center">
+                                                <AnimatePresence mode="wait">
+                                                    {analysisSubTab === 'radar' ? (
+                                                        <motion.div key="radar" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
+                                                            <PlayerRadar player={playerData} />
+                                                        </motion.div>
+                                                    ) : (
+                                                        <motion.div key="trends" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
+                                                            <PlayerTrends player={playerData} metricsList={metricsList} />
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
                                         </div>
                                     </div>
 
-                                </div>
-
-                                {/* Colonne DROITE : Stats & Réseau (Onglets 'stats' et 'reseau' sur mobile) */}
-                                <div className="lg:col-span-4 space-y-6">
-                                    <div className={`${activeTab === 'stats' ? 'block' : 'hidden'} lg:block space-y-6`}>
-                                        <TrendsWidget player={playerData} />
-                                        <DataPanelWidget player={playerData} />
-                                    </div>
-                                    
-                                    <div className={`${activeTab === 'reseau' ? 'block' : 'hidden'} lg:block space-y-6`}>
-                                    
-                                    {playerData && (
-                                        <TeammatesWidget 
-                                            playerId={playerId} 
-                                            team={playerData?.last_club_name}
-                                            competition={contextToUse?.competition}
-                                            season={contextToUse?.season}
-                                            onSelectPlayer={onSwitchPlayer}
-                                        />
-                                    )}
-                                    
-                                    <SimilarPlayersWidget 
-                                        playerId={playerId} 
-                                        competition={contextToUse?.competition}
-                                        season={contextToUse?.season}
-                                        onSelectPlayer={onSwitchPlayer}
-                                    />
+                                    {/* Colonne DROITE : Stats & Voisinage */}
+                                    <div className="lg:col-span-4 space-y-10">
+                                        <div className={`${activeTab === 'stats' ? 'block' : 'hidden'} lg:block space-y-10`}>
+                                            <TrendsWidget player={playerData} />
+                                            <DataPanelWidget player={playerData} />
+                                        </div>
+                                        
+                                        <div className={`${activeTab === 'reseau' ? 'block' : 'hidden'} lg:block space-y-10`}>
+                                            {playerData && (
+                                                <TeammatesWidget 
+                                                    playerId={playerId} 
+                                                    team={playerData?.last_club_name}
+                                                    competition={contextToUse?.competition}
+                                                    season={contextToUse?.season}
+                                                    onSelectPlayer={onSwitchPlayer}
+                                                />
+                                            )}
+                                            
+                                            <SimilarPlayersWidget 
+                                                playerId={playerId} 
+                                                competition={contextToUse?.competition}
+                                                season={contextToUse?.season}
+                                                onSelectPlayer={onSwitchPlayer}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -397,41 +358,28 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                 {/* Modale de Classement Détaillé */}
                 <RankingModal 
                     isOpen={isRankingModalOpen}
-                    onClose={() => {
-                        setIsRankingModalOpen(false);
-                        setSelectedPositionForRanking(null);
-                    }}
+                    onClose={() => { setIsRankingModalOpen(false); setSelectedPositionForRanking(null); }}
                     playerId={playerId}
                     playerName={playerData?.name || playerData?.full_name}
                     competition={contextToUse?.competition}
                     season={contextToUse?.season}
                     position={selectedPositionForRanking}
-                    onSelectPlayer={(id) => {
-                        if (onSwitchPlayer) {
-                            onSwitchPlayer(id);
-                            setIsRankingModalOpen(false);
-                        } else {
-                            // Fallback si pas de switch prop : on simule un clic via les outils du parent
-                            console.warn("Switch player not implemented in parent");
-                            setIsRankingModalOpen(false);
-                        }
-                    }}
+                    onSelectPlayer={(id) => { onSwitchPlayer && onSwitchPlayer(id); setIsRankingModalOpen(false); }}
                 />
             </div>
         </div>
     );
 }
 
-// Sous-composant Modale de Ranking - DESIGN PREMIUM
+// Ranking Modal Refactored for Verge
 function RankingModal({ isOpen, onClose, playerId, playerName, competition, season, position, onSelectPlayer }) {
     const [rankingList, setRankingList] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('full'); // 'full' ou 'focus'
+    const [activeTab, setActiveTab] = useState('full');
 
     useEffect(() => {
         if (isOpen && playerId) {
             setLoading(true);
-            
             let url = `${API_BASE_URL}/api/players/${playerId}/ranking?`;
             const params = [];
             if (competition) params.push(`competition=${encodeURIComponent(competition)}`);
@@ -445,133 +393,56 @@ function RankingModal({ isOpen, onClose, playerId, playerName, competition, seas
                     setRankingList(data.items || data.full_ranking || []);
                     setLoading(false);
                 })
-                .catch(err => {
-                    console.error("Ranking Detail fetch error:", err);
-                    setLoading(false);
-                });
+                .catch(err => { console.error(err); setLoading(false); });
         }
     }, [isOpen, playerId]);
 
     if (!isOpen) return null;
 
-    // Logique pour l'onglet 'Ma Position' (Joueur cible + voisins)
-    const targetIndex = rankingList.findIndex(p => (p.id === playerId || p.player_id === playerId));
-    const focusList = targetIndex !== -1 
+    const targetIndex = rankingList.findIndex(p => (String(p.id || p.player_id) === String(playerId)));
+    const displayList = activeTab === 'focus' && targetIndex !== -1 
         ? rankingList.slice(Math.max(0, targetIndex - 2), Math.min(rankingList.length, targetIndex + 3))
-        : [];
-
-    const displayList = activeTab === 'focus' ? focusList : rankingList;
+        : rankingList;
 
     return (
-        <div className="fixed inset-0 z-[200] bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-0 md:p-4">
-            <div className="bg-slate-900 border-0 md:border md:border-slate-700/50 rounded-none md:rounded-[2.5rem] w-full max-w-2xl h-full md:max-h-[85vh] flex flex-col shadow-2xl animate-in fade-in zoom-in duration-300 overflow-hidden">
-                
-                {/* Header Premium */}
-                <div className="p-6 md:p-8 border-b border-white/5 flex justify-between items-center bg-slate-900">
+        <div className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4">
+            <div className="bg-[#131313] border border-white/20 rounded-[4px] w-full max-w-2xl h-full max-h-[85vh] flex flex-col overflow-hidden">
+                <div className="p-10 border-b border-white/10 flex justify-between items-center bg-[#131313]">
                     <div>
-                        <h3 className="text-xl md:text-3xl font-black text-white tracking-tighter uppercase italic">{position || 'Classement'}</h3>
-                        <div className="flex items-center gap-2 mt-1">
-                            <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></div>
-                            <p className="text-sky-400 text-[10px] font-black uppercase tracking-widest truncate max-w-[200px] md:max-w-none">{playerName}</p>
-                        </div>
+                        <h3 className="verge-h3 text-white uppercase italic">{position || 'LEADERBOARD'}</h3>
+                        <p className="verge-label-mono text-[#3cffd0] text-[10px] mt-2 uppercase font-black tracking-widest">{playerName}</p>
                     </div>
-                    <button 
-                        onClick={onClose} 
-                        className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl md:rounded-2xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all border border-white/5"
-                    >
-                        ✕
-                    </button>
+                    <button onClick={onClose} className="w-10 h-10 flex items-center justify-center bg-[#2d2d2d] text-white hover:bg-white hover:text-black border border-white/10 rounded-[4px]">✕</button>
                 </div>
 
-                {/* Barre d'onglets Mobile */}
-                <div className="px-6 py-3 bg-slate-900 border-b border-white/5 flex gap-2">
-                    <button 
-                        onClick={() => setActiveTab('full')}
-                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'full' ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/5 text-slate-500'}`}
-                    >
-                        Leaderboard
-                    </button>
-                    <button 
-                        onClick={() => setActiveTab('focus')}
-                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'focus' ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/5 text-slate-500'}`}
-                    >
-                        Ma Position
-                    </button>
+                <div className="px-10 py-6 bg-[#131313] border-b border-white/10 flex gap-4">
+                    <button onClick={() => setActiveTab('full')} className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${activeTab === 'full' ? 'bg-[#3cffd0] text-black' : 'bg-[#2d2d2d] text-[#949494]'}`}>GLOBAL</button>
+                    <button onClick={() => setActiveTab('focus')} className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${activeTab === 'focus' ? 'bg-[#3cffd0] text-black' : 'bg-[#2d2d2d] text-[#949494]'}`}>FOCUS</button>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-4 md:p-8 space-y-4 styled-scrollbar bg-slate-900/30">
+                <div className="flex-1 overflow-y-auto p-10 space-y-3 styled-scrollbar bg-[#131313]">
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-20 gap-6">
-                            <div className="relative">
-                                <div className="w-16 h-16 border-4 border-sky-500/20 rounded-full"></div>
-                                <div className="w-16 h-16 border-4 border-sky-500 border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
-                            </div>
-                            <p className="text-white font-black text-xs uppercase tracking-widest animate-pulse">Analyse du classement...</p>
-                        </div>
-                    ) : displayList.length > 0 ? (
-                        <div className="space-y-3 md:space-y-4 pb-10">
-                            {displayList.map((item, idx) => {
-                                const realIdx = activeTab === 'focus' ? rankingList.indexOf(item) : idx;
-                                const isTarget = item.id === playerId || item.player_id === playerId;
-                                return (
-                                    <div 
-                                        key={idx} 
-                                        onClick={() => !isTarget && onSelectPlayer(item.id || item.player_id)}
-                                        className={`group flex items-center justify-between p-3 md:p-4 rounded-2xl md:rounded-3xl border transition-all duration-300 cursor-pointer ${
-                                            isTarget 
-                                                ? 'bg-sky-500/20 border-sky-500/40 shadow-[0_0_20px_rgba(14,165,233,0.15)] cursor-default' 
-                                                : 'bg-white/[0.02] border-white/5 hover:bg-white/5 hover:border-white/10'
-                                        }`}
-                                    >
-                                        <div className="flex items-center gap-3 md:gap-5 flex-1 min-w-0">
-                                            {/* Badge de Rang */}
-                                            <div className={`w-8 h-8 md:w-12 md:h-12 shrink-0 flex items-center justify-center rounded-lg md:rounded-2xl font-black text-xs md:text-lg ${
-                                                realIdx === 0 ? 'bg-yellow-500 text-yellow-950' : 
-                                                realIdx === 1 ? 'bg-slate-300 text-slate-950' : 
-                                                realIdx === 2 ? 'bg-orange-600 text-orange-50' : 
-                                                'bg-slate-800 text-slate-400'
-                                            }`}>
-                                                {realIdx + 1}
-                                            </div>
-
-                                            {/* Photo & Info */}
-                                            <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
-                                                <div className="relative shrink-0">
-                                                    {item.image ? (
-                                                        <img src={item.image} alt="" className="w-10 h-10 md:w-14 md:h-14 rounded-full object-cover border border-white/10 bg-slate-800" />
-                                                    ) : (
-                                                        <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-sm md:text-xl font-black text-slate-600">
-                                                            {item.name ? item.name.charAt(0) : '?'}
-                                                        </div>
-                                                    )}
-                                                    {isTarget && <div className="absolute -bottom-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-sky-500 rounded-full border-2 border-slate-900 flex items-center justify-center text-[8px] md:text-[10px] text-white font-black">✓</div>}
-                                                </div>
-                                                <div className="flex flex-col min-w-0">
-                                                    <span className={`text-sm md:text-base font-black truncate ${isTarget ? 'text-white' : 'text-slate-200 group-hover:text-sky-400 transition-colors'}`}>
-                                                        {item.name || item.player_name}
-                                                    </span>
-                                                    <span className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase truncate">
-                                                        {item.team || item.current_team_name}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="text-right shrink-0">
-                                            <div className={`text-sm md:text-lg font-black ${isTarget ? 'text-sky-400' : 'text-white'}`}>
-                                                {Number(item.score).toFixed(1)}
-                                            </div>
-                                            <div className="text-[8px] font-black text-slate-500 uppercase tracking-tighter">SCORE</div>
+                        <div className="flex flex-col items-center justify-center py-20 gap-4"><div className="w-8 h-8 border-2 border-[#3cffd0] border-t-transparent animate-spin"></div></div>
+                    ) : (
+                        displayList.map((item, idx) => {
+                            const realIdx = activeTab === 'focus' ? rankingList.indexOf(item) : idx;
+                            const isTarget = item.id === playerId || item.player_id === playerId;
+                            return (
+                                <div key={idx} onClick={() => !isTarget && onSelectPlayer(item.id || item.player_id)} className={`flex items-center justify-between p-4 border transition-all cursor-pointer ${isTarget ? 'bg-[#3cffd0] border-[#3cffd0] text-black' : 'bg-[#2d2d2d] border-white/5 hover:border-white/20'}`}>
+                                    <div className="flex items-center gap-6 flex-1 min-w-0">
+                                        <div className={`w-10 h-10 shrink-0 flex items-center justify-center verge-label-mono text-[14px] font-black ${isTarget ? 'bg-black text-[#3cffd0]' : 'bg-[#131313] text-white'}`}>{realIdx + 1}</div>
+                                        <div className="min-w-0">
+                                            <div className={`text-sm font-black uppercase truncate ${isTarget ? 'text-black' : 'text-white'}`}>{item.name || item.player_name}</div>
+                                            <div className={`verge-label-mono text-[8px] uppercase tracking-widest truncate ${isTarget ? 'text-black/60' : 'text-[#949494]'}`}>{item.team || item.current_team_name}</div>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                            <div className="text-4xl">🔎</div>
-                            <div className="text-slate-500 font-bold text-sm">Aucune donnée de classement disponible pour ce contexte.</div>
-                        </div>
+                                    <div className="text-right shrink-0">
+                                        <div className={`text-xl font-black ${isTarget ? 'text-black' : 'text-white'}`}>{Number(item.score).toFixed(1)}</div>
+                                        <div className={`verge-label-mono text-[7px] uppercase ${isTarget ? 'text-black/40' : 'text-[#949494]'}`}>PTS</div>
+                                    </div>
+                                </div>
+                            );
+                        })
                     )}
                 </div>
             </div>

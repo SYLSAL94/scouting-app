@@ -6,16 +6,16 @@ const API_BASE_URL = 'https://api-scouting.theanalyst.cloud';
 
 /* --------------------------------------------
    Section Header Component
--------------------------------------------- */
+ -------------------------------------------- */
 const SectionHeader = ({ icon: Icon, title, subtitle }) => (
     <div className="flex items-center gap-3 mb-4">
-        <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-gradient-to-br from-slate-100/10 to-slate-200/5 border border-white/5 shadow-sm group-hover:scale-110 group-hover:shadow-md transition-all duration-300">
-            <Icon size={14} className="text-slate-400 group-hover:text-sky-400 transition-colors" />
+        <div className="flex items-center justify-center w-9 h-9 rounded-[8px] bg-[#2d2d2d] border border-white/5">
+            <Icon size={16} className="text-[#949494]" />
         </div>
-        <div>
-            <h4 className="text-[11px] font-black uppercase tracking-widest text-white">{title}</h4>
+        <div className="flex flex-col">
+            <h4 className="verge-label-mono text-[10px] uppercase font-black tracking-widest text-white leading-none mb-1">{title}</h4>
             {subtitle && (
-                <p className="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">{subtitle}</p>
+                <p className="verge-label-mono text-[7px] text-[#949494] uppercase tracking-wider font-black">{subtitle}</p>
             )}
         </div>
     </div>
@@ -23,10 +23,9 @@ const SectionHeader = ({ icon: Icon, title, subtitle }) => (
 
 /* --------------------------------------------
    Filter Section Wrapper
--------------------------------------------- */
+ -------------------------------------------- */
 const FilterSection = ({ children, className = '' }) => (
-    <div className={`relative p-5 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl hover:bg-white/10 transition-all duration-300 group overflow-hidden ${className}`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+    <div className={`relative p-6 rounded-[4px] bg-[#2d2d2d]/30 border border-white/5 hover:border-white/10 transition-all duration-300 group overflow-hidden ${className}`}>
         <div className="relative z-10">
             {children}
         </div>
@@ -37,7 +36,7 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
     const [seasonsList, setSeasonsList] = useState([]);
     const [competitionsList, setCompetitionsList] = useState([]);
     const [isRecalculating, setIsRecalculating] = useState(false);
-    const [recalcMetadata, setRecalcMetadata] = useState(null); // { populationCount, rank }
+    const [recalcMetadata, setRecalcMetadata] = useState(null); 
 
     const [filters, setFilters] = useState({
         seasons: [],
@@ -48,7 +47,6 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
         min_playtime_percent: 0
     });
 
-    // Chargement des métadonnées
     useEffect(() => {
         if (!playerId) return;
         fetch(`${API_BASE_URL}/api/meta/seasons`).then(res => res.json()).then(data => setSeasonsList(data));
@@ -123,30 +121,34 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
                     <FilterSection>
                         <SectionHeader icon={Filter} title="Âge" subtitle="Min/Max" />
                         <div className="flex items-center gap-2 mt-2">
-                            <input 
-                                type="number" value={filters.min_age} 
-                                onChange={(e) => setFilters({...filters, min_age: parseFloat(e.target.value)})}
-                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-2 text-xs text-white text-center focus:ring-1 focus:ring-sky-500 outline-none"
-                            />
-                            <span className="text-slate-600">—</span>
-                            <input 
-                                type="number" value={filters.max_age} 
-                                onChange={(e) => setFilters({...filters, max_age: parseFloat(e.target.value)})}
-                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-2 text-xs text-white text-center focus:ring-1 focus:ring-sky-500 outline-none"
-                            />
+                            <div className="flex-1 bg-[#131313] border border-white/10 rounded-[8px] p-2 flex items-center justify-center">
+                                <input 
+                                    type="number" value={filters.min_age} 
+                                    onChange={(e) => setFilters({...filters, min_age: parseFloat(e.target.value)})}
+                                    className="w-full bg-transparent verge-label-mono text-[11px] text-white text-center outline-none font-black"
+                                />
+                            </div>
+                            <span className="text-[#949494] text-xs">—</span>
+                            <div className="flex-1 bg-[#131313] border border-white/10 rounded-[8px] p-2 flex items-center justify-center">
+                                <input 
+                                    type="number" value={filters.max_age} 
+                                    onChange={(e) => setFilters({...filters, max_age: parseFloat(e.target.value)})}
+                                    className="w-full bg-transparent verge-label-mono text-[11px] text-white text-center outline-none font-black"
+                                />
+                            </div>
                         </div>
                     </FilterSection>
 
                     {/* Temps de Jeu */}
                     <FilterSection>
                         <SectionHeader icon={SlidersHorizontal} title="Playtime %" subtitle="Seuil représentatif" />
-                        <div className="relative mt-2">
+                        <div className="relative mt-2 flex items-center justify-center bg-[#131313] border border-white/10 rounded-[8px] p-2">
                             <input 
                                 type="number" value={filters.min_playtime_percent} 
                                 onChange={(e) => setFilters({...filters, min_playtime_percent: parseFloat(e.target.value)})}
-                                className="w-full bg-slate-900/50 border border-white/10 rounded-xl p-2 text-xs text-white text-center focus:ring-1 focus:ring-sky-500 outline-none"
+                                className="w-full bg-transparent verge-label-mono text-[11px] text-white text-center outline-none font-black"
                             />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-500 font-black">%</span>
+                            <span className="verge-label-mono text-[9px] text-[#949494] font-black ml-1">%</span>
                         </div>
                     </FilterSection>
                 </div>
@@ -154,43 +156,52 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
 
             {/* Metadata Feedback */}
             {recalcMetadata && !isRecalculating && (
-                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-500">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-                        <TrendingUp size={20} />
+                <div className="p-5 rounded-[12px] bg-[#3cffd0]/10 border border-[#3cffd0]/20 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-[4px] bg-[#3cffd0] flex items-center justify-center text-black">
+                        <TrendingUp size={18} />
                     </div>
                     <div>
-                        <h5 className="text-[11px] font-black uppercase text-emerald-400">Recalcul Actif</h5>
-                        <p className="text-[10px] font-bold text-emerald-500/80 uppercase">
-                            Rang : {recalcMetadata.rank} / {recalcMetadata.populationCount} joueurs
+                        <h5 className="verge-label-mono text-[10px] font-black uppercase text-[#3cffd0] tracking-widest">Calcul Contextuel Terminé</h5>
+                        <p className="verge-label-mono text-[8px] text-[#3cffd0]/80 uppercase font-black mt-0.5">
+                            Rang Estimé : {recalcMetadata.rank} sur {recalcMetadata.populationCount}
                         </p>
                     </div>
                 </div>
             )}
 
-            {/* Actions */}
-            <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+            {/* Actions Section matching Screenshot */}
+            <div className="flex items-center gap-5 pt-6 border-t border-white/5">
                 <button 
                     onClick={handleReset}
-                    className="flex items-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black uppercase text-slate-500 hover:text-white hover:bg-white/5 transition-all"
+                    className="flex items-center gap-2.5 px-2 hover:text-white transition-colors group"
                 >
-                    <RotateCcw size={14} />
-                    Reset
+                    <RotateCcw size={16} className="text-[#949494] group-hover:rotate-[-45deg] transition-transform" />
+                    <span className="verge-label-mono text-[10px] font-black uppercase tracking-widest text-[#949494]">Reset</span>
                 </button>
+                
                 <button 
                     onClick={handleRecalculate}
                     disabled={isRecalculating}
-                    className="flex-1 relative overflow-hidden bg-sky-500 hover:bg-sky-400 disabled:opacity-50 text-white font-black uppercase tracking-widest py-3 px-6 rounded-xl transition-all shadow-xl shadow-sky-500/20 text-[10px] flex items-center justify-center gap-2 group"
+                    className={`flex-1 relative overflow-hidden flex items-center justify-center gap-3 py-4 px-8 rounded-full transition-all duration-500 ${
+                        isRecalculating 
+                        ? 'bg-[#2d2d2d] text-[#949494] cursor-not-allowed' 
+                        : 'bg-[#3cffd0] text-black hover:bg-white shadow-[0_0_30px_rgba(60,255,208,0.2)]'
+                    }`}
                 >
                     {isRecalculating ? (
                         <>
-                            <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>Calcul en cours...</span>
+                            <div className="w-4 h-4 border-2 border-[#949494] border-t-transparent rounded-full animate-spin" />
+                            <span className="verge-label-mono text-[10px] font-black uppercase tracking-widest">Calcul en cours...</span>
                         </>
                     ) : (
                         <>
-                            <Check size={14} className="group-hover:scale-125 transition-transform" />
-                            <span>Appliquer les filtres</span>
+                            <Check size={18} className="font-black" />
+                            <span className="verge-label-mono text-[11px] font-black uppercase tracking-widest">Appliquer les filtres</span>
                         </>
+                    )}
+                    
+                    {!isRecalculating && (
+                        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     )}
                 </button>
             </div>

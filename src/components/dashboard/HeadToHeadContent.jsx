@@ -5,10 +5,9 @@ import {
 } from 'recharts';
 import { Activity } from 'lucide-react';
 
-const COLORS = ['#0ea5e9', '#f59e0b', '#10b981', '#f43f5e', '#8b5cf6'];
+const COLORS = ['#3cffd0', '#5200ff', '#f43f5e', '#ffffff', '#949494'];
 
 export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetrics = [] }) => {
-  // 1. Identify comparative metrics (from props or auto-discovery)
   const chartData = useMemo(() => {
     if (selectedPlayersToCompare.length === 0) return [];
 
@@ -21,7 +20,6 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
         ).slice(0, 8);
 
     return metricKeys.map(key => {
-      // Clean label for display: "offensive_volume_avg_norm" -> "OFFENSIVE VOLUME"
       const cleanMetric = key
         .replace(/_avg_norm|_norm|_pct|indice_/gi, '')
         .replace(/_/g, ' ')
@@ -30,78 +28,88 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
 
       const dataPoint = { metric: cleanMetric };
       
-      // Inject each player's value multiplied by 100
       selectedPlayersToCompare.forEach(p => {
         const name = `${p.full_name || p.name || 'Inconnu'}`;
-        // On multiplie par 100 pour l'échelle 0-100 stricte demandée
         dataPoint[name] = (Number(p[key]) || 0) * 100;
       });
       return dataPoint;
     });
   }, [selectedPlayersToCompare, selectedMetrics]);
 
-  // Handle Empty State gracefully
   if (selectedPlayersToCompare.length < 2) {
     return (
-      <div className="h-[500px] flex flex-col items-center justify-center text-slate-400 bg-slate-50 dark:bg-slate-900/30 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-        <div className="p-6 bg-slate-100 dark:bg-slate-800 rounded-full mb-4">
-          <Activity size={48} className="opacity-50" />
+      <div className="h-[600px] flex flex-col items-center justify-center bg-[#2d2d2d] rounded-[4px] border border-dashed border-white/10">
+        <div className="p-8 bg-[#131313] border border-white/10 rounded-[2px] mb-8">
+          <Activity size={56} className="text-[#3cffd0] opacity-50" />
         </div>
-        <p className="font-medium text-lg">Sélectionnez au moins 2 joueurs pour la comparaison Head-to-Head.</p>
-        <p className="text-sm mt-2 opacity-70">Architecture Zero-Calcul (Cloud-Native)</p>
+        <p className="verge-label-mono text-[12px] font-black text-[#949494] tracking-[0.2em] uppercase text-center max-w-md px-6">Sélectionnez au moins 2 joueurs pour la comparaison Head-to-Head.</p>
+        <p className="verge-label-mono text-[9px] mt-4 text-[#3cffd0]/50 tracking-[0.1em] uppercase">Architecture Zero-Calcul (Cloud-Native)</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 shadow-2xl rounded-3xl p-8 border border-slate-200 dark:border-slate-800 space-y-8 backdrop-blur-xl">
-      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
-        <h2 className="text-2xl font-bold flex items-center gap-3 text-slate-800 dark:text-slate-100">
-          <span className="w-3 h-8 bg-gradient-to-b from-sky-400 to-sky-600 rounded-full shadow-[0_0_10px_rgba(56,189,248,0.5)]"></span>
-          Comparaison Versus
-        </h2>
-        <div className="px-3 py-1 bg-sky-100 dark:bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs font-bold rounded-full border border-sky-200 dark:border-sky-500/30">
+    <div className="bg-[#131313] rounded-[4px] p-10 border border-white/10 space-y-12 relative overflow-hidden">
+      {/* Hazard Corner */}
+      <div className="absolute top-0 right-0 w-24 h-24 border-t-4 border-r-4 border-[#3cffd0]/10" />
+
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-white/5 pb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-2 h-8 bg-[#3cffd0]" />
+          <h2 className="verge-label-mono text-xl font-black tracking-[0.2em] text-white uppercase">
+            Comparaison Versus
+          </h2>
+        </div>
+        <div className="px-5 py-2 bg-[#2d2d2d] border border-[#3cffd0]/30 text-[#3cffd0] verge-label-mono text-[9px] font-black tracking-[0.3em] rounded-[1px] uppercase">
           Zero-Disque Node
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
         
-        {/* Radar Chart (Overlap Strategy) */}
-        <div className="h-[450px] bg-slate-50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-100 dark:border-slate-800/80 shadow-inner group transition-all duration-300 hover:shadow-lg">
-          <h3 className="text-center font-extrabold uppercase tracking-widest text-xs mb-4 text-slate-500 dark:text-slate-400 group-hover:text-sky-500 transition-colors">
-            Superposition Radiale
+        {/* Radar Chart */}
+        <div className="h-[500px] bg-[#2d2d2d] rounded-[4px] p-8 border border-white/5 relative group">
+          <div className="absolute top-4 left-4 verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.3em] uppercase opacity-50">01 / RADIAL_MAPPING</div>
+          <h3 className="text-center verge-label-mono text-[11px] font-black uppercase tracking-[0.4em] mb-10 text-[#3cffd0]">
+            SUPERPOSITION RADIALE
           </h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <RadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
-              <PolarGrid stroke="#cbd5e1" className="dark:stroke-slate-700" strokeDasharray="3 3"/>
+          <ResponsiveContainer width="100%" height="90%">
+            <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
+              <PolarGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="0" />
               <PolarAngleAxis 
                 dataKey="metric" 
-                tick={{ fill: '#64748b', fontSize: 10, fontWeight: 'bold' }} 
+                tick={{ fill: '#949494', fontSize: 9, fontWeight: 'black', fontFamily: 'PolySans Mono, monospace' }} 
               />
-              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+              <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#666', fontSize: 8, fontFamily: 'PolySans Mono, monospace' }} axisLine={false} />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                  border: '1px solid rgba(56, 189, 248, 0.2)', 
-                  borderRadius: '12px', 
-                  color: '#f8fafc',
-                  backdropFilter: 'blur(8px)'
+                  backgroundColor: '#131313', 
+                  border: '1px solid rgba(60, 255, 208, 0.3)', 
+                  borderRadius: '2px', 
+                  color: '#fff',
+                  fontFamily: 'PolySans Mono, monospace',
+                  fontSize: '11px',
+                  boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
                 }}
+                itemStyle={{ padding: '2px 0' }}
               />
-              <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} iconType="circle" />
+              <Legend 
+                wrapperStyle={{ paddingTop: '30px', fontSize: '10px', fontWeight: 'black', fontFamily: 'PolySans Mono, monospace', letterSpacing: '0.1em' }} 
+                iconType="square" 
+                iconSize={8}
+              />
               {selectedPlayersToCompare.map((p, i) => {
-                const name = `${p.full_name || p.name || 'Inconnu'}`;
+                const name = `${p.full_name || p.name || 'Inconnu'}`.toUpperCase();
                 return (
                   <Radar
                     key={p.id || i}
                     name={name}
-                    dataKey={name}
+                    dataKey={`${p.full_name || p.name || 'Inconnu'}`}
                     stroke={COLORS[i % COLORS.length]}
-                    strokeWidth={3}
+                    strokeWidth={2}
                     fill={COLORS[i % COLORS.length]}
-                    fillOpacity={0.35}
-                    activeDot={{ r: 6, strokeWidth: 2, stroke: '#fff' }}
+                    fillOpacity={0.2}
+                    activeDot={{ r: 4, strokeWidth: 2, stroke: '#fff' }}
                   />
                 );
               })}
@@ -109,45 +117,51 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
           </ResponsiveContainer>
         </div>
 
-        {/* Bar Chart (Direct Face-off) */}
-        <div className="h-[450px] bg-slate-50 dark:bg-slate-800/40 rounded-2xl p-4 border border-slate-100 dark:border-slate-800/80 shadow-inner group transition-all duration-300 hover:shadow-lg">
-          <h3 className="text-center font-extrabold uppercase tracking-widest text-xs mb-4 text-slate-500 dark:text-slate-400 group-hover:text-sky-500 transition-colors">
-            Face à Face Direct
+        {/* Bar Chart */}
+        <div className="h-[500px] bg-[#2d2d2d] rounded-[4px] p-8 border border-white/5 relative group">
+          <div className="absolute top-4 left-4 verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.3em] uppercase opacity-50">02 / DIRECT_FACE_OFF</div>
+          <h3 className="text-center verge-label-mono text-[11px] font-black uppercase tracking-[0.4em] mb-10 text-[#3cffd0]">
+            FACE À FACE DIRECT
           </h3>
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 30, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" className="dark:stroke-slate-700/50" />
-              <XAxis type="number" domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 10 }} axisLine={false} tickLine={false} />
+          <ResponsiveContainer width="100%" height="90%">
+            <BarChart data={chartData} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="0" horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
+              <XAxis type="number" domain={[0, 100]} hide />
               <YAxis 
                 dataKey="metric" 
                 type="category" 
-                width={110} 
-                tick={{ fill: '#64748b', fontSize: 10, fontWeight: 'bold' }} 
+                width={120} 
+                tick={{ fill: '#949494', fontSize: 9, fontWeight: 'black', fontFamily: 'PolySans Mono, monospace' }} 
                 axisLine={false} 
                 tickLine={false} 
               />
               <Tooltip 
-                cursor={{ fill: 'rgba(226, 232, 240, 0.4)', strokeWidth: 2 }}
+                cursor={{ fill: 'rgba(255, 255, 255, 0.02)' }}
                 contentStyle={{ 
-                  backgroundColor: 'rgba(15, 23, 42, 0.95)', 
-                  border: '1px solid rgba(56, 189, 248, 0.2)', 
-                  borderRadius: '12px', 
-                  color: '#f8fafc' 
+                  backgroundColor: '#131313', 
+                  border: '1px solid rgba(60, 255, 208, 0.3)', 
+                  borderRadius: '2px', 
+                  color: '#fff',
+                  fontFamily: 'PolySans Mono, monospace',
+                  fontSize: '11px'
                 }}
               />
-              <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '12px', fontWeight: 'bold' }} iconType="circle" />
+              <Legend 
+                wrapperStyle={{ paddingTop: '30px', fontSize: '10px', fontWeight: 'black', fontFamily: 'PolySans Mono, monospace', letterSpacing: '0.1em' }} 
+                iconType="square" 
+                iconSize={8}
+              />
               {selectedPlayersToCompare.map((p, i) => {
-                const name = `${p.full_name || p.name || 'Inconnu'}`;
+                const name = `${p.full_name || p.name || 'Inconnu'}`.toUpperCase();
                 return (
                   <Bar 
                     key={p.id || i}
                     name={name}
-                    dataKey={name} 
+                    dataKey={`${p.full_name || p.name || 'Inconnu'}`} 
                     fill={COLORS[i % COLORS.length]} 
-                    radius={[0, 4, 4, 0]}
-                    barSize={12}
+                    radius={[0, 2, 2, 0]}
+                    barSize={10}
                     animationDuration={1500}
-                    animationEasing="ease-out"
                   />
                 );
               })}

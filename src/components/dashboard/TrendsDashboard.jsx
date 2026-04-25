@@ -8,7 +8,7 @@ import { TrendingUp, Plus, X, Search, Activity, Calendar, UserPlus, ChevronDown,
 import GlobalPlayerSearch from './GlobalPlayerSearch';
 import { normalizeString } from '../../utils/stringUtils';
 
-const COLORS = ['#38bdf8', '#f43f5e', '#22d3ee', '#a78bfa', '#f59e0b', '#4ade80', '#ec4899', '#8b5cf6'];
+const COLORS = ['#3cffd0', '#5200ff', '#ffffff', '#949494', '#3860be', '#309875', '#3d00bf', '#c2c2c2'];
 
 const TrendsDashboard = ({ metricsList = [] }) => {
   const [selectedPlayers, setSelectedPlayers] = useState([]);
@@ -43,7 +43,7 @@ const TrendsDashboard = ({ metricsList = [] }) => {
 
   const currentMetricLabel = useMemo(() => {
     const m = flatMetrics.find(m => m.value === selectedMetric);
-    return m ? m.label : 'Impact Score';
+    return m ? m.label : 'IMPACT SCORE';
   }, [selectedMetric, flatMetrics]);
 
   const addPlayer = async (player) => {
@@ -87,59 +87,62 @@ const TrendsDashboard = ({ metricsList = [] }) => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-6 min-h-screen pb-12">
-      {/* Header & Search - Elevate z-index for search results */}
-      <div className="relative z-50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 bg-slate-900/40 p-6 rounded-[2rem] border border-white/5 backdrop-blur-xl">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-sky-500/10 border border-sky-500/20">
-            <TrendingUp size={24} className="text-sky-400" />
+    <div className="flex flex-col gap-8 min-h-screen pb-20">
+      {/* Header & Search */}
+      <div className="relative z-50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 bg-[#2d2d2d] p-8 border border-white/5 rounded-[4px]">
+        <div className="flex items-center gap-6">
+          <div className="p-3 bg-[#3cffd0] rounded-[2px] shadow-[0_0_20px_rgba(60,255,208,0.3)]">
+            <TrendingUp size={24} className="text-black" />
           </div>
           <div>
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Market <span className="text-sky-400">Trends</span></h2>
-            <p className="text-[9px] text-white/30 uppercase tracking-widest font-bold mt-0.5">Analyse comparative des trajectoires</p>
+            <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none">Market <span className="text-[#3cffd0]">Trends</span></h2>
+            <p className="verge-label-mono text-[9px] text-[#3cffd0] tracking-[0.3em] font-black mt-2">ANALYSE COMPARATIVE DES TRAJECTOIRES</p>
           </div>
         </div>
 
         <div className="w-full xl:w-[500px]">
-          <GlobalPlayerSearch onPlayerSelect={addPlayer} placeholder="Rechercher un joueur (ex: Mbappe, Haaland...)" />
+          <GlobalPlayerSearch onPlayerSelect={addPlayer} placeholder="RECHERCHER UN JOUEUR..." />
         </div>
       </div>
 
-      {/* Main Chart Section - 100% WIDTH */}
-      <div className="bg-slate-900/40 rounded-[2.5rem] border border-white/5 p-8 backdrop-blur-2xl relative overflow-hidden shadow-3xl">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+      {/* Main Chart Section */}
+      <div className="bg-[#131313] border border-white/10 p-10 rounded-[4px] relative overflow-hidden">
+        {/* Technical Hazard Corner */}
+        <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-[#3cffd0]/20" />
+        
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
           
           <div className="relative" ref={menuRef}>
             <button 
               onClick={() => setIsMetricMenuOpen(!isMetricMenuOpen)}
-              className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-5 py-3 hover:bg-white/10 transition-all min-w-[320px]"
+              className="flex items-center gap-5 bg-[#2d2d2d] border border-white/10 rounded-[2px] px-6 py-4 hover:border-[#3cffd0]/50 transition-all min-w-[340px]"
             >
-              <BarChart size={16} className="text-sky-400" />
+              <BarChart size={18} className="text-[#3cffd0]" />
               <div className="flex-1 text-left">
-                <p className="text-[8px] text-sky-400 font-black uppercase tracking-[0.2em] mb-0.5">Métrique active</p>
-                <p className="text-xs font-black text-white uppercase truncate">{currentMetricLabel}</p>
+                <p className="verge-label-mono text-[8px] text-[#3cffd0] tracking-[0.2em] font-black mb-1">MÉTRIQUE ACTIVE</p>
+                <p className="text-sm font-black text-white uppercase truncate tracking-tight">{currentMetricLabel}</p>
               </div>
-              <ChevronDown size={16} className={`text-white/20 transition-transform ${isMetricMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown size={18} className={`text-[#949494] transition-transform ${isMetricMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
             <AnimatePresence>
               {isMetricMenuOpen && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                  className="absolute top-full left-0 mt-3 w-[380px] max-h-[500px] bg-slate-900/98 border border-white/10 rounded-3xl shadow-2xl backdrop-blur-3xl z-50 flex flex-col overflow-hidden"
+                  className="absolute top-full left-0 mt-3 w-[400px] max-h-[500px] bg-[#2d2d2d] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] z-50 flex flex-col overflow-hidden"
                 >
-                  <div className="p-4 border-b border-white/5">
+                  <div className="p-5 border-b border-white/10 bg-[#131313]">
                     <div className="relative">
-                      <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20" />
-                      <input autoFocus placeholder="Chercher une métrique..." className="w-full bg-white/5 border border-white/5 rounded-xl py-2.5 pl-9 pr-4 text-xs text-white outline-none focus:border-sky-500/30 transition-all" value={metricSearch} onChange={(e) => setMetricSearch(e.target.value)} />
+                      <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#949494]" />
+                      <input autoFocus placeholder="RECHERCHER UNE MÉTRIQUE..." className="w-full bg-[#2d2d2d] border border-white/10 rounded-[1px] py-3 pl-11 pr-4 text-[10px] verge-label-mono text-white outline-none focus:border-[#3cffd0] transition-all" value={metricSearch} onChange={(e) => setMetricSearch(e.target.value)} />
                     </div>
                   </div>
-                  <div className="flex-1 overflow-y-auto p-2 styled-scrollbar">
+                  <div className="flex-1 overflow-y-auto p-3 styled-scrollbar">
                     {filteredMetrics.map((group, gIdx) => (
-                      <div key={group.label || gIdx} className="mb-4 last:mb-0">
-                        <div className="px-3 py-2 text-[10px] font-black text-sky-400 uppercase tracking-widest flex items-center gap-2"><Star size={10} /> {group.label}</div>
+                      <div key={group.label || gIdx} className="mb-6 last:mb-0">
+                        <div className="px-3 py-2 verge-label-mono text-[9px] text-[#3cffd0] tracking-[0.3em] font-black mb-2 flex items-center gap-2 border-l-2 border-[#3cffd0]">{group.label}</div>
                         {group.options.map(m => (
                           <button key={m.value} onClick={() => { setSelectedMetric(m.value); setIsMetricMenuOpen(false); }}
-                            className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold flex items-center justify-between transition-all ${selectedMetric === m.value ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:bg-white/5 hover:text-white'}`}
+                            className={`w-full text-left px-4 py-3 rounded-[1px] text-[11px] font-black verge-label-mono flex items-center justify-between transition-all mb-1 ${selectedMetric === m.value ? 'bg-[#3cffd0] text-black shadow-[0_0_20px_rgba(60,255,208,0.2)]' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
                           >
                             {m.label}
                             {selectedMetric === m.value && <Check size={14} />}
@@ -153,17 +156,17 @@ const TrendsDashboard = ({ metricsList = [] }) => {
             </AnimatePresence>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             <AnimatePresence>
               {selectedPlayers.map((p, idx) => (
-                <motion.div key={p.id} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-2 py-1.5"
+                <motion.div key={p.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
+                  className="flex items-center gap-3 bg-[#2d2d2d] border border-white/10 rounded-[2px] px-3 py-2"
                 >
-                  <div className="w-5 h-5 rounded-full border overflow-hidden" style={{ borderColor: COLORS[idx % COLORS.length] }}>
-                    {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-slate-800 flex items-center justify-center text-[7px] font-black">{p.name.charAt(0)}</div>}
+                  <div className="w-6 h-6 rounded-full border-2 overflow-hidden" style={{ borderColor: COLORS[idx % COLORS.length] }}>
+                    {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#131313] flex items-center justify-center text-[8px] font-black text-white">{p.name.charAt(0)}</div>}
                   </div>
-                  <span className="text-[10px] font-bold text-white truncate max-w-[80px]">{p.name}</span>
-                  <button onClick={() => removePlayer(p.id)} className="text-white/20 hover:text-red-400 transition-colors"><X size={10} /></button>
+                  <span className="verge-label-mono text-[10px] font-black text-white truncate max-w-[100px] uppercase">{p.name}</span>
+                  <button onClick={() => removePlayer(p.id)} className="text-[#949494] hover:text-[#f43f5e] transition-colors"><X size={14} /></button>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -172,51 +175,55 @@ const TrendsDashboard = ({ metricsList = [] }) => {
 
         <div className="h-[550px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={combinedData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-              <XAxis dataKey="season" axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11, fontWeight: 700 }} dy={15} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(255,255,255,0.3)', fontSize: 11 }} width={45} />
+            <LineChart data={combinedData} margin={{ top: 20, right: 30, left: 10, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.05)" vertical={false} />
+              <XAxis dataKey="season" axisLine={false} tickLine={false} tick={{ fill: '#949494', fontSize: 10, fontWeight: 900, fontFamily: 'PolySans Mono' }} dy={15} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#949494', fontSize: 10, fontFamily: 'PolySans Mono' }} width={45} />
               <Tooltip 
-                contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', backdropFilter: 'blur(20px)', boxShadow: '0 20px 50px -10px rgba(0,0,0,0.8)', padding: '16px' }}
-                itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
-                labelStyle={{ color: '#38bdf8', fontSize: '10px', fontWeight: '900', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.1em' }}
-                formatter={(value) => value !== null ? Number(value).toFixed(2) : 'N/A'}
+                cursor={{ stroke: '#3cffd0', strokeWidth: 1 }}
+                contentStyle={{ backgroundColor: '#131313', border: '1px solid #3cffd0', borderRadius: '2px', padding: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}
+                itemStyle={{ fontSize: '11px', fontWeight: '900', fontFamily: 'PolySans Mono', textTransform: 'uppercase' }}
+                labelStyle={{ color: '#3cffd0', fontSize: '9px', fontWeight: '900', fontFamily: 'PolySans Mono', marginBottom: '10px', tracking: '0.2em' }}
+                formatter={(value) => value !== null ? Number(value).toFixed(2) : '—'}
               />
-              <Legend verticalAlign="top" align="right" wrapperStyle={{ paddingBottom: '30px', fontSize: '10px', textTransform: 'uppercase', fontWeight: '900', letterSpacing: '0.1em' }} />
+              <Legend verticalAlign="top" align="right" wrapperStyle={{ paddingBottom: '40px', fontSize: '9px', textTransform: 'uppercase', fontWeight: '900', fontFamily: 'PolySans Mono', letterSpacing: '0.2em' }} />
               {selectedPlayers.map((p, idx) => (
-                <Line key={p.id} name={p.name} type="monotone" dataKey={`player_${p.id}`} stroke={COLORS[idx % COLORS.length]} strokeWidth={4} dot={{ r: 5, fill: '#0f172a', strokeWidth: 2, stroke: COLORS[idx % COLORS.length] }} activeDot={{ r: 8, strokeWidth: 0, fill: COLORS[idx % COLORS.length] }} animationDuration={2000} />
+                <Line key={p.id} name={p.name.toUpperCase()} type="monotone" dataKey={`player_${p.id}`} stroke={COLORS[idx % COLORS.length]} strokeWidth={4} dot={{ r: 4, fill: '#131313', strokeWidth: 2, stroke: COLORS[idx % COLORS.length] }} activeDot={{ r: 6, strokeWidth: 0, fill: COLORS[idx % COLORS.length] }} animationDuration={1000} />
               ))}
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Info Cards - BELOW THE CHART */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-         <div className="bg-gradient-to-br from-sky-500 to-indigo-600 rounded-[2rem] p-6 text-white shadow-xl flex flex-col justify-between">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Activity size={20} />
+      {/* Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+         <div className="bg-[#2d2d2d] border border-[#3cffd0]/30 rounded-[4px] p-8 text-white relative overflow-hidden group">
+            {/* Corner Hazard */}
+            <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#3cffd0] opacity-40" />
+            
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-12 h-12 bg-[#3cffd0] flex items-center justify-center rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.3)]">
+                  <Activity size={24} className="text-black" />
                 </div>
-                <h4 className="text-lg font-black uppercase tracking-tighter italic">Analyse de Momentum</h4>
+                <h4 className="text-2xl font-black uppercase tracking-tighter italic leading-none">Analyse de <span className="text-[#3cffd0]">Momentum</span></h4>
               </div>
-              <p className="text-xs text-white/80 leading-relaxed font-medium">
-                Détectez les ruptures de croissance, les cycles de méforme ou les accélérations de carrière grâce à la corrélation temporelle.
+              <p className="verge-label-mono text-[10px] text-[#949494] leading-relaxed font-black uppercase tracking-wider mb-10 opacity-70">
+                Détectez les ruptures de croissance, les cycles de méforme ou les accélérations de carrière grâce à la corrélation temporelle des trajectoires de performance.
               </p>
-            </div>
-            <div className="mt-6 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest opacity-60">
-              <ArrowUpRight size={14} /> Synchronisation Multi-joueurs active
+              <div className="flex items-center gap-3 verge-label-mono text-[9px] font-black text-[#3cffd0] tracking-[0.2em] uppercase">
+                <ArrowUpRight size={16} /> Synchronisation multi-joueurs active
+              </div>
             </div>
          </div>
 
-         <div className="lg:col-span-2 bg-white/5 border border-white/5 rounded-[2rem] p-6 backdrop-blur-md">
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-sky-400 mb-6 flex items-center gap-2">
-              <Calendar size={12} /> Highlights de performance par joueur
+         <div className="lg:col-span-2 bg-[#2d2d2d] border border-white/5 rounded-[4px] p-8 relative">
+            <h4 className="verge-label-mono text-[10px] font-black uppercase tracking-[0.3em] text-[#3cffd0] mb-8 flex items-center gap-3">
+              <Calendar size={14} /> Highlights de performance par joueur
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {selectedPlayers.length === 0 ? (
-                <div className="col-span-full py-8 text-center opacity-20 text-[10px] font-black uppercase tracking-[0.2em]">En attente de sélection...</div>
+                <div className="col-span-full py-12 text-center opacity-30 verge-label-mono text-[10px] font-black uppercase tracking-[0.4em]">EN ATTENTE DE SÉLECTION...</div>
               ) : (
                 selectedPlayers.map((p, idx) => {
                   const data = allTrendsData[p.id] || [];
@@ -224,16 +231,16 @@ const TrendsDashboard = ({ metricsList = [] }) => {
                   const val = last ? (last[selectedMetric] !== undefined ? last[selectedMetric] : (last.metrics ? last.metrics[selectedMetric] : null)) : null;
                   
                   return (
-                    <div key={p.id} className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-sky-500/30 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <div className="w-1.5 h-8 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
+                    <div key={p.id} className="flex items-center justify-between p-5 rounded-[2px] bg-[#131313] border border-white/5 hover:border-[#3cffd0]/40 transition-all group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
                         <div className="flex flex-col">
-                          <span className="text-[11px] font-black text-white truncate max-w-[120px]">{p.name}</span>
-                          <span className="text-[8px] text-white/30 font-bold uppercase">{last?.season || '—'}</span>
+                          <span className="verge-label-mono text-[11px] font-black text-white truncate max-w-[120px] uppercase">{p.name}</span>
+                          <span className="verge-label-mono text-[8px] text-[#949494] font-black tracking-[0.1em]">{last?.season || '—'}</span>
                         </div>
                       </div>
-                      <div className="text-sm font-black text-sky-400 font-mono">
-                        {val !== null ? Number(val).toFixed(2) : 'N/A'}
+                      <div className="text-lg font-black text-[#3cffd0] font-mono group-hover:scale-110 transition-transform">
+                        {val !== null ? Number(val).toFixed(2) : '—'}
                       </div>
                     </div>
                   );

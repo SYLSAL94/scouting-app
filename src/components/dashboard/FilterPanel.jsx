@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Globe, BarChart2, Calendar, Activity, Zap, Save, ChevronDown, Check, X, Filter, Coins, User, ArrowRight } from 'lucide-react';
+import { Users, Globe, BarChart2, Calendar, Activity, Zap, Save, ChevronDown, Check, X, Filter, SlidersHorizontal } from 'lucide-react';
 import AccordionSection from './AccordionSection';
 import MultiSelectWithChips from '../ui/MultiSelectWithChips';
 import DualRangeSlider from '../ui/DualRangeSlider';
+import TacticalPositionPicker from './TacticalPositionPicker';
 
 const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved, onProfileDeleted }) => {
   const [isSaving, setIsSaving] = useState(false);
@@ -55,17 +56,17 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
   };
 
   return (
-    <div className="mb-8 p-4 bg-[#0f172a]/60 border border-white/10 rounded-[1.5rem] backdrop-blur-xl shadow-xl overflow-hidden">
+    <div className="mb-8 p-6 bg-[#2d2d2d] border border-white/5 rounded-[4px] overflow-hidden">
       <div className="flex items-center justify-between mb-4 px-1">
-        <label className="text-[9px] font-black uppercase tracking-[0.2em] text-sky-400/80">Analyse Presets</label>
-        {showConfirm && <span className="text-[9px] text-emerald-400 font-bold flex items-center gap-1 animate-pulse"><Check size={10} /> Saved</span>}
+        <label className="verge-label-mono text-[9px] text-[#3cffd0] uppercase tracking-widest font-black">Analyse Presets</label>
+        {showConfirm && <span className="verge-label-mono text-[9px] text-[#3cffd0] animate-pulse">SAVED</span>}
       </div>
       
       <div className="space-y-4">
         <div className="flex gap-2">
           <div className="relative flex-1 group min-w-0">
             <select 
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-[11px] text-white/70 appearance-none outline-none focus:border-sky-500/50 transition-all cursor-pointer truncate"
+              className="w-full bg-[#131313] border border-white/10 rounded-[2px] px-4 py-3 verge-label-mono text-[10px] text-white appearance-none outline-none focus:border-[#3cffd0] transition-all cursor-pointer truncate uppercase font-black"
               value={selectedId}
               onChange={(e) => {
                 const id = e.target.value;
@@ -74,43 +75,43 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
                 if (profile) loadProfile(profile.filter_config);
               }}
             >
-              <option value="" disabled>Load profile...</option>
+              <option value="" disabled className="text-[#949494]">Charger un profil...</option>
               {profiles?.map(p => (
-                <option key={p.id} value={p.id}>{p.profile_name}</option>
+                <option key={p.id} value={p.id} className="bg-[#131313] text-white uppercase">{p.profile_name}</option>
               ))}
             </select>
-            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none group-hover:text-sky-400 transition-colors" size={12} />
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#949494] pointer-events-none group-hover:text-[#3cffd0] transition-colors" size={14} />
           </div>
           {selectedId && (
             <button 
               onClick={handleDelete}
-              className="w-10 h-10 flex items-center justify-center bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition-all shrink-0"
+              className="w-12 h-12 flex items-center justify-center bg-[#131313] text-[#949494] border border-white/10 rounded-[2px] hover:bg-white hover:text-black transition-all shrink-0"
             >
-              <X size={14} />
+              <X size={16} />
             </button>
           )}
         </div>
 
-        <div className="bg-white/5 rounded-2xl border border-white/5 p-3 space-y-2">
-          <span className="text-[8px] font-bold text-white/20 uppercase tracking-widest block">New Preset</span>
-          <div className="grid grid-cols-[1fr_40px] gap-2">
+        <div className="bg-[#131313] rounded-[2px] border border-white/10 p-5 space-y-4">
+          <span className="verge-label-mono text-[8px] text-[#949494] block uppercase tracking-widest">Nouveau Preset</span>
+          <div className="flex gap-2">
             <input 
               type="text" 
-              placeholder="Name..." 
-              className="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-[11px] text-white outline-none focus:border-sky-500/30 transition-all min-w-0"
+              placeholder="NOM DU PROFIL..." 
+              className="flex-1 bg-transparent border border-white/10 rounded-[2px] px-4 py-3 verge-label-mono text-[10px] text-white outline-none focus:border-[#3cffd0] transition-all min-w-0 uppercase"
               value={profileName}
               onChange={(e) => setProfileName(e.target.value)}
             />
             <button 
               onClick={handleSave}
               disabled={!profileName.trim() || isSaving}
-              className={`w-full h-full flex items-center justify-center rounded-lg transition-all ${
+              className={`px-5 flex items-center justify-center rounded-[2px] transition-all ${
                 profileName.trim() 
-                ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/30' 
-                : 'bg-white/5 text-white/10 cursor-not-allowed'
+                ? 'bg-[#3cffd0] text-black' 
+                : 'bg-white/5 text-[#949494] cursor-not-allowed border border-white/5'
               }`}
             >
-              {isSaving ? <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={14} />}
+              {isSaving ? <div className="w-3 h-3 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <Save size={16} />}
             </button>
           </div>
         </div>
@@ -118,8 +119,6 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
     </div>
   );
 };
-
-import TacticalPositionPicker from './TacticalPositionPicker';
 
 const FilterPanel = ({ 
   openSection, setOpenSection, 
@@ -146,45 +145,45 @@ const FilterPanel = ({
     let count = 0;
     let parts = [];
     if (section === 'periode') {
-      if (pendingFilters.seasons.length > 0) { count++; parts.push(`${pendingFilters.seasons.length} saisons`); }
+      if (pendingFilters.seasons.length > 0) { count++; parts.push(`${pendingFilters.seasons.length} Saisons`); }
     }
     if (section === 'entites') {
-      if (pendingFilters.competitions.length > 0) { count++; parts.push(`${pendingFilters.competitions.length} ligues`); }
-      if (pendingFilters.teams.length > 0) { count++; parts.push(`${pendingFilters.teams.length} clubs`); }
+      if (pendingFilters.competitions.length > 0) { count++; parts.push(`${pendingFilters.competitions.length} Ligues`); }
+      if (pendingFilters.teams.length > 0) { count++; parts.push(`${pendingFilters.teams.length} Clubs`); }
     }
     if (section === 'morphologie') {
       if (pendingFilters.minAge !== defaults.minAge || pendingFilters.maxAge !== defaults.maxAge) { count++; parts.push(`Âge ${pendingFilters.minAge}-${pendingFilters.maxAge}`); }
-      if (pendingFilters.useSeasonAge) { count++; parts.push('Âge saison'); }
-      if (pendingFilters.foot !== defaults.foot) { count++; parts.push(pendingFilters.foot === 'left' ? 'Gauchers' : pendingFilters.foot === 'right' ? 'Droitiers' : '2 pieds'); }
+      if (pendingFilters.useSeasonAge) { count++; parts.push('Âge Saison'); }
+      if (pendingFilters.foot !== defaults.foot) { count++; parts.push(pendingFilters.foot === 'left' ? 'Gauche' : pendingFilters.foot === 'right' ? 'Droit' : '2 Pieds'); }
     }
     if (section === 'performance') {
-      if (pendingFilters.positions?.length > 0) { count++; parts.push(`${pendingFilters.positions.length} postes`); }
+      if (pendingFilters.positions?.length > 0) { count++; parts.push(`${pendingFilters.positions.length} Postes`); }
       if ((pendingFilters.playtime?.min || 0) > 0) { count++; parts.push(`TJ ${pendingFilters.playtime.min}%+`); }
-      if (pendingFilters.minMatches > 0) { count++; parts.push(`${pendingFilters.minMatches}+ matchs`); }
+      if (pendingFilters.minMatches > 0) { count++; parts.push(`${pendingFilters.minMatches}+ Matchs`); }
     }
     if (section === 'contrat') {
-      if (pendingFilters.onLoan) { count++; parts.push('En prêt'); }
-      if ((pendingFilters.marketValue?.min || 0) > 0 || (pendingFilters.marketValue?.max || 150000000) < 150000000) { count++; parts.push(`MV max ${Math.round((pendingFilters.marketValue?.max || 150000000)/1000000)}M€`); }
+      if (pendingFilters.onLoan) { count++; parts.push('En Prêt'); }
+      if ((pendingFilters.marketValue?.min || 0) > 0 || (pendingFilters.marketValue?.max || 150000000) < 150000000) { count++; parts.push(`MV Max ${Math.round((pendingFilters.marketValue?.max || 150000000)/1000000)}M€`); }
     }
-    return { count, subtitle: parts.join(' · ') };
+    return { count, subtitle: parts.join(' · ').toUpperCase() };
   };
 
   return (
-    <aside className="sidebar-filters w-full xl:w-[400px] shrink-0 xl:sticky xl:top-8 h-[700px] xl:h-[calc(100vh-6rem)] flex flex-col bg-[#0f172a]/30 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500">
+    <aside className="sidebar-filters w-full xl:w-[420px] shrink-0 xl:sticky xl:top-8 h-[700px] xl:h-[calc(100vh-6rem)] flex flex-col bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden transition-all duration-500">
       
-      {/* Header Section - Fixe */}
-      <div className="p-6 pb-2 border-b border-white/5 bg-white/[0.01]">
-        <div className="flex items-center justify-between mb-6">
+      {/* Header Section */}
+      <div className="p-10 pb-6 border-b border-white/10">
+        <div className="flex items-center justify-between mb-10">
           <div className="flex flex-col">
-            <h3 className="text-xl font-black uppercase tracking-tighter flex items-center gap-2 text-white">
-              <Zap size={20} className="text-sky-400 fill-sky-400/20" />
-              Scouting Engine
+            <h3 className="verge-h3 text-white flex items-center gap-4">
+              <Zap size={22} className="text-[#3cffd0]" />
+              Population
             </h3>
-            <p className="text-[9px] font-bold text-white/20 uppercase tracking-[0.2em] mt-1">Configuring population filters</p>
+            <p className="verge-label-mono text-[9px] text-[#949494] mt-2 uppercase tracking-widest">Configuration de l'échantillon</p>
           </div>
           <button 
             onClick={handleResetFilters}
-            className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-red-500/10 text-[9px] font-black uppercase tracking-widest text-slate-500 hover:text-red-400 transition-all border border-white/5"
+            className="verge-label-mono text-[10px] text-[#949494] hover:text-white uppercase font-black transition-colors"
           >
             Reset
           </button>
@@ -199,15 +198,15 @@ const FilterPanel = ({
         />
       </div>
 
-      {/* Content Section - Scrollable */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
+      {/* Content Section */}
+      <div className="flex-1 overflow-y-auto p-10 pt-6 space-y-4 styled-scrollbar">
         <AccordionSection 
           id="periode" title="Période" icon={<Calendar size={18} />}
           isOpen={openSection === 'periode'} onToggle={() => setOpenSection(openSection === 'periode' ? null : 'periode')}
           badge={getSectionStats('periode').count}
           subtitle={getSectionStats('periode').subtitle}
         >
-          <MultiSelectWithChips label="Saisons" options={seasonsList} selected={pendingFilters.seasons} onChange={(val) => updateFilters('seasons', val)} placeholder="Filter by season..." />
+          <MultiSelectWithChips label="Saisons" options={seasonsList} selected={pendingFilters.seasons} onChange={(val) => updateFilters('seasons', val)} placeholder="Sélectionner..." />
         </AccordionSection>
 
         <AccordionSection 
@@ -216,9 +215,9 @@ const FilterPanel = ({
           badge={getSectionStats('entites').count}
           subtitle={getSectionStats('entites').subtitle}
         >
-          <div className="space-y-4">
-            <MultiSelectWithChips label="Compétitions" options={competitionsList} selected={pendingFilters.competitions} onChange={(val) => updateFilters('competitions', val)} placeholder="Select leagues..." />
-            <MultiSelectWithChips label="Équipes" options={teamsList} selected={pendingFilters.teams} onChange={(val) => updateFilters('teams', val)} placeholder="Filter by club..." />
+          <div className="space-y-8">
+            <MultiSelectWithChips label="Compétitions" options={competitionsList} selected={pendingFilters.competitions} onChange={(val) => updateFilters('competitions', val)} placeholder="Ligues..." />
+            <MultiSelectWithChips label="Équipes" options={teamsList} selected={pendingFilters.teams} onChange={(val) => updateFilters('teams', val)} placeholder="Clubs..." />
           </div>
         </AccordionSection>
 
@@ -228,33 +227,31 @@ const FilterPanel = ({
           badge={getSectionStats('morphologie').count}
           subtitle={getSectionStats('morphologie').subtitle}
         >
-          <div className="space-y-6">
-            <div className="filter-group">
-               <DualRangeSlider label="Tranche d'Âge" min={15} max={45} currentMin={pendingFilters.minAge} currentMax={pendingFilters.maxAge} onChange={(min, max) => setPendingFilters(prev => ({ ...prev, minAge: min, maxAge: max }))} />
-            </div>
+          <div className="space-y-10">
+            <DualRangeSlider label="Tranche d'Âge" min={15} max={45} currentMin={pendingFilters.minAge} currentMax={pendingFilters.maxAge} onChange={(min, max) => setPendingFilters(prev => ({ ...prev, minAge: min, maxAge: max }))} />
 
-            <div className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
+            <div className="flex items-center justify-between p-6 bg-[#2d2d2d] rounded-[4px] border border-white/5">
               <div className="flex flex-col">
-                <span className="text-[10px] font-bold text-sky-400 uppercase tracking-widest">Âge de Saison</span>
-                <span className="text-[8px] text-slate-500 uppercase tracking-tighter">Based on season year</span>
+                <span className="verge-label-mono text-[10px] text-[#3cffd0] uppercase font-black">Âge de Saison</span>
+                <span className="verge-label-mono text-[8px] text-[#949494] mt-1 uppercase">Basé sur l'année de saison</span>
               </div>
-              <button onClick={() => updateFilters('useSeasonAge', !pendingFilters.useSeasonAge)} className={`w-8 h-4 rounded-full p-0.5 transition-all duration-300 ${pendingFilters.useSeasonAge ? 'bg-sky-500 shadow-lg shadow-sky-500/30' : 'bg-slate-700'}`}>
-                <div className={`w-3 h-3 bg-white rounded-full transition-transform duration-300 ${pendingFilters.useSeasonAge ? 'translate-x-4' : 'translate-x-0'}`} />
+              <button onClick={() => updateFilters('useSeasonAge', !pendingFilters.useSeasonAge)} className={`w-10 h-5 rounded-full p-0.5 transition-all duration-300 ${pendingFilters.useSeasonAge ? 'bg-[#3cffd0]' : 'bg-[#131313]'}`}>
+                <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-300 ${pendingFilters.useSeasonAge ? 'translate-x-5' : 'translate-x-0'}`} />
               </button>
             </div>
 
             <div className="filter-group">
-              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 mb-3 block">Lateral Preference</label>
-              <div className="flex p-1 bg-black/40 rounded-2xl border border-white/5">
+              <label className="verge-label-mono text-[9px] text-[#949494] mb-4 block uppercase tracking-widest">Préférence Latérale</label>
+              <div className="grid grid-cols-4 gap-3">
                 {['all', 'right', 'left', 'both'].map((f) => (
-                  <button key={f} onClick={() => updateFilters('foot', f)} className={`flex-1 py-2.5 rounded-xl text-[9px] font-black uppercase transition-all duration-300 ${pendingFilters.foot === f ? 'bg-sky-500 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>
+                  <button key={f} onClick={() => updateFilters('foot', f)} className={`py-4 rounded-[2px] verge-label-mono text-[9px] font-black uppercase transition-all duration-300 ${pendingFilters.foot === f ? 'bg-[#3cffd0] text-black' : 'bg-[#2d2d2d] text-[#949494] hover:text-white border border-white/5'}`}>
                     {f === 'all' ? 'All' : f === 'right' ? 'R' : f === 'left' ? 'L' : '2P'}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-8 pt-4">
+            <div className="grid grid-cols-1 gap-12 pt-4">
               <DualRangeSlider label="Taille (cm)" min={140} max={210} currentMin={pendingFilters.height?.min || 140} currentMax={pendingFilters.height?.max || 210} onChange={(min, max) => updateFilters('height', { min, max })} unit="cm" />
               <DualRangeSlider label="Poids (kg)" min={50} max={110} currentMin={pendingFilters.weight?.min || 50} currentMax={pendingFilters.weight?.max || 110} onChange={(min, max) => updateFilters('weight', { min, max })} unit="kg" />
             </div>
@@ -267,28 +264,28 @@ const FilterPanel = ({
           badge={getSectionStats('performance').count}
           subtitle={getSectionStats('performance').subtitle}
         >
-          <div className="mb-6 bg-black/20 rounded-3xl p-1 border border-white/5 shadow-inner">
+          <div className="mb-10">
             <TacticalPositionPicker 
               selectedPositions={pendingFilters.positions}
               onChange={(val) => updateFilters('positions', val)}
             />
           </div>
-          <MultiSelectWithChips label="Postes" options={positionsList} selected={pendingFilters.positions} onChange={(val) => updateFilters('positions', val)} placeholder="Tactical roles..." />
+          <MultiSelectWithChips label="Postes" options={positionsList} selected={pendingFilters.positions} onChange={(val) => updateFilters('positions', val)} placeholder="Rôles tactiques..." />
           
-          <div className="space-y-6 mt-8 p-4 bg-white/[0.02] rounded-2xl border border-white/5">
+          <div className="space-y-10 mt-12 p-8 bg-[#2d2d2d] rounded-[4px] border border-white/5">
             <div className="filter-group">
-               <label className="filter-label flex justify-between">
-                 <span>Playtime (%)</span>
-                 <span className="text-sky-400 font-mono">{(pendingFilters.playtime?.min || 0)}%+</span>
+               <label className="verge-label-mono text-[9px] text-white flex justify-between mb-4 uppercase font-black">
+                 <span>Temps de Jeu (%)</span>
+                 <span className="text-[#3cffd0]">{(pendingFilters.playtime?.min || 0)}%+</span>
                </label>
-               <input type="range" min="0" max="100" step="5" value={pendingFilters.playtime?.min || 0} onChange={e => updateFilters('playtime', { ...(pendingFilters.playtime || {}), min: Number(e.target.value) })} className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-sky-400" />
+               <input type="range" min="0" max="100" step="5" value={pendingFilters.playtime?.min || 0} onChange={e => updateFilters('playtime', { ...(pendingFilters.playtime || {}), min: Number(e.target.value) })} className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" />
             </div>
             <div className="filter-group">
-               <label className="filter-label flex justify-between">
-                 <span>Min Matches</span>
-                 <span className="text-emerald-400 font-mono">{pendingFilters.minMatches}+</span>
+               <label className="verge-label-mono text-[9px] text-white flex justify-between mb-4 uppercase font-black">
+                 <span>Matchs Min</span>
+                 <span className="text-[#3cffd0]">{pendingFilters.minMatches}+</span>
                </label>
-               <input type="range" min="0" max="60" step="1" value={pendingFilters.minMatches} onChange={e => updateFilters('minMatches', Number(e.target.value))} className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-400" />
+               <input type="range" min="0" max="60" step="1" value={pendingFilters.minMatches} onChange={e => updateFilters('minMatches', Number(e.target.value))} className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" />
             </div>
           </div>
         </AccordionSection>
@@ -299,41 +296,36 @@ const FilterPanel = ({
           badge={getSectionStats('contrat').count}
           subtitle={getSectionStats('contrat').subtitle}
         >
-          <div className="space-y-8 py-2">
-            <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
+          <div className="space-y-12 py-4">
+            <div className="flex items-center justify-between p-8 bg-[#2d2d2d] rounded-[4px] border border-white/5">
               <div className="flex flex-col">
-                <span className="text-[11px] font-bold text-white uppercase tracking-tight">On Loan</span>
-                <span className="text-[8px] text-slate-500 uppercase tracking-widest">Filter temporary status</span>
+                <span className="verge-label-mono text-[11px] text-white uppercase font-black">En Prêt</span>
+                <span className="verge-label-mono text-[8px] text-[#949494] mt-1 uppercase">Exclure les transferts secs</span>
               </div>
-              <button onClick={() => updateFilters('onLoan', !pendingFilters.onLoan)} className={`w-10 h-5 rounded-full p-0.5 transition-all duration-500 ${pendingFilters.onLoan ? 'bg-sky-500 shadow-lg shadow-sky-500/50' : 'bg-slate-700'}`}>
-                <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-500 ${pendingFilters.onLoan ? 'translate-x-4' : 'translate-x-0'}`} />
+              <button onClick={() => updateFilters('onLoan', !pendingFilters.onLoan)} className={`w-12 h-6 rounded-full p-1 transition-all duration-500 ${pendingFilters.onLoan ? 'bg-[#3cffd0]' : 'bg-[#131313]'}`}>
+                <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-500 ${pendingFilters.onLoan ? 'translate-x-6' : 'translate-x-0'}`} />
               </button>
             </div>
             
-            <div className="px-1">
-              <DualRangeSlider label="Market Value (€)" min={0} max={150000000} step={500000} currentMin={pendingFilters.marketValue?.min || 0} currentMax={pendingFilters.marketValue?.max || 150000000} onChange={(min, max) => updateFilters('marketValue', { min, max })} unit="€" />
+            <div className="px-2">
+              <DualRangeSlider label="Valeur Marchande (€)" min={0} max={150000000} step={500000} currentMin={pendingFilters.marketValue?.min || 0} currentMax={pendingFilters.marketValue?.max || 150000000} onChange={(min, max) => updateFilters('marketValue', { min, max })} unit="€" />
             </div>
           </div>
         </AccordionSection>
       </div>
 
-      {/* Footer Section - Fixe / Action */}
-      <div className="p-6 bg-white/[0.04] border-t border-white/5 backdrop-blur-3xl">
+      {/* Footer Section */}
+      <div className="p-10 bg-[#131313] border-t border-white/10">
         <button 
           onClick={handleApplyFilters} 
           disabled={!hasChanges} 
-          className={`w-full py-5 rounded-[1.5rem] flex items-center justify-center gap-3 transition-all duration-500 relative group overflow-hidden ${
+          className={`w-full py-6 rounded-[4px] flex items-center justify-center gap-4 transition-all duration-500 relative group overflow-hidden ${
             hasChanges 
-            ? 'bg-gradient-to-r from-sky-500 to-indigo-600 text-white shadow-2xl shadow-sky-500/40 hover:scale-[1.02]' 
-            : 'bg-white/5 text-white/10 cursor-not-allowed'
+            ? 'bg-[#3cffd0] text-black hover:bg-white' 
+            : 'bg-white/5 text-[#949494] cursor-not-allowed border border-white/5'
           }`}
         >
-          {hasChanges && (
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"
-            />
-          )}
-          <span className="text-[11px] font-black uppercase tracking-[0.3em]">Apply Analysis</span>
+          <span className="verge-label-mono text-[11px] font-black uppercase tracking-widest">Appliquer les filtres</span>
           <Check size={18} className={`${hasChanges ? 'opacity-100 scale-100' : 'opacity-0 scale-50'} transition-all duration-300`} />
         </button>
       </div>

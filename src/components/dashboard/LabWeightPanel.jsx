@@ -123,16 +123,14 @@ export default function LabWeightPanel({ metricsList, onCalculate, loading }) {
     };
 
     return (
-        <div className="flex flex-col h-full bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
-            {/* HEADER AVEC METRIC SELECTION PANEL (Réutilisation Lego) */}
-            <div className="p-6 border-b border-white/5 bg-gradient-to-b from-white/5 to-transparent flex-shrink-0">
-                <div className="flex items-center gap-3 mb-8">
-                    <div className="p-2.5 rounded-xl bg-sky-500/20 ring-1 ring-sky-500/30">
-                        <Settings size={22} className="text-sky-400" />
-                    </div>
+        <div className="flex flex-col h-full bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden shadow-[0_30px_90px_rgba(0,0,0,0.6)]">
+            {/* HEADER */}
+            <div className="p-8 border-b border-white/5 bg-[#2d2d2d] flex-shrink-0">
+                <div className="flex items-center gap-4 mb-10">
+                    <div className="w-2 h-8 bg-[#3cffd0]" />
                     <div>
-                        <h3 className="text-xl font-bold text-white tracking-tight">Configuration</h3>
-                        <p className="text-[10px] text-slate-500 font-medium">Définissez vos critères d'analyse</p>
+                        <h3 className="verge-label-mono text-xl font-black text-white tracking-[0.1em] uppercase">Configuration</h3>
+                        <p className="verge-label-mono text-[9px] text-[#949494] font-black uppercase tracking-[0.3em] opacity-40 mt-1">Définissez vos critères d'analyse</p>
                     </div>
                 </div>
 
@@ -145,56 +143,56 @@ export default function LabWeightPanel({ metricsList, onCalculate, loading }) {
                     onMetricToggle={handleMetricToggle}
                     MIN_METRICS={1}
                     onResetMetrics={handleReset}
-                    hideModeSelector={true} // Nouveau flag pour masquer le sélecteur de mode
+                    hideModeSelector={true}
                 />
             </div>
 
-            {/* LISTE DES PONDÉRATIONS (DYNAMIQUE) */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-black/10">
+            {/* LISTE DES PONDÉRATIONS */}
+            <div className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar bg-[#131313]">
                 {selectedMetrics.length > 0 ? (
                     <>
-                        <div className="sticky top-0 z-10 flex items-center gap-4 py-3 bg-slate-900/95 backdrop-blur-sm -mx-6 px-6 mb-2 border-b border-white/5">
-                            <div className="h-px flex-grow bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                        <div className="sticky top-0 z-10 flex items-center gap-4 py-4 bg-[#131313] -mx-8 px-8 mb-4 border-b border-white/5">
+                            <div className="h-px flex-grow bg-white/5"></div>
+                            <div className="flex items-center gap-3 verge-label-mono text-[9px] font-black uppercase tracking-[0.3em] text-[#949494]">
                                 <SlidersHorizontal size={12} />
-                                Pondération
+                                PONDÉRATION
                                 <button 
                                     onClick={handleEqualize}
-                                    className="ml-2 p-1 rounded-full hover:bg-sky-500/20 text-sky-400 transition-colors"
+                                    className="ml-3 p-1.5 rounded-[1px] hover:bg-[#3cffd0]/10 text-[#3cffd0] transition-colors border border-transparent hover:border-[#3cffd0]/20"
                                     title="Égaliser les poids"
                                 >
                                     <Scale size={12} />
                                 </button>
                             </div>
-                            <div className="h-px flex-grow bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                            <div className="h-px flex-grow bg-white/5"></div>
                         </div>
                         
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                             {selectedMetrics.map(m => (
-                                <div key={m.id} className="group p-4 bg-white/5 border border-white/5 rounded-2xl hover:border-white/10 transition-all">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <span className="text-xs font-bold text-slate-200 truncate pr-4">{m.label}</span>
-                                        <button onClick={() => handleMetricToggle(m.id)} className="text-slate-500 hover:text-red-400 transition-colors">
+                                <div key={m.id} className="group p-5 bg-[#2d2d2d] border border-white/5 rounded-[2px] hover:border-[#3cffd0]/20 transition-all shadow-lg">
+                                    <div className="flex justify-between items-start mb-6">
+                                        <span className="verge-label-mono text-[10px] font-black text-white uppercase tracking-wider truncate pr-4">{m.label}</span>
+                                        <button onClick={() => handleMetricToggle(m.id)} className="text-[#949494] hover:text-white transition-colors">
                                             <X size={14} />
                                         </button>
                                     </div>
                                     
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-5">
                                         <button 
                                             onClick={() => updateMetric(m.id, 'sign', m.sign === 1 ? -1 : 1)}
-                                            className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-sm transition-all border ${
+                                            className={`w-10 h-10 rounded-[1px] flex items-center justify-center verge-label-mono text-base font-black transition-all border ${
                                                 m.sign === 1 
-                                                ? 'bg-sky-500/10 border-sky-500/30 text-sky-400' 
-                                                : 'bg-red-500/10 border-red-500/30 text-red-400'
+                                                ? 'bg-[#3cffd0]/10 border-[#3cffd0]/30 text-[#3cffd0]' 
+                                                : 'bg-red-500/10 border-red-500/30 text-red-500'
                                             }`}
                                         >
                                             {m.sign === 1 ? '+' : '-'}
                                         </button>
                                         
-                                        <div className="relative flex-grow h-6 flex items-center">
-                                            <div className="absolute w-full h-1 bg-white/10 rounded-full" />
+                                        <div className="relative flex-grow h-8 flex items-center">
+                                            <div className="absolute w-full h-1 bg-[#131313] rounded-[1px]" />
                                             <div 
-                                                className={`absolute h-1 rounded-full ${m.sign === 1 ? 'bg-sky-500' : 'bg-red-500'}`} 
+                                                className={`absolute h-1 rounded-[1px] ${m.sign === 1 ? 'bg-[#3cffd0]' : 'bg-red-500'}`} 
                                                 style={{ width: `${Math.round(m.weight * 100)}%` }}
                                             />
                                             <input 
@@ -204,12 +202,12 @@ export default function LabWeightPanel({ metricsList, onCalculate, loading }) {
                                                 className="absolute w-full h-full opacity-0 cursor-pointer z-10"
                                             />
                                             <div 
-                                                className={`absolute h-3 w-3 rounded-full border-2 border-slate-900 shadow-lg ${m.sign === 1 ? 'bg-sky-400' : 'bg-red-400'}`}
+                                                className={`absolute h-4 w-4 rounded-[1px] shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/20 ${m.sign === 1 ? 'bg-[#3cffd0]' : 'bg-red-500'}`}
                                                 style={{ left: `${Math.round(m.weight * 100)}%`, transform: 'translateX(-50%)' }}
                                             />
                                         </div>
                                         
-                                        <span className={`w-10 text-right text-xs font-black tabular-nums ${m.sign === 1 ? 'text-sky-400' : 'text-red-400'}`}>
+                                        <span className={`w-12 text-right verge-label-mono text-[11px] font-black tabular-nums ${m.sign === 1 ? 'text-[#3cffd0]' : 'text-red-500'}`}>
                                             {Math.round(m.weight * 100)}%
                                         </span>
                                     </div>
@@ -218,24 +216,24 @@ export default function LabWeightPanel({ metricsList, onCalculate, loading }) {
                         </div>
                     </>
                 ) : (
-                    <div className="h-full flex flex-col items-center justify-center text-slate-600 space-y-4 opacity-40">
-                        <SlidersHorizontal size={40} strokeWidth={1} />
-                        <p className="text-[10px] font-black uppercase tracking-widest text-center">Ajoutez des métriques pour commencer</p>
+                    <div className="h-full flex flex-col items-center justify-center text-[#949494] space-y-6 opacity-20 py-20">
+                        <SlidersHorizontal size={48} strokeWidth={1} />
+                        <p className="verge-label-mono text-[10px] font-black uppercase tracking-[0.3em] text-center">Ajoutez des métriques pour commencer</p>
                     </div>
                 )}
             </div>
 
             {/* FOOTER ACTION */}
-            <div className="p-6 bg-black/40 border-t border-white/5 flex-shrink-0">
+            <div className="p-8 bg-[#2d2d2d] border-t border-white/5 flex-shrink-0">
                 <button
                     onClick={handleRun}
                     disabled={selectedMetrics.length === 0 || loading}
-                    className="w-full relative group flex items-center justify-center px-6 py-4 rounded-2xl bg-gradient-to-r from-sky-600 to-cyan-500 hover:from-sky-500 hover:to-cyan-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 shadow-xl shadow-sky-900/20"
+                    className="w-full relative group flex items-center justify-center px-8 py-6 rounded-[2px] bg-[#3cffd0] hover:bg-[#3cffd0]/90 disabled:bg-[#131313] disabled:text-[#444] transition-all duration-300 shadow-[0_20px_40px_rgba(60,255,208,0.2)] active:scale-[0.98]"
                 >
                     {loading ? (
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <div className="w-6 h-6 border-2 border-black/10 border-t-black rounded-full animate-spin" />
                     ) : (
-                        <span className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-white">
+                        <span className="flex items-center gap-4 verge-label-mono text-[12px] font-black uppercase tracking-[0.4em] text-black">
                             <Zap size={18} fill="currentColor" />
                             Lancer l'Analyse
                         </span>

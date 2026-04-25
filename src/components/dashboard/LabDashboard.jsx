@@ -8,7 +8,7 @@ export default function LabDashboard({ activeFilters, metricsList, onPlayerClick
     const [labResults, setLabResults] = useState([]);
     const [totalPlayers, setTotalPlayers] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [lastConfig, setLastConfig] = useState(null); // Pour re-déclencher sur changement de page
+    const [lastConfig, setLastConfig] = useState(null); 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
@@ -55,26 +55,26 @@ export default function LabDashboard({ activeFilters, metricsList, onPlayerClick
     const totalPages = Math.ceil(totalPlayers / pageSize);
 
     return (
-        <div className="flex flex-col gap-6 h-full min-h-0">
+        <div className="flex flex-col gap-6 h-full min-h-0 bg-[#131313]">
             {/* Mobile Local Tabs */}
-            <div className="flex xl:hidden bg-white/5 p-1 rounded-xl border border-white/5 mb-2">
+            <div className="flex xl:hidden bg-[#2d2d2d] p-1 rounded-[2px] border border-white/5 mb-2">
                 <button 
                     onClick={() => setActiveTab('RESULTS')}
-                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'RESULTS' ? 'bg-emerald-500 text-white' : 'text-white/40'}`}
+                    className={`flex-1 py-4 rounded-[1px] verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === 'RESULTS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
                 >
-                    Résultats
+                    RÉSULTATS
                 </button>
                 <button 
                     onClick={() => setActiveTab('CONFIG')}
-                    className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'CONFIG' ? 'bg-emerald-500 text-white' : 'text-white/40'}`}
+                    className={`flex-1 py-4 rounded-[1px] verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeTab === 'CONFIG' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
                 >
-                    Paramètres
+                    PARAMÈTRES
                 </button>
             </div>
 
-            <div className="flex flex-col xl:flex-row gap-6 xl:gap-10 h-full min-h-0">
+            <div className="flex flex-col xl:flex-row gap-8 xl:gap-10 h-full min-h-0">
                 {/* Control Panel */}
-                <div className={`w-full xl:w-[400px] shrink-0 ${activeTab === 'CONFIG' ? 'block' : 'hidden xl:block'}`}>
+                <div className={`w-full xl:w-[420px] shrink-0 ${activeTab === 'CONFIG' ? 'block' : 'hidden xl:block'}`}>
                     <LabWeightPanel 
                         metricsList={metricsList} 
                         onCalculate={(w, s) => {
@@ -87,56 +87,66 @@ export default function LabDashboard({ activeFilters, metricsList, onPlayerClick
 
                 {/* Results Area */}
                 <div className={`flex-1 flex flex-col min-w-0 ${activeTab === 'RESULTS' ? 'flex' : 'hidden xl:flex'}`}>
-                <div className="bg-white/5 backdrop-blur-md border border-white/5 rounded-3xl p-6 mb-6 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-                            <FlaskConical className="text-emerald-400" size={24} />
+                    <div className="bg-[#2d2d2d] border border-white/10 rounded-[4px] p-8 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.4)]">
+                        {/* Hazard Line */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-[#3cffd0]/20" />
+                        
+                        <div className="flex items-center gap-6">
+                            <div className="p-4 bg-[#131313] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_15px_30px_rgba(0,0,0,0.3)]">
+                                <FlaskConical className="text-[#3cffd0]" size={28} />
+                            </div>
+                            <div>
+                                <h2 className="verge-label-mono text-2xl font-black text-white uppercase tracking-[0.1em]">RÉSULTATS DE <span className="text-[#3cffd0]">L'EXPÉRIENCE</span></h2>
+                                <p className="verge-label-mono text-[9px] text-[#949494] uppercase font-black tracking-[0.3em] opacity-50 mt-1">Calculé dynamiquement sur la population filtrée</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-2xl font-black text-white uppercase tracking-tight">Résultats de <span className="text-emerald-400">l'Expérience</span></h2>
-                            <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Calculé dynamiquement sur la population filtrée</p>
-                        </div>
+                        {totalPlayers > 0 && (
+                            <div className="px-5 py-2.5 bg-[#131313] border border-[#3cffd0]/30 rounded-[1px] text-[#3cffd0] verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] shadow-[0_10px_20px_rgba(0,0,0,0.2)]">
+                                {totalPlayers} PROFILS IDENTIFIÉS
+                            </div>
+                        )}
                     </div>
-                    {totalPlayers > 0 && (
-                        <div className="px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-emerald-400 text-[10px] font-black uppercase tracking-widest">
-                            {totalPlayers} Profils Identifiés
+
+                    {error ? (
+                        <div className="flex-1 flex flex-col items-center justify-center bg-[#131313] border border-red-500/20 rounded-[4px] p-12 shadow-2xl">
+                            <div className="p-6 bg-red-500/10 rounded-full mb-8">
+                                <AlertTriangle className="text-red-500" size={56} />
+                            </div>
+                            <h3 className="verge-label-mono text-xl font-black text-white uppercase tracking-widest mb-4">Erreur d'Analyse</h3>
+                            <p className="verge-label-mono text-[#949494] text-[11px] text-center max-w-md uppercase tracking-widest leading-loose opacity-60">{error}</p>
+                        </div>
+                    ) : labResults.length > 0 ? (
+                        <div className="flex-1 min-h-0 bg-[#131313] rounded-[4px] overflow-hidden border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
+                            <RankingTable 
+                                players={labResults} 
+                                loading={loading}
+                                pageSize={pageSize}
+                                currentPage={currentPage}
+                                totalPlayers={totalPlayers}
+                                totalPages={totalPages}
+                                setCurrentPage={handlePageChange}
+                                handlePlayerClick={onPlayerClick}
+                                metricsList={metricsList}
+                                selectedSortBy="custom_score"
+                                onSortChange={() => {}}
+                            />
+                        </div>
+                    ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center bg-[#131313] border border-dashed border-white/5 rounded-[4px] p-12 relative overflow-hidden group">
+                            {/* Technical Corner */}
+                            <div className="absolute top-4 right-4 w-12 h-12 border-t border-r border-white/10" />
+                            
+                            <div className="w-24 h-24 bg-[#2d2d2d] border border-white/10 rounded-[2px] flex items-center justify-center mb-10 shadow-2xl group-hover:scale-105 transition-transform duration-700">
+                                <Info className="text-[#3cffd0] opacity-30" size={56} />
+                            </div>
+                            <h3 className="verge-label-mono text-3xl font-black text-white uppercase tracking-tighter mb-4">PRÊT POUR L'EXPÉRIMENTATION</h3>
+                            <p className="verge-label-mono text-[#949494] text-[11px] text-center max-w-sm font-black uppercase tracking-[0.2em] leading-loose opacity-40">
+                                Configurez vos pondérations à gauche et lancez l'analyse pour identifier des talents uniques basés sur vos propres algorithmes.
+                            </p>
                         </div>
                     )}
                 </div>
-
-                {error ? (
-                    <div className="flex-1 flex flex-col items-center justify-center bg-red-500/5 border border-red-500/10 rounded-3xl p-10">
-                        <AlertTriangle className="text-red-500 mb-4" size={48} />
-                        <h3 className="text-lg font-bold text-white mb-2">Erreur d'Analyse</h3>
-                        <p className="text-slate-400 text-sm text-center max-w-md">{error}</p>
-                    </div>
-                ) : labResults.length > 0 ? (
-                    <div className="flex-1 min-h-0 bg-slate-900/50 rounded-3xl overflow-hidden border border-white/5">
-                        <RankingTable 
-                            players={labResults} 
-                            loading={loading}
-                            pageSize={pageSize}
-                            currentPage={currentPage}
-                            totalPlayers={totalPlayers}
-                            totalPages={totalPages}
-                            setCurrentPage={handlePageChange}
-                            handlePlayerClick={onPlayerClick}
-                            metricsList={metricsList}
-                            selectedSortBy="custom_score"
-                            onSortChange={() => {}}
-                        />
-                    </div>
-                ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center bg-white/5 border border-dashed border-white/10 rounded-3xl p-10 opacity-40">
-                        <Info className="text-slate-500 mb-6" size={64} />
-                        <h3 className="text-2xl font-black text-white uppercase tracking-tight mb-2">Prêt pour l'Expérimentation</h3>
-                        <p className="text-slate-400 text-sm text-center max-w-sm font-medium">
-                            Configurez vos pondérations à gauche et lancez l'analyse pour identifier des talents uniques basés sur vos propres algorithmes.
-                        </p>
-                    </div>
-                )}
             </div>
         </div>
-    </div>
     );
 }

@@ -36,9 +36,9 @@ export const MetricSelectionPanel = ({
         return (
             <button
                 onClick={() => onMetricModeChange(mode)}
-                className={`flex items-center justify-center flex-1 px-3 py-2 text-xs font-bold rounded-lg transition-all duration-300 ${isActive
-                    ? 'text-white bg-gradient-to-r from-sky-600 to-cyan-600 shadow-lg shadow-sky-900/20'
-                    : 'bg-white dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-700 dark:hover:text-slate-200 shadow-sm dark:shadow-none'
+                className={`flex items-center justify-center flex-1 px-4 py-3 text-[11px] font-black verge-label-mono rounded-[2px] transition-all ${isActive
+                    ? 'text-black bg-[#3cffd0] shadow-[0_0_15px_rgba(60,255,208,0.3)]'
+                    : 'bg-[#131313] text-[#949494] hover:bg-white/5 border border-white/5'
                     }`}
             >
                 <Icon size={14} className="mr-2" />
@@ -50,14 +50,14 @@ export const MetricSelectionPanel = ({
     return (
         <ThemeContext.Provider value={{ theme }}>
             <div className="space-y-6">
-                <div className="flex items-center justify-between mb-[-1rem]">
-                    <div />
+                <div className="flex items-center justify-between">
+                    <div className="w-2 h-2 bg-[#3cffd0]" />
                     <button
                         onClick={onResetMetrics}
-                        className="flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 bg-rose-50 dark:bg-rose-950/30 border border-rose-100 dark:border-rose-800/50 rounded-md transition-all hover:shadow-sm"
+                        className="flex items-center gap-2 px-4 py-2 verge-label-mono text-[9px] font-black tracking-[0.2em] text-[#f43f5e] hover:bg-[#f43f5e]/10 border border-[#f43f5e]/30 rounded-[2px] transition-all"
                     >
                         <Trash2 size={12} />
-                        Réinitialiser
+                        RÉINITIALISER
                     </button>
                 </div>
 
@@ -73,24 +73,27 @@ export const MetricSelectionPanel = ({
                 />
 
                 {!hideModeSelector && (
-                    <div className="space-y-2">
+                    <div className="space-y-4 pt-6 border-t border-white/5">
                         <div className="flex items-center justify-between">
-                            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                            <label className="verge-label-mono text-[10px] text-[#949494] tracking-[0.2em] font-black uppercase">
                                 Type de données
                             </label>
                             <div className="group relative">
-                                <Info size={14} className="text-slate-500 hover:text-sky-400 cursor-help transition-colors" />
-                                <div className="absolute right-0 bottom-full mb-2 w-64 p-3 bg-slate-900 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                                    <p className="text-[10px] leading-relaxed text-slate-300 space-y-2">
-                                        <span className="block font-bold text-sky-400 mb-1 uppercase tracking-tighter">Guide Analytique :</span>
-                                        <span className="block"><strong className="text-white">Percentiles :</strong> Compare les joueurs dynamiquement au sein de votre population filtrée actuelle.</span>
-                                        <span className="block mt-1"><strong className="text-white">Valeurs Brutes :</strong> Affiche les statistiques réelles (par 90 min) sans aucune transformation.</span>
-                                        <span className="block mt-2 pt-2 border-t border-white/5 text-slate-500 italic">Note : Les infobulles du radar affichent toujours les unités réelles (buts, passes, etc.).</span>
-                                    </p>
+                                <Info size={14} className="text-[#949494] hover:text-[#3cffd0] cursor-help transition-colors" />
+                                <div className="absolute right-0 bottom-full mb-3 w-72 p-6 bg-[#131313] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                                    <div className="space-y-3">
+                                        <p className="verge-label-mono text-[9px] text-[#3cffd0] font-black tracking-[0.2em] uppercase">Guide Analytique</p>
+                                        <p className="text-[11px] leading-relaxed text-[#949494]">
+                                            <strong className="text-white">PERCENTILES :</strong> Compare les joueurs dynamiquement au sein de votre population filtrée actuelle.
+                                        </p>
+                                        <p className="text-[11px] leading-relaxed text-[#949494]">
+                                            <strong className="text-white">VALEURS BRUTES :</strong> Affiche les statistiques réelles (par 90 min) sans aucune transformation.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-white/5">
+                        <div className="flex items-center gap-2 p-1 bg-[#131313] border border-white/5 rounded-[2px]">
                             {renderModeButton('percentile', 'Percentiles', Percent)}
                             {renderModeButton('standard', 'Valeurs Brutes', Hash)}
                         </div>

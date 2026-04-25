@@ -45,19 +45,19 @@ export const VersusDashboard = ({
     };
 
     return (
-        <div className="p-8 max-w-[1600px] mx-auto min-h-screen flex flex-col">
-            <div className="flex justify-between items-center mb-8">
+        <div className="p-8 max-w-[1700px] mx-auto min-h-screen flex flex-col bg-[#131313]">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
                 <div className="flex flex-col">
-                    <button onClick={onClose} className="btn-back mb-2">
-                        <ArrowLeft size={14} /> Intelligence Hub
+                    <button onClick={onClose} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-4 group">
+                        <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
                     </button>
-                    <h1 className="text-5xl font-black uppercase tracking-tighter">Match-up <span className="text-highlight">Simulator</span></h1>
+                    <h1 className="verge-h1 text-white">Match-up <span className="text-[#3cffd0]">Simulator</span></h1>
                 </div>
                 <button 
                     onClick={() => setSelectedPlayersToCompare([])}
-                    className="px-6 py-3 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg text-xs font-bold uppercase tracking-widest transition-all"
+                    className="px-8 py-3 border border-[#f43f5e]/30 text-[#f43f5e] hover:bg-[#f43f5e]/10 rounded-[4px] verge-label-mono text-[10px] font-black tracking-widest transition-all"
                 >
-                    Reset Sélecteur
+                    RESET SÉLECTEUR
                 </button>
             </div>
 

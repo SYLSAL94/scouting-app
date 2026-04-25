@@ -119,26 +119,26 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen text-[rgb(var(--text-main))] font-sans relative">
+    <div className="min-h-screen bg-[#131313] text-white font-sans relative flex flex-col">
       {/* Header Premium Apple-Style */}
       {view !== 'LANDING' && (
-        <div className="sticky top-0 z-[100] w-full px-4 md:px-8 bg-[#080809]/60 backdrop-blur-xl border-b border-white/5 h-20 flex items-center">
+        <div className="sticky top-0 z-[100] w-full px-4 md:px-8 bg-[#131313] border-b border-white/10 h-24 flex items-center">
           <div className="w-full max-w-[1700px] mx-auto grid grid-cols-2 md:grid-cols-3 items-center">
             
             {/* Logo - Colonne Gauche */}
-            <div className="flex items-center gap-3 cursor-pointer group w-fit" onClick={() => setView('EXPLORATION')}>
-               <div className="w-10 h-10 bg-gradient-to-br from-sky-400 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform duration-300">
-                  <Activity size={22} className="text-white" />
+            <div className="flex items-center gap-4 cursor-pointer group w-fit" onClick={() => setView('EXPLORATION')}>
+               <div className="w-12 h-12 bg-white text-black rounded-[4px] flex items-center justify-center group-hover:bg-[#3cffd0] transition-colors">
+                  <Activity size={24} />
                </div>
                <div className="hidden lg:flex flex-col">
-                  <span className="text-[11px] font-black uppercase tracking-[0.2em] leading-none">The Analyst</span>
-                  <span className="text-[11px] font-bold text-sky-400 uppercase tracking-[0.2em] leading-none mt-1">Intelligence</span>
+                  <span className="verge-h3 text-white leading-none tracking-tighter">The Analyst</span>
+                  <span className="verge-label-mono text-[#3cffd0] text-[10px] mt-1">Intelligence Hub</span>
                </div>
             </div>
             
-            {/* Recherche Centrale - Style Apple */}
+            {/* Recherche Centrale */}
             <div className="flex justify-center order-3 md:order-2 col-span-2 md:col-span-1 mt-4 md:mt-0">
-              <div className="w-full max-w-[500px] transition-all duration-500 focus-within:max-w-[600px]">
+              <div className="w-full max-w-[500px]">
                 <GlobalPlayerSearch onPlayerSelect={handlePlayerClick} />
               </div>
             </div>
@@ -189,21 +189,21 @@ function App() {
             className="p-4 md:p-8 max-w-[1700px] mx-auto min-h-screen flex flex-col"
           >
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-              <div>
-                <button onClick={() => setView('EXPLORATION')} className="btn-back" style={{ marginBottom: '8px' }}>
-                  <ArrowLeft size={14} /> Back to Hub
+              <div className="flex flex-col items-center md:items-start">
+                <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-4">
+                  <ArrowLeft size={14} /> Intelligence Hub
                 </button>
-                <h1 className="text-2xl md:text-3xl xl:text-5xl font-black tracking-tighter uppercase leading-none">
-                  Player <span className="text-highlight">Rankings</span>
+                <h1 className="verge-h1 text-white">
+                  Player <span className="text-[#3cffd0]">Rankings</span>
                 </h1>
               </div>
               <div className="flex flex-wrap xl:flex-nowrap items-center gap-2 xl:gap-6">
-                  <div className="flex w-full xl:w-auto gap-1 bg-white/5 p-1 rounded-xl border border-white/5 h-fit">
-                      <button onClick={() => setDashboardView('FILTERS')} className={`xl:hidden flex-1 px-4 py-3 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'FILTERS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}>Filtres</button>
-                      <button onClick={() => setDashboardView('TABLE')} className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'TABLE' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}>Tableau</button>
-                      <button onClick={() => setDashboardView('SCATTER')} className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'SCATTER' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}>Analyse</button>
-                      <button onClick={() => setDashboardView('TRENDS')} className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'TRENDS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:text-white'}`}>Trends</button>
-                      <button onClick={() => setDashboardView('VERSUS')} disabled={selectedPlayersToCompare.length !== 2} className={`flex-1 xl:flex-none px-4 xl:px-6 py-3 rounded-lg text-[9px] xl:text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${dashboardView === 'VERSUS' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : (selectedPlayersToCompare.length === 2 ? 'text-sky-400 hover:text-sky-300 border border-sky-500/30' : 'text-white/20 cursor-not-allowed')}`}>Versus ({selectedPlayersToCompare.length}/2)</button>
+                  <div className="flex w-full xl:w-auto gap-2 bg-[#2d2d2d] p-1.5 rounded-full border border-white/10 h-fit">
+                      <button onClick={() => setDashboardView('FILTERS')} className={`xl:hidden px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'FILTERS' ? 'bg-[#3cffd0] text-black' : 'text-[#949494] hover:text-white'}`}>Filtres</button>
+                      <button onClick={() => setDashboardView('TABLE')} className={`px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'TABLE' ? 'bg-[#3cffd0] text-black' : 'text-[#949494] hover:text-white'}`}>Tableau</button>
+                      <button onClick={() => setDashboardView('SCATTER')} className={`px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'SCATTER' ? 'bg-[#3cffd0] text-black' : 'text-[#949494] hover:text-white'}`}>Analyse</button>
+                      <button onClick={() => setDashboardView('TRENDS')} className={`px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'TRENDS' ? 'bg-[#3cffd0] text-black' : 'text-[#949494] hover:text-white'}`}>Trends</button>
+                      <button onClick={() => setDashboardView('VERSUS')} disabled={selectedPlayersToCompare.length !== 2} className={`px-5 py-2.5 rounded-full verge-label-mono text-[9px] transition-all ${dashboardView === 'VERSUS' ? 'bg-[#3cffd0] text-black' : (selectedPlayersToCompare.length === 2 ? 'text-[#3cffd0] hover:text-white' : 'text-white/10 cursor-not-allowed')}`}>Versus ({selectedPlayersToCompare.length}/2)</button>
                   </div>
               </div>
             </div>
@@ -286,7 +286,11 @@ function App() {
         ) : null}
       </AnimatePresence>
 
-      <footer className="mt-auto py-8 border-t border-white/5 text-center text-[10px] text-[rgb(var(--text-muted))] uppercase tracking-widest">© 2026 THE ANALYST SCOUTING SYSTEM • CLOUD-NATIVE ARCHITECTURE</footer>
+      <footer className="w-full py-12 border-t border-white/5 bg-[#131313] text-center">
+        <span className="verge-label-mono text-[9px] text-[#949494] tracking-[0.4em] font-black uppercase">
+          © 2026 THE ANALYST SCOUTING SYSTEM • CLOUD-NATIVE ARCHITECTURE
+        </span>
+      </footer>
 
       <ContextualChatBot selectedPlayer={selectedPlayer} players={players} activeFilters={activeFilters} />
 

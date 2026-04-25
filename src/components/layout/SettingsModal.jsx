@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { User, Shield, Bell, Key, X, CheckCircle2, AlertCircle, Loader2, Heart, Filter, Trash2, ChevronRight, Search, Settings } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { User, Shield, X, CheckCircle2, AlertCircle, Loader2, Heart, Filter, Trash2, ChevronRight, Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const SettingsModal = ({ isOpen, onClose, user, initialTab = 'profile', onUpdateUser, profiles = [], onProfileDeleted, onPlayerClick }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -40,7 +40,7 @@ const SettingsModal = ({ isOpen, onClose, user, initialTab = 'profile', onUpdate
   };
 
   const handleRemoveFavorite = async (e, player) => {
-    e.stopPropagation(); // Évite d'ouvrir la fiche joueur lors du clic sur supprimer
+    e.stopPropagation(); 
     try {
       const res = await fetch('https://api-scouting.theanalyst.cloud/api/favorites/toggle', {
         method: 'POST',
@@ -70,7 +70,7 @@ const SettingsModal = ({ isOpen, onClose, user, initialTab = 'profile', onUpdate
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
     if (passwords.new !== passwords.confirm) {
-      setStatus({ ...status, error: "Les nouveaux mots de passe ne correspondent pas" });
+      setStatus({ ...status, error: "LES NOUVEAUX MOTS DE PASSE NE CORRESPONDENT PAS" });
       return;
     }
     setStatus({ loading: true, error: null, success: false });
@@ -80,7 +80,7 @@ const SettingsModal = ({ isOpen, onClose, user, initialTab = 'profile', onUpdate
         body: JSON.stringify({ user_id: user.id, old_password: passwords.old, new_password: passwords.new })
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Erreur lors de la mise à jour");
+      if (!res.ok) throw new Error(data.detail || "ERREUR LORS DE LA MISE À JOUR");
       setStatus({ loading: false, error: null, success: true });
       setPasswords({ old: '', new: '', confirm: '' });
       setTimeout(() => setStatus({ ...status, success: false }), 3000);
@@ -92,101 +92,116 @@ const SettingsModal = ({ isOpen, onClose, user, initialTab = 'profile', onUpdate
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-xl">
+    <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm">
       <motion.div 
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
-        className="w-full max-w-5xl h-[700px] bg-slate-900 border border-white/10 rounded-[2.5rem] shadow-3xl overflow-hidden flex flex-col md:flex-row relative"
+        initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}
+        className="w-full max-w-6xl h-[750px] bg-[#131313] border border-white/10 rounded-[4px] shadow-[0_60px_120px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col md:flex-row relative"
       >
-        {/* Sidebar */}
-        <div className="w-full md:w-72 bg-white/5 border-r border-white/5 p-6 flex flex-col gap-2">
-          <div className="flex items-center gap-3 mb-8 px-2">
-             <div className="w-10 h-10 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/20">
-                <Settings className="text-sky-400" size={20} />
+        {/* Sidebar - Technical Control Panel */}
+        <div className="w-full md:w-80 bg-[#2d2d2d] border-r border-white/5 p-8 flex flex-col gap-2 relative">
+          <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#3cffd0]/20" />
+          
+          <div className="flex items-center gap-4 mb-12 px-2">
+             <div className="w-12 h-12 bg-[#131313] border border-[#3cffd0]/30 flex items-center justify-center shadow-2xl">
+                <Settings className="text-[#3cffd0]" size={24} />
              </div>
-             <h3 className="text-xl font-black uppercase tracking-tighter text-white">Espace Pro</h3>
+             <div>
+                <h3 className="verge-label-mono text-xl font-black uppercase tracking-[0.1em] text-white leading-none">Espace Pro</h3>
+                <p className="verge-label-mono text-[8px] text-[#949494] font-black uppercase tracking-[0.3em] opacity-40 mt-1.5">Administrative Hub</p>
+             </div>
           </div>
 
-          <button onClick={() => setActiveTab('profile')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'profile' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:bg-white/5 hover:text-white'}`}>
-            <User size={16} /> Profil Administrateur
-          </button>
-          
-          <button onClick={() => setActiveTab('favorites')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'favorites' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:bg-white/5 hover:text-white'}`}>
-            <Heart size={16} /> Ma Shortlist ({user?.favorites?.length || 0})
-          </button>
+          <div className="space-y-1">
+            <button onClick={() => setActiveTab('profile')} className={`w-full flex items-center justify-between px-5 py-4 rounded-[1px] verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${activeTab === 'profile' ? 'bg-[#3cffd0] text-black border-[#3cffd0]' : 'text-[#949494] border-transparent hover:bg-white/5 hover:text-white'}`}>
+              <div className="flex items-center gap-4">
+                <User size={16} strokeWidth={2.5} /> PROFIL ADMIN
+              </div>
+              {activeTab === 'profile' && <ChevronRight size={14} />}
+            </button>
+            
+            <button onClick={() => setActiveTab('favorites')} className={`w-full flex items-center justify-between px-5 py-4 rounded-[1px] verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${activeTab === 'favorites' ? 'bg-[#3cffd0] text-black border-[#3cffd0]' : 'text-[#949494] border-transparent hover:bg-white/5 hover:text-white'}`}>
+              <div className="flex items-center gap-4">
+                <Heart size={16} strokeWidth={2.5} /> MA SHORTLIST
+              </div>
+              <span className={`px-2 py-0.5 rounded-[1px] text-[8px] font-black ${activeTab === 'favorites' ? 'bg-black text-[#3cffd0]' : 'bg-white/10 text-white'}`}>{user?.favorites?.length || 0}</span>
+            </button>
 
-          <button onClick={() => setActiveTab('profiles')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'profiles' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:bg-white/5 hover:text-white'}`}>
-            <Filter size={16} /> Filtres Sauvegardés ({profiles.length})
-          </button>
+            <button onClick={() => setActiveTab('profiles')} className={`w-full flex items-center justify-between px-5 py-4 rounded-[1px] verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${activeTab === 'profiles' ? 'bg-[#3cffd0] text-black border-[#3cffd0]' : 'text-[#949494] border-transparent hover:bg-white/5 hover:text-white'}`}>
+              <div className="flex items-center gap-4">
+                <Filter size={16} strokeWidth={2.5} /> FILTRES SAUV.
+              </div>
+              <span className={`px-2 py-0.5 rounded-[1px] text-[8px] font-black ${activeTab === 'profiles' ? 'bg-black text-[#3cffd0]' : 'bg-white/10 text-white'}`}>{profiles.length}</span>
+            </button>
 
-          <button onClick={() => setActiveTab('security')} className={`flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${activeTab === 'security' ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'text-white/40 hover:bg-white/5 hover:text-white'}`}>
-            <Shield size={16} /> Sécurité & Accès
-          </button>
+            <button onClick={() => setActiveTab('security')} className={`w-full flex items-center justify-between px-5 py-4 rounded-[1px] verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${activeTab === 'security' ? 'bg-[#3cffd0] text-black border-[#3cffd0]' : 'text-[#949494] border-transparent hover:bg-white/5 hover:text-white'}`}>
+              <div className="flex items-center gap-4">
+                <Shield size={16} strokeWidth={2.5} /> SÉCURITÉ
+              </div>
+            </button>
+          </div>
 
-          <div className="mt-auto p-5 bg-gradient-to-br from-sky-500/20 to-indigo-600/20 border border-white/10 rounded-2xl relative overflow-hidden group">
+          <div className="mt-auto p-6 bg-[#131313] border border-white/5 rounded-[2px] relative overflow-hidden group shadow-2xl">
+            <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-white/10" />
             <div className="relative z-10">
-                <p className="text-[10px] font-black uppercase text-sky-400 mb-1 tracking-widest">Licence Enterprise</p>
-                <p className="text-[11px] font-bold text-white mb-3">Accès illimité aux données</p>
-                <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                    <div className="h-full w-3/4 bg-sky-500 rounded-full" />
+                <p className="verge-label-mono text-[8px] font-black uppercase text-[#3cffd0] mb-2 tracking-[0.3em]">LICENCE ENTERPRISE</p>
+                <p className="verge-label-mono text-[10px] font-black text-white mb-5 uppercase tracking-tight">Accès illimité aux données</p>
+                <div className="h-1 w-full bg-white/5 rounded-[1px] overflow-hidden">
+                    <div className="h-full w-3/4 bg-[#3cffd0] shadow-[0_0_10px_rgba(60,255,208,0.5)]" />
                 </div>
             </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 flex flex-col relative bg-slate-900/50">
-          <button onClick={onClose} className="absolute top-8 right-8 p-3 rounded-full hover:bg-white/5 text-white/20 hover:text-white transition-all z-20 bg-slate-900 border border-white/5 shadow-xl">
+        {/* Content Area - Clean Technical Layout */}
+        <div className="flex-1 flex flex-col relative bg-[#131313]">
+          <button onClick={onClose} className="absolute top-8 right-8 p-3 rounded-[2px] bg-[#2d2d2d] border border-white/10 text-[#949494] hover:text-white hover:border-[#3cffd0]/50 transition-all z-20 shadow-2xl">
             <X size={20} />
           </button>
 
-          <div className="flex-1 overflow-y-auto p-8 md:p-12 styled-scrollbar">
+          <div className="flex-1 overflow-y-auto p-12 styled-scrollbar">
             
             {/* ONGLET FAVORIS */}
             {activeTab === 'favorites' && (
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div>
-                        <h4 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">Ma Shortlist</h4>
-                        <p className="text-sm text-white/40 font-medium">Favoris liés à une saison et compétition précise.</p>
+                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
+                    <div className="flex items-center gap-6">
+                        <div className="h-10 w-1 bg-[#3cffd0]" />
+                        <div>
+                            <h4 className="verge-label-mono text-3xl font-black text-white uppercase tracking-tighter mb-1">Ma Shortlist</h4>
+                            <p className="verge-label-mono text-[9px] text-[#949494] font-black uppercase tracking-[0.2em] opacity-40">Favoris liés à une saison et compétition précise</p>
+                        </div>
                     </div>
 
                     {loadingFavs ? (
-                        <div className="flex flex-col items-center justify-center py-20 gap-4">
-                            <Loader2 size={40} className="text-sky-500 animate-spin" />
-                            <p className="text-xs font-bold text-white/20 uppercase tracking-widest">Récupération des performances...</p>
+                        <div className="flex flex-col items-center justify-center py-32 gap-6 opacity-30">
+                            <div className="w-12 h-12 border-2 border-[#3cffd0] border-t-transparent rounded-full animate-spin" />
+                            <p className="verge-label-mono text-[9px] font-black text-white uppercase tracking-[0.4em]">SYNCING DATA...</p>
                         </div>
                     ) : favoritesList.length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                             {favoritesList.map((player, idx) => (
-                                <div 
-                                    key={`${player.id}-${idx}`} 
-                                    onClick={() => { onPlayerClick(player); onClose(); }}
-                                    className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center gap-4 group hover:border-sky-500/30 transition-all cursor-pointer relative overflow-hidden"
-                                >
-                                    <div className="w-14 h-14 rounded-full bg-slate-800 border-2 border-white/5 overflow-hidden flex-shrink-0 relative z-10">
-                                        {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-xl font-black text-white/20">{player.name[0]}</div>}
+                                <div key={`${player.id}-${idx}`} onClick={() => { onPlayerClick(player); onClose(); }} className="bg-[#2d2d2d] border border-white/5 rounded-[2px] p-5 flex items-center gap-6 group hover:border-[#3cffd0]/30 transition-all cursor-pointer relative overflow-hidden shadow-lg">
+                                    <div className="w-16 h-16 rounded-[1px] bg-[#131313] border border-white/10 overflow-hidden flex-shrink-0 relative z-10 group-hover:border-[#3cffd0]/50 transition-all duration-500">
+                                        {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" /> : <div className="w-full h-full flex items-center justify-center text-xl font-black text-white/10">{player.name[0]}</div>}
                                     </div>
                                     <div className="flex-1 min-w-0 relative z-10">
-                                        <p className="text-sm font-bold text-white truncate">{player.name}</p>
-                                        <p className="text-[10px] font-bold text-sky-400 uppercase tracking-tighter truncate">{player.competition}</p>
-                                        <p className="text-[9px] font-medium text-white/30 uppercase tracking-widest">{player.season} • {player.position_category}</p>
+                                        <p className="verge-label-mono text-[13px] font-black text-white truncate uppercase tracking-tight group-hover:text-[#3cffd0] transition-colors">{player.name}</p>
+                                        <p className="verge-label-mono text-[8px] font-black text-[#3cffd0] uppercase tracking-tighter truncate mt-1 opacity-60">{player.competition}</p>
+                                        <p className="verge-label-mono text-[8px] font-black text-[#949494] uppercase tracking-[0.1em] mt-1 opacity-40">{player.season} • {player.position_category}</p>
                                     </div>
-                                    <div className="text-right relative z-10">
-                                        <p className="text-[10px] font-black text-white/40 uppercase tracking-tighter">Note</p>
-                                        <p className="text-xl font-black text-sky-400 leading-none">{Math.round(player.note_ponderee)}</p>
+                                    <div className="text-right relative z-10 pr-4">
+                                        <p className="verge-label-mono text-[7px] font-black text-[#949494] uppercase tracking-tighter opacity-40">SCORE</p>
+                                        <p className="verge-label-mono text-2xl font-black text-[#3cffd0] leading-none tabular-nums mt-1">{Math.round(player.note_ponderee)}</p>
                                     </div>
-                                    <button 
-                                        onClick={(e) => handleRemoveFavorite(e, player)}
-                                        className="p-2.5 rounded-lg bg-red-500/10 text-red-400 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20 ml-2 relative z-10"
-                                    >
+                                    <button onClick={(e) => handleRemoveFavorite(e, player)} className="p-3 rounded-[1px] bg-red-500/10 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500/20 ml-2 relative z-10 border border-red-500/20">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-white/10"><Heart size={32} /></div>
-                            <p className="text-sm text-white/20 font-bold uppercase tracking-widest">Aucune performance sauvegardée</p>
+                        <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 opacity-20 border border-dashed border-white/5 rounded-[4px]">
+                            <Heart size={48} strokeWidth={1} />
+                            <p className="verge-label-mono text-[10px] font-black uppercase tracking-[0.4em]">AUCUNE PERFORMANCE SAUVEGARDÉE</p>
                         </div>
                     )}
                 </div>
@@ -194,83 +209,93 @@ const SettingsModal = ({ isOpen, onClose, user, initialTab = 'profile', onUpdate
 
             {/* ONGLET PROFILS / FILTRES */}
             {activeTab === 'profiles' && (
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div>
-                        <h4 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">Mes Filtres Sauvegardés</h4>
-                        <p className="text-sm text-white/40 font-medium">Gérez vos configurations de recherche personnalisées.</p>
+                <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
+                    <div className="flex items-center gap-6">
+                        <div className="h-10 w-1 bg-[#3cffd0]" />
+                        <div>
+                            <h4 className="verge-label-mono text-3xl font-black text-white uppercase tracking-tighter mb-1">Filtres Sauvegardés</h4>
+                            <p className="verge-label-mono text-[9px] text-[#949494] font-black uppercase tracking-[0.2em] opacity-40">Gérez vos configurations de recherche personnalisées</p>
+                        </div>
                     </div>
 
                     {profiles.length > 0 ? (
-                        <div className="space-y-3">
+                        <div className="grid grid-cols-1 gap-3">
                             {profiles.map(profile => (
-                                <div key={profile.id} className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-2xl group hover:bg-white/10 transition-all">
-                                    <div className="flex items-center gap-4">
-                                        <div className="p-2 bg-sky-500/10 rounded-lg text-sky-400"><Filter size={18} /></div>
+                                <div key={profile.id} className="flex items-center justify-between p-6 bg-[#2d2d2d] border border-white/5 rounded-[2px] group hover:border-[#3cffd0]/30 transition-all">
+                                    <div className="flex items-center gap-6">
+                                        <div className="p-3 bg-[#131313] border border-white/5 rounded-[1px] text-[#3cffd0]"><Filter size={20} /></div>
                                         <div>
-                                            <p className="text-sm font-bold text-white">{profile.profile_name}</p>
-                                            <p className="text-[10px] font-medium text-white/40 uppercase tracking-widest">Filtre Sauvegardé</p>
+                                            <p className="verge-label-mono text-sm font-black text-white uppercase tracking-tight">{profile.profile_name}</p>
+                                            <p className="verge-label-mono text-[8px] font-black text-[#949494] uppercase tracking-[0.2em] mt-1 opacity-40">Configuration Système</p>
                                         </div>
                                     </div>
-                                    <button 
-                                        onClick={() => onProfileDeleted(profile.id)}
-                                        className="p-2.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all"
-                                    >
-                                        <Trash2 size={16} />
+                                    <button onClick={() => onProfileDeleted(profile.id)} className="p-3 rounded-[1px] bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all border border-red-500/20">
+                                        <Trash2 size={18} />
                                     </button>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-white/10"><Filter size={32} /></div>
-                            <p className="text-sm text-white/20 font-bold uppercase tracking-widest">Aucun filtre sauvegardé</p>
+                        <div className="flex flex-col items-center justify-center py-32 text-center space-y-6 opacity-20 border border-dashed border-white/5 rounded-[4px]">
+                            <Filter size={48} strokeWidth={1} />
+                            <p className="verge-label-mono text-[10px] font-black uppercase tracking-[0.4em]">AUCUN FILTRE SAUVEGARDÉ</p>
                         </div>
                     )}
                 </div>
             )}
 
             {activeTab === 'profile' && (
-              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div>
-                  <h4 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">Profil Administrateur</h4>
-                  <p className="text-sm text-white/40 font-medium">Détails de votre compte professionnel.</p>
+              <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="flex items-center gap-6">
+                    <div className="h-10 w-1 bg-[#3cffd0]" />
+                    <div>
+                        <h4 className="verge-label-mono text-3xl font-black text-white uppercase tracking-tighter mb-1">Profil Administrateur</h4>
+                        <p className="verge-label-mono text-[9px] text-[#949494] font-black uppercase tracking-[0.2em] opacity-40">Détails de votre compte professionnel</p>
+                    </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="p-6 bg-white/5 border border-white/5 rounded-3xl space-y-1">
-                    <label className="text-[10px] font-black uppercase text-sky-400 tracking-widest">Nom d'utilisateur</label>
-                    <p className="text-lg font-bold text-white">{user?.username}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="p-8 bg-[#2d2d2d] border border-white/5 rounded-[2px] space-y-2 relative shadow-lg">
+                    <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-white/10" />
+                    <label className="verge-label-mono text-[9px] font-black uppercase text-[#3cffd0] tracking-[0.2em]">Nom d'utilisateur</label>
+                    <p className="verge-label-mono text-xl font-black text-white uppercase tracking-tight">{user?.username}</p>
                   </div>
-                  <div className="p-6 bg-white/5 border border-white/5 rounded-3xl space-y-1">
-                    <label className="text-[10px] font-black uppercase text-sky-400 tracking-widest">Email Associé</label>
-                    <p className="text-lg font-bold text-white">{user?.email || 'N/A'}</p>
+                  <div className="p-8 bg-[#2d2d2d] border border-white/5 rounded-[2px] space-y-2 relative shadow-lg">
+                    <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-white/10" />
+                    <label className="verge-label-mono text-[9px] font-black uppercase text-[#3cffd0] tracking-[0.2em]">Email Associé</label>
+                    <p className="verge-label-mono text-xl font-black text-white uppercase tracking-tight">{user?.email || 'NON DÉFINI'}</p>
                   </div>
                 </div>
               </div>
             )}
 
             {activeTab === 'security' && (
-              <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div>
-                  <h4 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">Sécurité</h4>
-                  <p className="text-sm text-white/40 font-medium">Mise à jour du mot de passe.</p>
+              <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
+                <div className="flex items-center gap-6">
+                    <div className="h-10 w-1 bg-[#3cffd0]" />
+                    <div>
+                        <h4 className="verge-label-mono text-3xl font-black text-white uppercase tracking-tighter mb-1">Sécurité</h4>
+                        <p className="verge-label-mono text-[9px] text-[#949494] font-black uppercase tracking-[0.2em] opacity-40">Mise à jour des protocoles d'accès</p>
+                    </div>
                 </div>
-                <form onSubmit={handleUpdatePassword} className="space-y-6 max-w-md">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 tracking-widest">Mot de passe actuel</label>
-                    <input type="password" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-sky-500/50 transition-all" value={passwords.old} onChange={(e) => setPasswords({...passwords, old: e.target.value})} />
+                <form onSubmit={handleUpdatePassword} className="space-y-8 max-w-lg">
+                  <div className="space-y-3">
+                    <label className="verge-label-mono text-[9px] font-black uppercase text-[#949494] tracking-[0.2em]">Mot de passe actuel</label>
+                    <input type="password" required className="w-full bg-[#131313] border border-white/10 rounded-[1px] px-5 py-4 text-white verge-label-mono text-[11px] font-black outline-none focus:border-[#3cffd0]/50 transition-all tracking-widest placeholder:text-white/5" placeholder="••••••••" value={passwords.old} onChange={(e) => setPasswords({...passwords, old: e.target.value})} />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 tracking-widest">Nouveau mot de passe</label>
-                    <input type="password" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-sky-500/50 transition-all" value={passwords.new} onChange={(e) => setPasswords({...passwords, new: e.target.value})} />
+                  <div className="space-y-3">
+                    <label className="verge-label-mono text-[9px] font-black uppercase text-[#949494] tracking-[0.2em]">Nouveau mot de passe</label>
+                    <input type="password" required className="w-full bg-[#131313] border border-white/10 rounded-[1px] px-5 py-4 text-white verge-label-mono text-[11px] font-black outline-none focus:border-[#3cffd0]/50 transition-all tracking-widest placeholder:text-white/5" placeholder="••••••••" value={passwords.new} onChange={(e) => setPasswords({...passwords, new: e.target.value})} />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase text-white/40 tracking-widest">Confirmer</label>
-                    <input type="password" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-sky-500/50 transition-all" value={passwords.confirm} onChange={(e) => setPasswords({...passwords, confirm: e.target.value})} />
+                  <div className="space-y-3">
+                    <label className="verge-label-mono text-[9px] font-black uppercase text-[#949494] tracking-[0.2em]">Confirmer le protocole</label>
+                    <input type="password" required className="w-full bg-[#131313] border border-white/10 rounded-[1px] px-5 py-4 text-white verge-label-mono text-[11px] font-black outline-none focus:border-[#3cffd0]/50 transition-all tracking-widest placeholder:text-white/5" placeholder="••••••••" value={passwords.confirm} onChange={(e) => setPasswords({...passwords, confirm: e.target.value})} />
                   </div>
-                  {status.error && <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-xs font-bold flex items-center gap-3"><AlertCircle size={16} /> {status.error}</div>}
-                  {status.success && <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 text-xs font-bold flex items-center gap-3"><CheckCircle2 size={16} /> Succès !</div>}
-                  <button type="submit" disabled={status.loading} className="w-full bg-sky-500 hover:bg-sky-400 disabled:opacity-50 text-white font-black uppercase tracking-widest py-4 rounded-xl shadow-lg shadow-sky-500/20 transition-all flex items-center justify-center gap-3">
-                    {status.loading ? <Loader2 size={18} className="animate-spin" /> : "Sauvegarder"}
+                  
+                  {status.error && <div className="p-5 bg-red-500/10 border border-red-500/30 rounded-[1px] text-red-500 verge-label-mono text-[9px] font-black uppercase tracking-widest flex items-center gap-4"><AlertCircle size={16} /> {status.error}</div>}
+                  {status.success && <div className="p-5 bg-emerald-500/10 border border-emerald-500/30 rounded-[1px] text-emerald-400 verge-label-mono text-[9px] font-black uppercase tracking-widest flex items-center gap-4"><CheckCircle2 size={16} /> MISE À JOUR VALIDÉE</div>}
+                  
+                  <button type="submit" disabled={status.loading} className="w-full bg-[#3cffd0] hover:bg-[#3cffd0]/90 disabled:bg-[#131313] disabled:text-[#444] text-black verge-label-mono text-[12px] font-black uppercase tracking-[0.4em] py-5 rounded-[2px] shadow-[0_20px_40px_rgba(60,255,208,0.2)] transition-all flex items-center justify-center gap-4 active:scale-[0.98]">
+                    {status.loading ? <Loader2 size={20} className="animate-spin" /> : "METTRE À JOUR"}
                   </button>
                 </form>
               </div>

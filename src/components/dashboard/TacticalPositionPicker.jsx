@@ -30,13 +30,13 @@ const TacticalPositionPicker = ({ selectedPositions, onChange }) => {
   };
 
   return (
-    <div className="relative w-full aspect-[3/4] bg-[#0f172a]/40 border border-white/5 rounded-3xl overflow-hidden backdrop-blur-md shadow-2xl p-4">
+    <div className="relative w-full aspect-[3/4] bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden p-4">
       {/* Pitch Lines */}
-      <div className="absolute inset-4 border-2 border-white/10 rounded-lg pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-b-2 border-x-2 border-white/10" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-t-2 border-x-2 border-white/10" />
-        <div className="absolute top-1/2 left-0 w-full h-px bg-white/10" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 aspect-square border-2 border-white/10 rounded-full" />
+      <div className="absolute inset-4 border border-white/5 rounded-[4px] pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-b border-x border-white/5" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-t border-x border-white/5" />
+        <div className="absolute top-1/2 left-0 w-full h-px bg-white/5" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 aspect-square border border-white/5 rounded-full" />
       </div>
 
       <div className="relative w-full h-full">
@@ -49,26 +49,16 @@ const TacticalPositionPicker = ({ selectedPositions, onChange }) => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => togglePosition(zone.codes)}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 w-8 md:w-10 h-8 md:h-10 rounded-full border flex items-center justify-center transition-all duration-300 shadow-xl ${
+              className={`absolute -translate-x-1/2 -translate-y-1/2 w-8 md:w-10 h-8 md:h-10 rounded-[2px] border flex items-center justify-center transition-all duration-300 ${
                 isActive 
-                ? 'bg-sky-500 border-sky-400 text-white shadow-sky-500/40 ring-4 ring-sky-500/20' 
+                ? 'bg-[#3cffd0] border-[#3cffd0] text-black shadow-[0_0_20px_rgba(60,255,208,0.2)]' 
                 : isPartiallyActive
-                ? 'bg-sky-500/30 border-sky-400/50 text-white/90 border-dashed'
-                : 'bg-black/40 border-white/10 text-white/40 hover:border-white/30 hover:bg-black/60'
+                ? 'bg-[#3cffd0]/30 border-[#3cffd0]/50 text-white border-dashed'
+                : 'bg-[#2d2d2d] border-white/10 text-[#949494] hover:border-white/30 hover:bg-white hover:text-black'
               }`}
               style={{ top: zone.top, left: zone.left }}
             >
-              <span className="text-[7px] md:text-[10px] font-black uppercase tracking-tighter">{zone.label}</span>
-              
-              {/* Glow Effect for active */}
-              {(isActive || isPartiallyActive) && (
-                <motion.div 
-                  layoutId={`glow-${zone.id}`}
-                  className={`absolute inset-0 rounded-full blur-md -z-10 transition-opacity ${isActive ? 'bg-sky-400 opacity-40' : 'bg-sky-400/20 opacity-20'}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: isActive ? 0.4 : 0.2 }}
-                />
-              )}
+              <span className="verge-label-mono text-[8px] md:text-[10px]">{zone.label}</span>
             </motion.button>
           );
         })}
@@ -76,7 +66,7 @@ const TacticalPositionPicker = ({ selectedPositions, onChange }) => {
 
       {/* Legend / Tip */}
       <div className="absolute bottom-4 left-0 w-full text-center">
-        <p className="text-[8px] font-bold text-white/20 uppercase tracking-[0.2em]">Select tactical zones</p>
+        <p className="verge-label-mono text-[8px] text-white/20">Select tactical zones</p>
       </div>
     </div>
   );

@@ -89,62 +89,64 @@ const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds, activeF
     };
 
     return (
-        <div className="h-full flex flex-col items-center justify-center bg-slate-50/50 dark:bg-slate-800/20 backdrop-blur-sm rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-700/50 p-8 transition-all hover:border-sky-500/50 dark:hover:border-sky-500/50 hover:bg-slate-100/50 dark:hover:bg-slate-800/40 group relative min-h-[420px]">
-            <div className="absolute inset-0 bg-gradient-to-b from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-3xl"></div>
-            <div className="p-4 rounded-full bg-slate-100 dark:bg-slate-800 mb-4 group-hover:scale-110 transition-transform duration-300 shadow-inner z-10">
-                <PlusCircle size={32} className="text-slate-400 dark:text-slate-500 group-hover:text-sky-500/80 transition-colors" />
+        <div className="h-full flex flex-col items-center justify-center bg-[#131313] rounded-[4px] border border-dashed border-white/10 p-10 transition-all hover:border-[#3cffd0]/50 hover:bg-white/[0.02] group relative min-h-[460px]">
+            {/* Corner Markers */}
+            <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-white/10 group-hover:border-[#3cffd0]/30 transition-colors" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-white/10 group-hover:border-[#3cffd0]/30 transition-colors" />
+            
+            <div className="p-6 bg-[#2d2d2d] border border-white/5 rounded-[1px] mb-8 group-hover:scale-105 transition-all duration-500 shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
+                <PlusCircle size={40} className="text-[#949494] group-hover:text-[#3cffd0] transition-colors" />
             </div>
-            <div className="w-full max-w-sm relative group/search z-10">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none group-focus-within/search:text-sky-500 transition-colors" />
-                <input
-                    type="text"
-                    value={query}
-                    onChange={e => setQuery(e.target.value)}
-                    onFocus={() => setIsOpen(true)}
-                    onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="Ajouter un joueur..."
-                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl py-3 pl-11 pr-4 text-sm font-medium text-slate-900 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500/50 focus:border-sky-500 transition-all shadow-sm"
-                />
+            
+            <div className="w-full max-w-[280px] relative z-10">
+                <div className={`relative transition-all duration-300 border-b ${isOpen ? 'border-[#3cffd0]' : 'border-white/10'}`}>
+                    <Search size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-[#949494]" />
+                    <input
+                        type="text"
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                        onFocus={() => setIsOpen(true)}
+                        onBlur={() => setTimeout(() => setIsOpen(false), 200)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="AJOUTER UN JOUEUR..."
+                        className="w-full bg-transparent verge-label-mono py-4 pl-8 pr-4 text-[10px] font-black text-white focus:outline-none placeholder-[#949494]/30 uppercase tracking-[0.1em]"
+                    />
+                </div>
+                
                 {isOpen && (
                     <div
                         ref={listRef}
-                        className="absolute top-full mt-2 w-full max-h-72 overflow-y-auto styled-scrollbar z-50 p-1.5 rounded-xl shadow-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 backdrop-blur-xl"
+                        className="absolute top-full left-0 right-0 mt-2 max-h-72 overflow-y-auto styled-scrollbar z-50 p-2 rounded-[2px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] bg-[#2d2d2d] border border-[#3cffd0]/20"
                     >
                         {isSearching ? (
-                            <div className="p-3 text-sm text-sky-500 text-center">Recherche...</div>
+                            <div className="p-4 verge-label-mono text-[9px] text-[#3cffd0] text-center font-black animate-pulse">RECHERCHE EN COURS...</div>
                         ) : results.length > 0 ? (
                             results.map((opt, index) => (
                                 <div
                                     key={`${opt.id || opt.unique_id}-${index}`}
                                     onMouseDown={() => handleSelect(opt)}
                                     onMouseOver={() => setHighlightedIndex(index)}
-                                    className={`px-3 py-2.5 rounded-lg cursor-pointer flex items-center justify-between transition-colors ${Math.max(0, highlightedIndex) === index ? 'bg-sky-50 dark:bg-sky-900/30' : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'}`}
+                                    className={`px-4 py-3 rounded-[1px] cursor-pointer flex items-center justify-between transition-all ${Math.max(0, highlightedIndex) === index ? 'bg-[#3cffd0] text-black' : 'hover:bg-white/5 text-[#949494]'}`}
                                 >
                                     <div className="flex flex-col min-w-0">
-                                        <span className={`text-sm font-semibold truncate ${Math.max(0, highlightedIndex) === index ? 'text-sky-700 dark:text-sky-300' : 'text-slate-700 dark:text-slate-200'}`}>
+                                        <span className={`verge-label-mono text-[10px] font-black uppercase truncate ${Math.max(0, highlightedIndex) === index ? 'text-black' : 'text-white'}`}>
                                             {displayNameOf(opt)}
                                         </span>
-                                        {opt.full_name && opt.name && opt.full_name !== opt.name && (
-                                            <span className="text-[10px] text-slate-500 opacity-70 truncate -mt-0.5">
-                                                {opt.full_name}
-                                            </span>
-                                        )}
-                                        <span className="text-xs text-slate-500 dark:text-slate-500 truncate">
-                                            {opt.competition || 'N/A'} - {opt.season || 'N/A'} • {opt.last_club_name}
+                                        <span className={`verge-label-mono text-[8px] font-black opacity-60 uppercase truncate ${Math.max(0, highlightedIndex) === index ? 'text-black/70' : 'text-[#949494]'}`}>
+                                            {opt.competition || 'N/A'} • {opt.season || 'N/A'}
                                         </span>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="p-3 text-sm text-slate-500 text-center">
-                                {query.length >= 3 ? `Aucun joueur trouvé` : "Tapez 3 lettres min..."}
+                            <div className="p-4 verge-label-mono text-[9px] text-[#949494] text-center font-black">
+                                {query.length >= 3 ? `AUCUN RÉSULTAT` : "TAPEZ 3 LETTRES MIN..."}
                             </div>
                         )}
                     </div>
                 )}
             </div>
-            <p className="mt-4 text-xs text-slate-400 dark:text-slate-600 font-medium z-10">
+            <p className="mt-8 verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.2em] uppercase opacity-40">
                 {placeholder}
             </p>
         </div>
@@ -153,91 +155,78 @@ const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds, activeF
 
 const PlayerCard = ({ player, onClear, rank, score, points }) => {
     const isWinner = rank === 1;
-
-    const getCardTheme = () => {
-        if (rank === 1) return {
-            border: 'border-amber-500/50 dark:border-amber-400/50',
-            bg: 'bg-gradient-to-b from-amber-50/80 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-950/30',
-            shadow: 'shadow-[0_0_20px_rgba(245,158,11,0.15)]',
-            text: 'text-amber-700 dark:text-amber-400',
-            badge: 'bg-amber-400 text-amber-950'
-        };
-        return {
-            border: 'border-slate-200 dark:border-slate-700',
-            bg: 'bg-white dark:bg-slate-800/40',
-            shadow: 'shadow-lg',
-            text: 'text-slate-500 dark:text-slate-400',
-            badge: 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-        };
-    };
-
-    const theme = getCardTheme();
     const dn = displayNameOf(player);
     const initial = dn ? dn.charAt(0) : '?';
 
     return (
-        <div className={`h-full group relative flex flex-col items-center rounded-3xl p-1 border-2 ${theme.border} ${theme.bg} ${theme.shadow} backdrop-blur-xl transition-all duration-500 hover:scale-[1.02] overflow-hidden min-h-[420px]`}>
-            {isWinner && <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />}
-
-            <div className="w-full flex justify-between items-start p-4 z-10">
+        <div className={`h-full group relative flex flex-col bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden transition-all duration-500 hover:border-[#3cffd0]/30 min-h-[460px] shadow-[0_20px_50px_rgba(0,0,0,0.5)]`}>
+            {/* Status Header */}
+            <div className="w-full flex justify-between items-center p-4 border-b border-white/5 bg-white/[0.02]">
                 {isWinner ? (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400 text-amber-950 text-xs font-bold shadow-sm animate-fade-in">
-                        <Trophy size={12} fill="currentColor" />
+                    <div className="flex items-center gap-2 px-3 py-1 bg-[#3cffd0] text-black verge-label-mono text-[9px] font-black tracking-[0.2em]">
+                        <Trophy size={10} fill="currentColor" />
                         <span>MVP</span>
                     </div>
-                ) : <div className="w-12" />}
+                ) : <div className="verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.1em] px-2 opacity-50 uppercase">Simulateur</div>}
 
                 <button
                     onClick={onClear}
-                    className="p-1.5 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                    className="p-1.5 text-[#949494] hover:text-white transition-all opacity-0 group-hover:opacity-100"
                     title="Retirer ce joueur"
                 >
-                    <IconX size={18} />
+                    <IconX size={14} />
                 </button>
             </div>
 
-            <div className="flex-1 flex flex-col items-center w-full px-6 pb-6 z-10">
-                <div className="relative mb-6 transform transition-transform duration-500 group-hover:-translate-y-1">
-                    <div className={`absolute inset-0 rounded-full blur-2xl opacity-20 ${isWinner ? 'bg-amber-400' : 'bg-sky-400'}`}></div>
-                    <div className="w-32 h-32 relative rounded-2xl overflow-hidden border-2 border-white/20 dark:border-white/10 shadow-2xl bg-gradient-to-b from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800">
+            <div className="flex-1 flex flex-col items-center w-full p-8">
+                {/* Image Section */}
+                <div className="relative mb-10 w-full flex justify-center">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#3cffd0]/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                    <div className="w-36 h-36 relative rounded-[2px] overflow-hidden border border-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.4)] bg-[#2d2d2d]">
                         <img
                             src={player.image}
                             alt={dn}
-                            className="w-full h-full object-cover mix-blend-normal"
+                            className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700"
                             onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src = `https://placehold.co/128x128/1e293b/ffffff?text=${encodeURIComponent(initial)}`;
+                                e.target.src = `https://placehold.co/144x144/1e293b/ffffff?text=${encodeURIComponent(initial)}`;
                             }}
                         />
+                        {rank && (
+                            <div className={`absolute bottom-0 right-0 px-2 py-1 bg-black/80 backdrop-blur-md verge-label-mono text-[10px] font-black text-[#3cffd0] border-t border-l border-white/10`}>
+                                #{rank}
+                            </div>
+                        )}
                     </div>
-                    {rank && (
-                        <div className={`absolute -bottom-3 -right-3 w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm shadow-lg border-2 border-white dark:border-slate-800 ${theme.badge}`}>
-                            #{rank}
-                        </div>
-                    )}
                 </div>
 
-                <div className="text-center mb-6">
-                    <h3 className="text-xl font-black text-slate-900 dark:text-white leading-tight mb-1">
+                {/* Info Section */}
+                <div className="text-center w-full mb-8">
+                    <h3 className="text-xl font-black text-white leading-tight mb-2 tracking-tight uppercase">
                         {dn}
                     </h3>
-                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400 flex flex-col items-center justify-center gap-0.5">
-                        <span>{player.last_club_name}</span>
-                        <span className="text-xs font-semibold text-sky-500">{player.competition || 'N/A'} - {player.season || 'N/A'}</span>
-                    </p>
+                    <div className="flex flex-col items-center gap-1">
+                        <span className="verge-label-mono text-[10px] font-black text-[#949494] tracking-[0.1em] uppercase">{player.last_club_name}</span>
+                        <div className="h-px w-8 bg-[#3cffd0]/30 my-1" />
+                        <span className="verge-label-mono text-[9px] font-black text-[#3cffd0] uppercase tracking-widest">{player.competition || 'N/A'} • {player.season || 'N/A'}</span>
+                    </div>
                 </div>
 
-                <div className="w-full grid grid-cols-2 gap-3 mb-6">
-                    <div className="flex flex-col items-center p-2 rounded-xl bg-white/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700/50">
-                        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Âge</span>
-                        <span className="font-bold text-slate-700 dark:text-slate-200">{player.age ?? '-'}</span>
+                {/* Stats Grid */}
+                <div className="w-full grid grid-cols-2 gap-px bg-white/5 border border-white/5">
+                    <div className="flex flex-col items-center p-4 bg-[#131313]">
+                        <span className="verge-label-mono text-[8px] text-[#949494] font-black tracking-[0.2em] mb-1">ÂGE</span>
+                        <span className="text-sm font-black text-white tabular-nums">{player.age ?? '-'}</span>
                     </div>
-                    <div className="flex flex-col items-center p-2 rounded-xl bg-white/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-700/50">
-                        <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold mb-0.5">Mins</span>
-                        <span className="font-bold text-slate-700 dark:text-slate-200">{player.minutes_on_field ?? '-'}</span>
+                    <div className="flex flex-col items-center p-4 bg-[#131313]">
+                        <span className="verge-label-mono text-[8px] text-[#949494] font-black tracking-[0.2em] mb-1">MINS</span>
+                        <span className="text-sm font-black text-white tabular-nums">{player.minutes_on_field ?? '-'}</span>
                     </div>
                 </div>
             </div>
+            
+            {/* Bottom Accent */}
+            <div className={`h-1 w-full transition-all duration-500 ${isWinner ? 'bg-[#3cffd0]' : 'bg-white/5 group-hover:bg-[#3cffd0]/30'}`} />
         </div>
     );
 };
@@ -253,22 +242,22 @@ export const VersusPlayerGrid = ({
 
     return (
         <div className="w-full relative">
-            <div className={`grid gap-6 ${selectedPlayers.length === 0 ? 'grid-cols-1 max-w-md mx-auto min-h-[420px]' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'}`}>
+            <div className={`grid gap-8 ${selectedPlayers.length === 0 ? 'grid-cols-1 max-w-lg mx-auto' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'}`}>
                 {selectedPlayers.map((player, index) => {
                     const id = player.id || player.unique_id || index;
                     return (
-                        <div key={id} className="h-full min-h-[420px] relative">
+                        <div key={id} className="h-full min-h-[460px] relative">
                             <PlayerCard
                                 player={player}
                                 onClear={() => onRemovePlayer(player.id || player.unique_id)}
                             />
                             {selectedPlayers.length === 2 && index === 0 && (
-                                <div className="hidden md:flex absolute -right-9 top-1/2 -translate-y-1/2 z-20 flex-col items-center justify-center animate-bounce-slow pointer-events-none">
-                                    <div className="w-12 h-12 rounded-full bg-slate-900 border-4 border-slate-100 dark:border-slate-800 flex items-center justify-center shadow-xl z-20 relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-black z-0"></div>
-                                        <span className="font-black text-white text-xs italic z-10 relative">VS</span>
+                                <div className="hidden md:flex absolute -right-10 top-1/2 -translate-y-1/2 z-20 items-center justify-center pointer-events-none">
+                                    <div className="w-12 h-12 bg-black border border-[#3cffd0]/30 flex items-center justify-center shadow-[0_0_20px_rgba(60,255,208,0.2)] z-20 relative">
+                                        <span className="verge-label-mono font-black text-[#3cffd0] text-xs italic tracking-tighter">VS</span>
                                     </div>
-                                    <div className="w-0.5 h-16 bg-gradient-to-b from-transparent via-slate-300 dark:via-slate-700 to-transparent absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 rotate-90 md:rotate-0"></div>
+                                    <div className="w-10 h-px bg-gradient-to-r from-[#3cffd0]/30 to-transparent absolute left-12"></div>
+                                    <div className="w-10 h-px bg-gradient-to-l from-[#3cffd0]/30 to-transparent absolute right-12"></div>
                                 </div>
                             )}
                         </div>
@@ -276,7 +265,7 @@ export const VersusPlayerGrid = ({
                 })}
 
                 {showAddButton && (
-                    <div className="h-full min-h-[420px]">
+                    <div className="h-full min-h-[460px]">
                         <PlayerSelector
                             onPlayerSelect={onAddPlayer}
                             placeholder={`Ajouter (${selectedPlayers.length}/${MAX_PLAYERS})`}

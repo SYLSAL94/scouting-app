@@ -27,57 +27,54 @@ export default function TeammatesWidget({ playerId, competition, season, team, o
     }, [playerId, competition, season, team]);
 
     return (
-        <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-5 shadow-2xl backdrop-blur-md flex flex-col overflow-hidden h-[450px]">
-            <div className="flex items-center justify-between mb-4">
+        <div className="bg-[#131313] border border-white/10 rounded-[4px] p-6 flex flex-col overflow-hidden h-[450px]">
+            <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-sm font-black uppercase tracking-widest text-white flex items-center gap-2">
-                        <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span> Effectif
+                    <h3 className="verge-label-mono text-[10px] uppercase tracking-widest text-white flex items-center gap-2">
+                        <span className="w-1 h-3 bg-[#3cffd0]"></span> Effectif
                     </h3>
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tighter mt-1">
-                        {team || 'Club Actuel'} • {season || 'Toute Saison'}
+                    <p className="verge-label-mono text-[8px] text-[#949494] uppercase tracking-widest mt-2 truncate max-w-[150px]">
+                        {team || 'Club Actuel'}
                     </p>
                 </div>
-                <div className="px-2 py-1 bg-slate-800 rounded text-[10px] font-black text-slate-400 border border-slate-700">
-                    {teammates.length} JOUEURS
+                <div className="px-3 py-1 bg-[#2d2d2d] rounded-[2px] verge-label-mono text-[8px] font-black text-[#949494] border border-white/5">
+                    {teammates.length}
                 </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto pr-2 styled-scrollbar space-y-1.5">
+            <div className="flex-1 overflow-y-auto pr-2 styled-scrollbar space-y-2">
                 {loading ? (
                     Array(8).fill(0).map((_, i) => (
-                        <div key={i} className="h-10 bg-slate-800/30 rounded-lg animate-pulse" />
+                        <div key={i} className="h-12 bg-[#2d2d2d] rounded-[2px] animate-pulse border border-white/5" />
                     ))
                 ) : teammates.length === 0 ? (
-                    <div className="text-slate-500 text-[11px] font-medium text-center py-10 italic">Aucun coéquipier identifié.</div>
+                    <div className="verge-label-mono text-[#949494] text-[9px] text-center py-10 uppercase">Aucun coéquipier identifié.</div>
                 ) : (
                     teammates.map((p, i) => {
                         const score = Number(p.note_ponderee || 0);
-                        const scoreColor = score >= 80 ? 'bg-emerald-500' : score >= 70 ? 'bg-sky-500' : score >= 60 ? 'bg-amber-500' : 'bg-slate-600';
                         
                         return (
                             <div 
                                 key={p.unique_id || `${p.id}-${i}`} 
                                 onClick={() => onSelectPlayer && onSelectPlayer(p.id)}
-                                className="group flex items-center gap-3 p-2 bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-sky-500/30 rounded-xl transition-all duration-300 cursor-pointer"
+                                className="group flex items-center gap-4 p-3 bg-[#2d2d2d] hover:bg-[#3cffd0] border border-white/5 transition-all duration-300 cursor-pointer rounded-[2px]"
                             >
-                                {/* Position Badge */}
-                                <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center text-[9px] font-black text-slate-400 group-hover:text-sky-400 group-hover:border-sky-500/50 transition-colors">
+                                <div className="w-8 h-8 rounded-[2px] bg-[#131313] border border-white/10 flex items-center justify-center verge-label-mono text-[9px] text-[#949494] group-hover:text-black transition-colors uppercase font-black">
                                     {p.position_category?.slice(0,2).toUpperCase() || 'PL'}
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between gap-2 mb-1">
-                                        <div className="font-bold text-xs text-slate-200 truncate group-hover:text-white transition-colors">
+                                    <div className="flex items-center justify-between gap-2 mb-2">
+                                        <div className="verge-label-mono font-black text-[10px] text-white truncate group-hover:text-black transition-colors uppercase">
                                             {p.name || p.full_name}
                                         </div>
-                                        <div className={`text-[10px] font-black ${score >= 70 ? 'text-sky-400' : 'text-slate-400'}`}>
-                                            {score.toFixed(1)}
+                                        <div className={`verge-label-mono text-[10px] font-black ${score >= 70 ? 'text-[#3cffd0]' : 'text-white'} group-hover:text-black`}>
+                                            {score.toFixed(0)}
                                         </div>
                                     </div>
-                                    {/* Mini Gauge */}
-                                    <div className="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                                    <div className="h-1 w-full bg-[#131313] rounded-full overflow-hidden">
                                         <div 
-                                            className={`h-full ${scoreColor} transition-all duration-700 ease-out`} 
+                                            className={`h-full transition-all duration-700 ease-out ${score >= 70 ? 'bg-[#3cffd0]' : 'bg-white/40'} group-hover:bg-black`} 
                                             style={{ width: `${score}%` }} 
                                         />
                                     </div>

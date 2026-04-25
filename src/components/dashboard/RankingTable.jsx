@@ -15,11 +15,18 @@ const findSelectedOption = (value, options = []) => {
 };
 
 const RankBadge = ({ rank }) => {
-  if (rank === 1) return <Trophy className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]" />;
-  if (rank === 2) return <Medal className="w-6 h-6 text-slate-300 drop-shadow-[0_0_8px_rgba(203,213,225,0.5)]" />;
-  if (rank === 3) return <Medal className="w-6 h-6 text-amber-600 drop-shadow-[0_0_8px_rgba(180,83,9,0.5)]" />;
+  if (rank === 1) return (
+    <div className="w-10 h-10 bg-[#3cffd0] text-black flex items-center justify-center text-xs font-black rounded-[4px] shadow-[4px_4px_0px_rgba(60,255,208,0.2)]">
+      {rank}
+    </div>
+  );
+  if (rank <= 3) return (
+    <div className="w-10 h-10 bg-[#5200ff] text-white flex items-center justify-center text-xs font-black rounded-[4px] shadow-[4px_4px_0px_rgba(82,0,255,0.2)]">
+      {rank}
+    </div>
+  );
   return (
-    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs font-bold text-[rgb(var(--text-muted))]">
+    <div className="w-10 h-10 bg-[#2d2d2d] text-[#949494] flex items-center justify-center text-xs font-black rounded-[4px] border border-white/5">
       {rank}
     </div>
   );
@@ -53,11 +60,12 @@ const RankingTable = ({
       }
     });
   };
+
   if (loading) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="w-12 h-12 border-4 border-sky-400 border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="text-[rgb(var(--text-muted))]">Fetching metadata-filtered data...</p>
+        <div className="w-12 h-12 border-2 border-[#3cffd0] border-t-transparent rounded-full animate-spin mb-6" />
+        <p className="verge-label-mono text-[9px] text-[#949494]">Fetching Population Data...</p>
       </div>
     );
   }
@@ -65,27 +73,29 @@ const RankingTable = ({
   if (error) {
     return (
       <div className="flex-1 flex items-center justify-center p-8 text-red-400 text-center">
-        <div>
-          <h3 className="text-xl font-bold">API Connection Error</h3>
-          <p>{error}</p>
+        <div className="bg-[#131313] p-10 border border-red-500/20 rounded-[24px]">
+          <h3 className="verge-h3 text-red-500 mb-4 uppercase">API Error</h3>
+          <p className="verge-label-mono text-[10px] opacity-60">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4 flex-1 min-h-0">
-      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/10 backdrop-blur-md shrink-0">
-        <div className="flex items-center gap-4 flex-1">
-          <span className="text-[10px] uppercase tracking-widest font-black text-sky-400/80 whitespace-nowrap">Trier par :</span>
-          <div className="flex-1 md:max-w-[300px]">
+    <div className="flex flex-col gap-0 flex-1 min-h-0 bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
+      {/* Control Bar - Sharp Technical Integration */}
+      <div className="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-6 bg-[#2d2d2d] p-6 border-b border-white/10 shrink-0">
+        <div className="flex items-center gap-6 flex-1">
+          <div className="w-1 h-6 bg-[#3cffd0]" />
+          <span className="verge-label-mono text-[11px] font-black text-white uppercase tracking-[0.2em] whitespace-nowrap">Order By</span>
+          <div className="flex-1 md:max-w-[420px]">
             <Select 
               components={{ MenuList: WindowedMenuList }}
               options={metricsList} 
               value={findSelectedOption(selectedSortBy, metricsList)}
               onChange={(selectedOption) => onSortChange(selectedOption.value)}
               isSearchable={true}
-              placeholder="Rechercher une métrique..."
+              placeholder="SEARCH METRICS..."
               className="react-select-container"
               classNamePrefix="react-select"
               menuPortalTarget={document.body}
@@ -93,26 +103,36 @@ const RankingTable = ({
                 menuPortal: (base) => ({ ...base, zIndex: 9999 }),
                 control: (base) => ({
                   ...base,
-                  background: 'rgba(11, 15, 25, 0.6)',
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: '12px',
+                  background: '#131313',
+                  borderColor: 'rgba(255, 255, 255, 0.05)',
+                  borderRadius: '2px',
                   color: 'white',
-                  minHeight: '40px',
-                  fontSize: '12px'
+                  minHeight: '52px',
+                  fontSize: '10px',
+                  fontFamily: 'PolySans Mono, monospace',
+                  textTransform: 'uppercase',
+                  paddingLeft: '16px',
+                  letterSpacing: '0.1em'
                 }),
                 menu: (base) => ({
                   ...base,
-                  background: '#0f172a',
-                  border: '1px solid rgba(14, 165, 233, 0.2)',
-                  borderRadius: '12px',
-                  zIndex: 100
+                  background: '#1a1a1a',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '2px',
+                  padding: '4px',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.5)'
                 }),
                 option: (base, state) => ({
                   ...base,
-                  background: state.isFocused ? 'rgba(14, 165, 233, 0.2)' : 'transparent',
-                  color: state.isSelected ? '#38bdf8' : 'white',
+                  background: state.isFocused ? '#3cffd0' : 'transparent',
+                  color: state.isFocused ? 'black' : state.isSelected ? '#3cffd0' : '#949494',
                   cursor: 'pointer',
-                  fontSize: '12px'
+                  fontSize: '10px',
+                  fontFamily: 'PolySans Mono, monospace',
+                  textTransform: 'uppercase',
+                  borderRadius: '1px',
+                  margin: '1px 0',
+                  padding: '12px 16px'
                 }),
                 singleValue: (base) => ({
                   ...base,
@@ -124,14 +144,19 @@ const RankingTable = ({
                 }),
                 placeholder: (base) => ({
                   ...base,
-                  color: 'rgba(255,255,255,0.3)'
+                  color: 'rgba(255,255,255,0.2)'
                 }),
                 groupHeading: (base) => ({
                    ...base,
-                   color: '#38bdf8',
-                   fontWeight: 'bold',
-                   fontSize: '10px',
-                   textTransform: 'uppercase'
+                   color: '#3cffd0',
+                   fontWeight: '900',
+                   fontSize: '8px',
+                   fontFamily: 'PolySans Mono, monospace',
+                   textTransform: 'uppercase',
+                   marginBottom: '4px',
+                   marginTop: '8px',
+                   letterSpacing: '0.2em',
+                   opacity: '0.6'
                 })
               }}
             />
@@ -139,131 +164,130 @@ const RankingTable = ({
         </div>
       </div>
 
-      <div className="ranking-table-container flex-1 overflow-hidden backdrop-blur-md bg-white/5 shadow-2xl border border-white/10 rounded-2xl flex flex-col">
+      <div className="ranking-table-container flex-1 overflow-hidden bg-[#131313] flex flex-col relative">
+        {/* Decorative corner markers */}
+        <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-white/5 pointer-events-none" />
+        
         <div className="flex-1 overflow-auto styled-scrollbar">
-          <table className="ranking-table w-full">
-        <thead>
-          <tr className="bg-slate-900/90 backdrop-blur-md sticky top-0 z-20 shadow-sm">
-            <th className="text-center p-6 w-16 border-b border-white/10">Vs</th>
-            <th className="text-center p-6 border-b border-white/10">Rank</th>
-            <th className="p-6 border-b border-white/10">Player</th>
-            <th className="hidden md:table-cell text-center p-6 border-b border-white/10">Saison</th>
-            <th className="hidden md:table-cell p-6 border-b border-white/10">Compétition</th>
-            <th className="hidden md:table-cell p-6 border-b border-white/10 text-center md:text-left">Team</th>
-            <th className="hidden md:table-cell p-6 border-b border-white/10">Position</th>
-            <th className="text-center p-6 border-b border-white/10">Age</th>
-            <th className="hidden md:table-cell text-center p-6 border-b border-white/10">Mins</th>
-            <th className="text-right p-6 border-b border-white/10">
-              {selectedSortBy === 'custom_score' ? 'Score Lab' :
-               selectedSortBy === 'note_ponderee' ? 'Impact Score' : 
-               selectedSortBy === 'goals' ? 'Goals' :
-               selectedSortBy === 'assists' ? 'Assists' :
-               selectedSortBy === 'expected_goals' ? 'xG' :
-               selectedSortBy === 'age' ? 'Age' : 'Value'}
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-white/5">
-          {players.map((player, index) => {
-            const globalIndex = (currentPage - 1) * pageSize + index;
-            const rank = globalIndex + 1;
-            
-            // Clé composite unique pour identifier la ligne (Joueur + Contexte)
-            const rowKey = `${player.id}-${player.competition}-${player.season}`;
-            
-            // Valeur dynamique basée sur la métrique avec formateur robuste
-            const rawValue = player[selectedSortBy];
-            let formattedValue = "-";
-            if (rawValue !== undefined && rawValue !== null && rawValue !== "") {
-                const num = Number(rawValue);
-                // Force l'arrondi à 2 décimales si c'est un flottant, sinon garde l'entier ou le texte
-                formattedValue = isNaN(num) ? rawValue : (num % 1 === 0 ? num : num.toFixed(2));
-            }
-
-            const isSelectedForCompare = selectedPlayersToCompare.some(p => 
-                p.id === player.id && 
-                p.competition === player.competition && 
-                p.season === player.season
-            );
-
-            return (
-              <tr 
-                key={rowKey} 
-                onClick={() => handlePlayerClick(player)} 
-                style={{ cursor: 'pointer' }}
-                className={`transition-all duration-200 group ${isSelectedForCompare ? 'bg-sky-500/10' : 'hover:bg-white/5'}`}
-              >
-                <td className="text-center p-4">
-                  <div className="flex justify-center items-center">
-                    <input 
-                      type="checkbox"
-                      className="w-5 h-5 rounded border-white/20 bg-white/5 text-sky-500 focus:ring-sky-500 focus:ring-offset-slate-900 cursor-pointer accent-sky-500"
-                      checked={isSelectedForCompare}
-                      onChange={(e) => handleToggleCompare(e, player)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </div>
-                </td>
-                <td className="text-center p-4">
-                  <div className="flex justify-center items-center">
-                    <RankBadge rank={rank} />
-                  </div>
-                </td>
-                <td className="py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-full overflow-hidden bg-white/5 border border-white/10 group-hover:border-sky-500/50 transition-colors">
-                      {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover" /> : null}
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="font-bold group-hover:text-sky-400 transition-colors text-sm md:text-base">
-                        {player.name || player.full_name || 'Nom inconnu'}
-                      </span>
-                      {player.full_name && player.name && player.full_name !== player.name && (
-                        <span className="text-[10px] text-[rgb(var(--text-muted))] uppercase -mt-0.5">
-                          {player.full_name}
-                        </span>
-                      )}
-                      <span className="md:hidden text-[10px] text-[rgb(var(--text-muted))] uppercase">{player.last_club_name}</span>
-                    </div>
-                  </div>
-                </td>
-                <td className="hidden md:table-cell text-center text-[rgb(var(--text-muted))]">{player.season || '—'}</td>
-                <td className="hidden md:table-cell text-[rgb(var(--text-muted))]">{player.competition || '—'}</td>
-                <td className="hidden md:table-cell text-[rgb(var(--text-muted))]">{player.last_club_name || 'Équipe inconnue'}</td>
-                <td className="hidden md:table-cell"><span className="px-2 py-0.5 rounded bg-white/5 text-xs border border-white/5">{player.position_category || 'Non renseigné'}</span></td>
-                <td className="text-center font-bold md:font-normal">{ (useSeasonAge ? player.season_age : player.age) || '—'}</td>
-                <td className="hidden md:table-cell text-center text-[rgb(var(--text-muted))] text-xs font-mono">{player.minutes_on_field || 0}'</td>
-                <td className="text-right font-mono font-black text-sky-400 text-base md:text-lg">{formattedValue}</td>
+          <table className="ranking-table w-full border-collapse">
+            <thead>
+              <tr className="bg-[#1a1a1a] sticky top-0 z-20 border-b border-white/10">
+                <th className="p-6 w-16 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Vs</th>
+                <th className="p-6 w-20 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Rank</th>
+                <th className="p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Player Profile</th>
+                <th className="hidden md:table-cell p-6 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Season</th>
+                <th className="hidden md:table-cell p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Context</th>
+                <th className="hidden md:table-cell p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Team</th>
+                <th className="hidden md:table-cell p-6 text-left verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Position</th>
+                <th className="p-6 text-center verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#949494]">Age</th>
+                <th className="p-6 text-right verge-label-mono text-[9px] font-black uppercase tracking-widest text-[#3cffd0]">
+                  {selectedSortBy === 'custom_score' ? 'LAB SCORE' :
+                   selectedSortBy === 'note_ponderee' ? 'IMPACT SCORE' : 
+                   selectedSortBy === 'goals' ? 'GOALS' :
+                   selectedSortBy === 'assists' ? 'ASSISTS' :
+                   selectedSortBy === 'expected_goals' ? 'XG' :
+                   selectedSortBy === 'age' ? 'AGE' : 'METRIC VALUE'}
+                </th>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-        </div>
-      </div>
+            </thead>
+            <tbody className="divide-y divide-white/[0.03]">
+              {players.map((player, index) => {
+                const globalIndex = (currentPage - 1) * pageSize + index;
+                const rank = globalIndex + 1;
+                const rowKey = `${player.id}-${player.competition}-${player.season}`;
+                
+                const rawValue = player[selectedSortBy];
+                let formattedValue = "-";
+                if (rawValue !== undefined && rawValue !== null && rawValue !== "") {
+                    const num = Number(rawValue);
+                    formattedValue = isNaN(num) ? rawValue : (num % 1 === 0 ? num : num.toFixed(2));
+                }
 
-      <div className="p-4 border-t border-white/5 flex items-center justify-between sticky bottom-0 bg-[rgba(11,15,25,0.95)] backdrop-blur shrink-0">
-        <div className="text-xs text-[rgb(var(--text-muted))] lowercase">
-          Showing <span className="text-white font-bold">{(currentPage - 1) * pageSize + 1}</span> - <span className="text-white font-bold">{Math.min(currentPage * pageSize, totalPlayers)}</span> of <span className="text-sky-400 font-bold">{totalPlayers}</span> results
+                const isSelectedForCompare = selectedPlayersToCompare.some(p => 
+                    p.id === player.id && 
+                    p.competition === player.competition && 
+                    p.season === player.season
+                );
+
+                return (
+                  <tr 
+                    key={rowKey} 
+                    onClick={() => handlePlayerClick(player)} 
+                    className={`group transition-all duration-300 cursor-pointer ${isSelectedForCompare ? 'bg-[#3cffd0]/5' : 'hover:bg-white/[0.02]'}`}
+                  >
+                    <td className="p-6 text-center">
+                      <input 
+                        type="checkbox"
+                        className="w-4 h-4 rounded-[1px] border-white/10 bg-transparent text-[#3cffd0] focus:ring-0 cursor-pointer accent-[#3cffd0] transition-all"
+                        checked={isSelectedForCompare}
+                        onChange={(e) => handleToggleCompare(e, player)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </td>
+                    <td className="p-6">
+                      <div className="flex justify-center">
+                        <RankBadge rank={rank} />
+                      </div>
+                    </td>
+                    <td className="p-6">
+                      <div className="flex items-center gap-5">
+                        <div className={`w-12 h-12 rounded-[1px] overflow-hidden border border-white/5 group-hover:border-[#3cffd0]/50 transition-all duration-500`}>
+                          {player.image ? <img src={player.image} alt="" className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all" /> : <div className="w-full h-full bg-[#1a1a1a]" />}
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                          <span className="verge-label-mono text-[13px] font-black leading-none text-white group-hover:text-[#3cffd0] transition-colors truncate uppercase tracking-tight">
+                            {player.name || player.full_name || 'Nom inconnu'}
+                          </span>
+                          <span className="verge-label-mono text-[7px] text-[#949494] mt-1.5 uppercase tracking-[0.2em] truncate opacity-40">
+                            {player.full_name || player.name}
+                          </span>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="hidden md:table-cell p-6 text-center verge-label-mono text-[10px] text-[#949494] font-black uppercase tracking-widest">{player.season || '—'}</td>
+                    <td className="hidden md:table-cell p-6 verge-label-mono text-[9px] text-[#949494] max-w-[150px] truncate uppercase tracking-tighter opacity-60">{player.competition || '—'}</td>
+                    <td className="hidden md:table-cell p-6 verge-label-mono text-[10px] text-white truncate uppercase font-black tracking-tight">{player.last_club_name || 'FREE AGENT'}</td>
+                    <td className="hidden md:table-cell p-6">
+                      <span className="verge-label-mono text-[8px] font-black px-2 py-1 rounded-[1px] bg-white/5 text-[#949494] border border-white/10 uppercase tracking-widest">{player.position_category || 'N/A'}</span>
+                    </td>
+                    <td className="p-6 text-center verge-label-mono text-[11px] font-black text-white tabular-nums">{(useSeasonAge ? player.season_age : player.age) || '—'}</td>
+                    <td className="p-6 text-right">
+                      <div className="flex flex-col items-end">
+                        <span className="verge-label-mono text-xl md:text-2xl font-black text-[#3cffd0] leading-none tracking-tighter tabular-nums">{formattedValue}</span>
+                        <span className="verge-label-mono text-[6px] font-black text-[#3cffd0] mt-1 tracking-widest uppercase opacity-30">PRIMARY_INDEX</span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
-            disabled={currentPage === 1} 
-            className="btn btn-ghost py-1.5 px-3 text-xs disabled:opacity-20 flex items-center gap-1"
-          >
-            <ChevronLeft size={14} /> Previous
-          </button>
-          <span className="text-xs font-bold text-white bg-white/10 px-3 py-1 rounded-md">
-            Page {currentPage} {" / "} {totalPages}
-          </span>
-          <button 
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
-            disabled={currentPage >= totalPages} 
-            className="btn btn-ghost py-1.5 px-3 text-xs disabled:opacity-20 flex items-center gap-1"
-          >
-            Next <ChevronRight size={14} />
-          </button>
+
+        {/* Pagination - High Density Industrial Dock */}
+        <div className="px-8 py-6 border-t border-white/5 flex items-center justify-between bg-[#1a1a1a]">
+          <div className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-[0.1em]">
+            SHOWING <span className="text-white">{(currentPage - 1) * pageSize + 1}</span> - <span className="text-white">{Math.min(currentPage * pageSize, totalPlayers)}</span> OF <span className="text-[#3cffd0]">{totalPlayers}</span> ENTRIES
+          </div>
+          <div className="flex items-center gap-8">
+            <button 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+              disabled={currentPage === 1} 
+              className="verge-label-mono text-[9px] font-black text-white hover:text-[#3cffd0] disabled:opacity-5 transition-colors flex items-center gap-3 uppercase tracking-widest"
+            >
+              <ChevronLeft size={14} /> PREVIOUS
+            </button>
+            <div className="verge-label-mono text-[11px] bg-[#3cffd0] text-black px-5 py-2.5 rounded-[1px] font-black shadow-[0_10px_20px_rgba(60,255,208,0.2)]">
+              {currentPage} / {totalPages}
+            </div>
+            <button 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} 
+              disabled={currentPage >= totalPages} 
+              className="verge-label-mono text-[9px] font-black text-white hover:text-[#3cffd0] disabled:opacity-5 transition-colors flex items-center gap-3 uppercase tracking-widest"
+            >
+              NEXT <ChevronRight size={14} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

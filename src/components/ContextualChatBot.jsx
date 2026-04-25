@@ -75,42 +75,45 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="mb-4 w-[380px] md:w-[450px] h-[600px] flex flex-col overflow-hidden bg-[#0f172a]/98 backdrop-blur-xl border border-white/20 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+            className="mb-6 w-[380px] md:w-[450px] h-[600px] flex flex-col overflow-hidden bg-[#131313] border-2 border-white/10 rounded-[4px] shadow-[0_30px_90px_rgba(0,0,0,0.8)]"
           >
-            {/* Header avec contraste élevé */}
-            <div className="p-5 bg-sky-500/10 border-b border-white/10 flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <div className="p-2.5 bg-sky-500 rounded-xl shadow-lg shadow-sky-500/40">
-                  <Bot size={22} className="text-white" />
+            {/* Header - Editorial Structure */}
+            <div className="p-6 bg-[#2d2d2d] border-b border-white/10 flex justify-between items-center relative overflow-hidden">
+              {/* Hazard Pattern */}
+              <div className="absolute top-0 right-0 w-16 h-16 bg-[#3cffd0]/5 rotate-45 translate-x-8 -translate-y-8" />
+              
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="p-2.5 bg-[#3cffd0] rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.4)]">
+                  <Bot size={22} className="text-black" />
                 </div>
                 <div>
-                  <h3 className="text-base font-black uppercase tracking-tighter text-white">Scouting <span className="text-sky-400">Assistant</span></h3>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-[10px] text-sky-400/80 uppercase font-bold tracking-widest">En ligne • Contextual Intelligence</span>
+                  <h3 className="verge-label-mono text-white text-[13px] font-black tracking-widest">Scouting <span className="text-[#3cffd0]">Assistant</span></h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-pulse"></div>
+                    <span className="verge-label-mono text-[8px] text-[#3cffd0] tracking-[0.2em] font-black uppercase">EN LIGNE • CONTEXTUAL INTELLIGENCE</span>
                   </div>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                <X size={20} className="text-white/60" />
+              <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/10 rounded-[2px] transition-colors relative z-10">
+                <X size={20} className="text-[#949494]" />
               </button>
             </div>
 
-            {/* Zone de Messages avec meilleur contraste */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-thin scrollbar-thumb-white/10">
+            {/* Zone de Messages */}
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-8 styled-scrollbar bg-[#131313]">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex gap-3 max-w-[90%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`mt-1 p-2 rounded-lg h-fit ${msg.role === 'user' ? 'bg-sky-500/20' : 'bg-white/10'}`}>
-                      {msg.role === 'user' ? <User size={14} className="text-sky-400" /> : <Sparkles size={14} className="text-sky-400" />}
+                  <div className={`flex gap-4 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                    <div className={`mt-1 p-2 rounded-[2px] h-fit border ${msg.role === 'user' ? 'bg-[#5200ff]/10 border-[#5200ff]/30' : 'bg-[#2d2d2d] border-white/10'}`}>
+                      {msg.role === 'user' ? <User size={14} className="text-[#5200ff]" /> : <Sparkles size={14} className="text-[#3cffd0]" />}
                     </div>
-                    <div className={`p-4 rounded-2xl text-sm leading-relaxed shadow-lg ${
+                    <div className={`p-5 rounded-[2px] text-xs leading-relaxed border ${
                       msg.role === 'user' 
-                        ? 'bg-sky-600 text-white shadow-sky-500/20 rounded-tr-none' 
-                        : 'bg-white/10 border border-white/10 text-white/95 rounded-tl-none'
+                        ? 'bg-[#5200ff] border-[#5200ff] text-white shadow-[0_10px_30px_rgba(82,0,255,0.2)]' 
+                        : 'bg-[#2d2d2d] border-white/10 text-white/90'
                     }`}>
                       {msg.content}
                     </div>
@@ -119,40 +122,40 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                   <div className="bg-white/10 border border-white/10 p-4 rounded-2xl flex gap-1.5">
-                      <div className="w-2 h-2 bg-sky-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-sky-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                      <div className="w-2 h-2 bg-sky-400 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                   <div className="bg-[#2d2d2d] border border-white/10 p-5 rounded-[2px] flex gap-2">
+                      <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-bounce [animation-delay:0.2s]"></div>
+                      <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-bounce [animation-delay:0.4s]"></div>
                    </div>
                 </div>
               )}
             </div>
 
-            {/* Zone de saisie optimisée */}
-            <div className="p-5 bg-white/5 border-t border-white/10 backdrop-blur-md">
+            {/* Zone de saisie */}
+            <div className="p-6 bg-[#2d2d2d] border-t border-white/10">
               <div className="relative group">
                 <input
                   type="text"
-                  placeholder="Posez une question sur le scouting..."
+                  placeholder="POSEZ UNE QUESTION SUR LE SCOUTING..."
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="w-full bg-black/60 border border-white/20 rounded-2xl py-4 pl-5 pr-14 text-sm text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 outline-none transition-all placeholder:text-white/20"
+                  className="w-full bg-[#131313] border border-white/10 rounded-[2px] py-4 pl-5 pr-14 verge-label-mono text-[10px] text-white focus:border-[#3cffd0] outline-none transition-all placeholder:text-[#949494] font-black"
                 />
                 <button 
                   onClick={handleSendMessage}
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-sky-500 hover:bg-sky-400 rounded-xl text-white disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-sky-500/40 transition-all active:scale-95"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-[#3cffd0] hover:bg-[#3cffd0]/80 rounded-[2px] text-black disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-95"
                 >
                   <Send size={18} />
                 </button>
               </div>
-              <div className="mt-3 flex justify-between items-center px-1">
-                <span className="text-[8px] text-white/20 uppercase font-black tracking-widest">
-                  DeepSeek Engine v3
+              <div className="mt-4 flex justify-between items-center px-1">
+                <span className="verge-label-mono text-[8px] text-[#949494] font-black tracking-[0.3em]">
+                  DEEPSEEK ENGINE V3
                 </span>
-                <span className="text-[8px] text-sky-400/40 uppercase font-black tracking-widest">
-                  Context: {selectedPlayer ? selectedPlayer.name : "Dashboard Mode"}
+                <span className="verge-label-mono text-[8px] text-[#3cffd0] font-black tracking-[0.2em]">
+                  CONTEXT: {selectedPlayer ? selectedPlayer.name : "DASHBOARD MODE"}
                 </span>
               </div>
             </div>
@@ -160,26 +163,26 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
         )}
       </AnimatePresence>
 
-      {/* Bulle Flottante (FAB) avec halo lumineux */}
+      {/* Bulle Flottante (FAB) */}
       <motion.button
-        whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(14, 165, 233, 0.6)" }}
+        whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className={`group p-5 rounded-2xl shadow-2xl flex items-center justify-center transition-all duration-500 relative ${
-          isOpen ? 'bg-red-500 rotate-90' : 'bg-sky-500'
+        className={`group w-16 h-16 rounded-[4px] shadow-2xl flex items-center justify-center transition-all duration-500 relative border-2 ${
+          isOpen ? 'bg-[#131313] border-white/20' : 'bg-[#5200ff] border-[#5200ff] shadow-[0_0_30px_rgba(82,0,255,0.3)]'
         }`}
       >
         {isOpen ? <X size={28} className="text-white" /> : <MessageSquare size={28} className="text-white" />}
         
         {!isOpen && (
-          <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full border-4 border-[#0f172a] flex items-center justify-center shadow-lg">
-             <span className="text-[10px] font-black text-white">1</span>
+          <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#3cffd0] rounded-[2px] flex items-center justify-center shadow-lg">
+             <span className="text-[9px] font-black text-black">1</span>
           </div>
         )}
         
         {/* Glow effect */}
         {!isOpen && (
-          <div className="absolute inset-0 rounded-2xl bg-sky-400 opacity-0 group-hover:opacity-20 blur-xl transition-opacity"></div>
+          <div className="absolute inset-0 rounded-[4px] bg-[#5200ff] opacity-0 group-hover:opacity-40 blur-xl transition-opacity"></div>
         )}
       </motion.button>
     </div>

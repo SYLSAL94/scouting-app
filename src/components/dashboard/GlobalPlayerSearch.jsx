@@ -86,14 +86,14 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
   return (
     <div className="relative w-full" ref={searchRef}>
       <div className="relative group">
-        <div className={`absolute left-6 top-1/2 -translate-y-1/2 transition-colors ${isLoading ? 'text-sky-400' : 'text-sky-400/50 group-focus-within:text-sky-400'}`}>
+        <div className={`absolute left-6 top-1/2 -translate-y-1/2 transition-colors ${isLoading ? 'text-[#3cffd0]' : 'text-[#949494] group-focus-within:text-[#3cffd0]'}`}>
           {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Search size={20} />}
         </div>
         
         <input 
           type="text" 
-          placeholder="Rechercher un joueur (ex: Mbappé, Haaland...)" 
-          className="search-input w-full pl-14 pr-14 py-4 text-base md:text-lg bg-white/5 border border-white/10 rounded-2xl outline-none focus:border-sky-500/50 focus:ring-4 focus:ring-sky-500/5 transition-all shadow-xl"
+          placeholder="RECHERCHER UN JOUEUR..." 
+          className="verge-label-mono w-full pl-14 pr-14 py-4 text-xs bg-[#2d2d2d] border border-white/10 rounded-full outline-none focus:border-[#3cffd0] transition-all"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -106,7 +106,7 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
         {query && (
           <button 
             onClick={() => setQuery('')}
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-white/20 hover:text-white transition-colors"
+            className="absolute right-6 top-1/2 -translate-y-1/2 text-[#949494] hover:text-white transition-colors"
           >
             <X size={18} />
           </button>
@@ -120,26 +120,26 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute z-[1000] left-0 right-0 mt-3 bg-[#0F172A]/95 border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-2xl overflow-hidden"
+            className="absolute z-[1000] left-0 right-0 mt-3 bg-[#131313] border border-white/20 rounded-[12px] overflow-hidden"
           >
-            <div className="p-2 border-b border-white/5 bg-white/5 text-[9px] font-black uppercase tracking-[0.2em] text-white/20 flex justify-between px-4">
-              <span>Résultats suggérés</span>
-              <span>{results.length} joueurs</span>
+            <div className="p-3 border-b border-white/10 bg-white/5 flex justify-between px-6">
+              <span className="verge-label-mono text-[9px] text-[#949494]">Résultats suggérés</span>
+              <span className="verge-label-mono text-[9px] text-[#3cffd0]">{results.length} joueurs</span>
             </div>
             
-            <div className="max-h-[400px] overflow-y-auto py-2">
+            <div className="max-h-[400px] overflow-y-auto py-2 styled-scrollbar">
               {results.map((player, index) => (
                 <div 
                   key={player.id}
-                  className={`px-4 py-3 flex items-center justify-between cursor-pointer transition-all ${
-                    index === activeIndex ? 'bg-sky-500 text-white' : 'hover:bg-white/5 text-white/70'
+                  className={`px-6 py-4 flex items-center justify-between cursor-pointer transition-all ${
+                    index === activeIndex ? 'bg-[#3cffd0] text-black' : 'hover:bg-white/5 text-white'
                   }`}
                   onClick={() => handleSelect(player)}
                   onMouseEnter={() => setActiveIndex(index)}
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-xl overflow-hidden ${
-                      index === activeIndex ? 'ring-2 ring-white/30' : 'bg-sky-500/10 border border-white/5'
+                    <div className={`w-12 h-12 rounded-[4px] flex items-center justify-center shrink-0 overflow-hidden border ${
+                      index === activeIndex ? 'border-black/20' : 'border-white/10 bg-[#2d2d2d]'
                     }`}>
                       {player.image ? (
                         <img 
@@ -149,24 +149,19 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
                           onError={(e) => { e.target.onerror = null; e.target.src = 'https://api-scouting.theanalyst.cloud/static/default-player.png'; }}
                         />
                       ) : (
-                        <User size={20} className={index === activeIndex ? 'text-white' : 'text-sky-400'} />
+                        <User size={20} className={index === activeIndex ? 'text-black' : 'text-[#3cffd0]'} />
                       )}
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="font-black text-sm truncate uppercase tracking-tighter">
+                      <span className="verge-label-mono text-[11px] truncate">
                         {player.name || player.full_name}
                       </span>
-                      {player.full_name && player.name && player.full_name !== player.name && (
-                        <span className="text-[10px] text-white/30 font-medium truncate -mt-0.5">
-                          {player.full_name}
-                        </span>
-                      )}
-                      <div className="flex items-center gap-1.5 overflow-hidden">
-                        <span className={`text-[9px] font-bold uppercase truncate ${index === activeIndex ? 'text-white/80' : 'text-sky-400'}`}>
+                      <div className="flex items-center gap-1.5 mt-1 overflow-hidden">
+                        <span className={`verge-label-mono text-[8px] truncate ${index === activeIndex ? 'text-black/60' : 'text-[#3cffd0]'}`}>
                           {player.last_club_name || 'Free Agent'}
                         </span>
-                        <span className="text-[9px] text-white/20">•</span>
-                        <span className={`text-[9px] uppercase truncate ${index === activeIndex ? 'text-white/60' : 'text-white/40'}`}>
+                        <span className="text-[9px] opacity-20">•</span>
+                        <span className={`verge-label-mono text-[8px] truncate ${index === activeIndex ? 'text-black/40' : 'text-[#949494]'}`}>
                           {player.position_category}
                         </span>
                       </div>
@@ -174,20 +169,20 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
                   </div>
                   <div className="flex items-center gap-4 shrink-0">
                     <div className="flex flex-col items-end">
-                      <span className={`text-[10px] font-black ${index === activeIndex ? 'text-white' : 'text-emerald-400'}`}>
+                      <span className={`verge-label-mono text-[10px] ${index === activeIndex ? 'text-black' : 'text-[#3cffd0]'}`}>
                         {player.note_ponderee?.toFixed(1) || '0.0'}
                       </span>
-                      <span className="text-[7px] uppercase font-bold tracking-widest opacity-40">Global Score</span>
+                      <span className="verge-label-mono text-[6px] opacity-40">Score</span>
                     </div>
-                    <ChevronRight size={14} className={index === activeIndex ? 'text-white' : 'text-white/10'} />
+                    <ChevronRight size={14} className={index === activeIndex ? 'text-black' : 'text-white/20'} />
                   </div>
                 </div>
               ))}
             </div>
             
-            <div className="p-3 bg-white/5 border-t border-white/5 text-center">
-               <span className="text-[9px] text-white/20 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                 <Search size={10} /> Appuyez sur <span className="px-1.5 py-0.5 bg-white/10 rounded">Entrée</span> pour ouvrir la fiche
+            <div className="p-4 bg-white/5 border-t border-white/10 text-center">
+               <span className="verge-label-mono text-[8px] text-[#949494] flex items-center justify-center gap-2">
+                 Appuyez sur <span className="px-1.5 py-0.5 bg-white/10 rounded text-white">Entrée</span> pour ouvrir
                </span>
             </div>
           </motion.div>

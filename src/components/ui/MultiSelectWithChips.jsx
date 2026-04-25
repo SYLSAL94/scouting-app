@@ -3,15 +3,11 @@ import { X, ChevronDown, Check, Search } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import { normalizeString } from '../../utils/stringUtils';
 
-/**
- * MultiSelectWithChips.jsx — Version "Combobox Pro"
- * Supporte la recherche inline, la navigation au clavier (flèches + Enter) et l'auto-scroll.
- */
 const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeholder = "Select..." }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownRect, setDropdownRect] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeIndex, setActiveIndex] = useState(0); // Index de l'élément survolé au clavier
+  const [activeIndex, setActiveIndex] = useState(0); 
   
   const dropdownRef = useRef(null);
   const portalRef = useRef(null);
@@ -43,12 +39,10 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
     return normalizeString(opt).includes(normalizeString(searchTerm));
   });
 
-  // Reset de l'index quand la recherche change
   useEffect(() => {
     setActiveIndex(0);
   }, [searchTerm]);
 
-  // Auto-scroll pour la navigation clavier
   useEffect(() => {
     if (isOpen && listRef.current) {
       const activeElement = listRef.current.children[activeIndex];
@@ -98,7 +92,6 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
         break;
       case 'Backspace':
         if (searchTerm === '' && selected.length > 0) {
-          // Supprime le dernier chip si le champ est vide
           onChange(selected.slice(0, -1));
         }
         break;
@@ -109,11 +102,11 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
 
   return (
     <div className="filter-group relative" ref={dropdownRef}>
-      <label className="filter-label">{label}</label>
+      <label className="verge-label-mono text-[9px] text-[#949494] mb-3 block">{label}</label>
       
       <div 
-        className={`min-h-[46px] p-2 bg-white/5 border rounded-2xl flex flex-wrap gap-2 cursor-text transition-all ${
-          isOpen ? 'border-sky-400 ring-4 ring-sky-400/10 bg-black/20' : 'border-white/10 hover:border-white/20'
+        className={`min-h-[46px] p-2 bg-[#131313] border rounded-[2px] flex flex-wrap gap-2 cursor-text transition-all ${
+          isOpen ? 'border-[#3cffd0] shadow-[0_0_15px_rgba(60,255,208,0.1)]' : 'border-white/10 hover:border-white/20'
         }`}
         onClick={() => {
           setIsOpen(true);
@@ -121,11 +114,11 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
         }}
       >
         {selected.map(item => (
-          <span key={item} className="bg-sky-500 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg flex items-center gap-2 shadow-lg shadow-sky-500/20 animate-in zoom-in-95 duration-200">
+          <span key={item} className="bg-[#3cffd0] text-black verge-label-mono text-[9px] px-2.5 py-1.5 rounded-[2px] font-black flex items-center gap-2 animate-in zoom-in-95 duration-200">
             {item}
             <button 
               onClick={(e) => { e.stopPropagation(); onChange(selected.filter(i => i !== item)); }} 
-              className="hover:bg-white/20 rounded-md p-0.5 transition-colors"
+              className="hover:bg-black/10 rounded-sm p-0.5 transition-colors"
             >
               <X size={10} />
             </button>
@@ -135,7 +128,7 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
         <input
           ref={inputRef}
           type="text"
-          className="flex-1 min-w-[60px] bg-transparent border-none outline-none text-xs text-white placeholder:text-white/20 px-2"
+          className="flex-1 min-w-[60px] bg-transparent border-none outline-none verge-label-mono text-[10px] text-white placeholder:text-[#949494] px-2 font-black"
           placeholder={selected.length === 0 ? placeholder : ""}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -144,14 +137,14 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
         />
 
         <div className="flex items-center pr-2 ml-auto">
-          <ChevronDown size={14} className={`text-white/20 transition-transform duration-300 ${isOpen ? 'rotate-180 text-sky-400' : ''}`} />
+          <ChevronDown size={14} className={`text-[#949494] transition-transform duration-300 ${isOpen ? 'rotate-180 text-[#3cffd0]' : ''}`} />
         </div>
       </div>
 
       {isOpen && dropdownRect && createPortal(
         <div 
           ref={portalRef}
-          className="fixed z-[9999] bg-[#0F172A]/98 border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden backdrop-blur-3xl animate-in fade-in slide-in-from-top-2 duration-200"
+          className="fixed z-[9999] bg-[#131313] border border-white/20 rounded-[2px] overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 shadow-2xl"
           style={{
             top: dropdownRect.bottom + 8,
             left: dropdownRect.left,
@@ -160,26 +153,26 @@ const MultiSelectWithChips = ({ label, options, selected = [], onChange, placeho
         >
           <div 
             ref={listRef}
-            className="max-h-64 overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-white/10"
+            className="max-h-64 overflow-y-auto py-2 styled-scrollbar"
           >
             {filteredOptions.length === 0 ? (
               <div className="px-6 py-8 text-center">
                 <Search size={24} className="mx-auto text-white/5 mb-2" />
-                <div className="text-white/20 text-[10px] uppercase font-black tracking-widest">Aucun résultat</div>
+                <div className="verge-label-mono text-[#949494] text-[9px]">Aucun résultat</div>
               </div>
             ) : (
               filteredOptions.map((option, index) => (
                 <div 
                   key={option} 
                   className={`px-6 py-3 text-xs flex items-center justify-between transition-all cursor-pointer ${
-                    index === activeIndex ? 'bg-sky-500 text-white font-bold' : 
-                    selected.includes(option) ? 'text-sky-400 font-black bg-sky-500/5' : 'text-white/60 hover:bg-white/5'
+                    index === activeIndex ? 'bg-[#3cffd0] text-black font-bold' : 
+                    selected.includes(option) ? 'text-[#3cffd0] font-black bg-[#3cffd0]/5' : 'text-[#949494] hover:bg-white/5 hover:text-white'
                   }`}
                   onClick={(e) => { e.stopPropagation(); toggleOption(option); }}
                   onMouseEnter={() => setActiveIndex(index)}
                 >
                   <span className="truncate">{option}</span>
-                  {selected.includes(option) && <Check size={14} className={`${index === activeIndex ? 'text-white' : 'text-sky-400'} shrink-0 ml-2`} />}
+                  {selected.includes(option) && <Check size={14} className={`${index === activeIndex ? 'text-black' : 'text-[#3cffd0]'} shrink-0 ml-2`} />}
                 </div>
               ))
             )}

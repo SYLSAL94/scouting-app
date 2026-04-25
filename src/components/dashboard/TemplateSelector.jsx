@@ -40,8 +40,8 @@ export const TemplateSelector = ({
     }
 
     return (
-        <div className="space-y-4">
-            <label className="text-[10px] font-black uppercase text-slate-500 tracking-widest mb-2 block">
+        <div className="space-y-6">
+            <label className="verge-label-mono text-[10px] font-black uppercase text-[#949494] tracking-[0.2em] mb-4 block">
                 Modèles Tactiques (DS)
             </label>
             <div className="flex flex-wrap gap-2">
@@ -51,10 +51,10 @@ export const TemplateSelector = ({
                         <button
                             key={key}
                             onClick={() => handleTemplateClick(key)}
-                            className={`px-3 py-2 text-[10px] font-black uppercase tracking-tighter rounded-xl border transition-all duration-300 ${
+                            className={`px-3 py-2 text-[9px] font-black verge-label-mono uppercase tracking-tight rounded-[2px] border transition-all duration-200 ${
                                 isActive 
-                                ? 'bg-sky-500 border-sky-400 text-white shadow-lg shadow-sky-500/20 scale-105' 
-                                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-sky-500/50 hover:bg-sky-500/5'
+                                ? 'bg-[#3cffd0] border-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)] scale-105' 
+                                : 'bg-[#131313] border-white/10 text-[#949494] hover:border-[#3cffd0]/50 hover:text-white'
                             }`}
                         >
                             {key}

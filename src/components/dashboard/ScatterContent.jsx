@@ -18,44 +18,39 @@ const ScatterTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="glass-panel p-4 border border-white/10 shadow-2xl backdrop-blur-xl min-w-[200px]">
-        <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/5">
-          <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 overflow-hidden shadow-inner">
+      <div className="bg-[#131313] p-5 border border-white/20 rounded-[4px] min-w-[220px] shadow-2xl">
+        <div className="flex items-center gap-4 mb-4 pb-4 border-b border-white/10">
+          <div className="w-12 h-12 rounded-[2px] bg-[#2d2d2d] border border-white/10 overflow-hidden">
             {data.image ? (
               <img src={data.image} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-white/20 font-black text-xl">
+              <div className="w-full h-full flex items-center justify-center text-white/10 verge-h3 text-xl">
                 {data.name?.charAt(0)}
               </div>
             )}
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-black text-white truncate">{data.name}</div>
-            <div className="text-[9px] text-sky-400 font-bold uppercase tracking-widest truncate">{data.team}</div>
-            <div className="mt-1">
-              <span className="px-1.5 py-0.5 rounded bg-white/5 text-[8px] font-black text-white/40 uppercase border border-white/5">
-                {data.position_category}
-              </span>
-            </div>
+            <div className="verge-h3 text-sm text-white truncate uppercase">{data.name}</div>
+            <div className="verge-label-mono text-[8px] text-[#3cffd0] uppercase truncate">{data.team}</div>
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-[9px] text-white/30 uppercase font-black">Performance X</span>
-            <span className="text-xs font-mono text-sky-400 font-black bg-sky-500/10 px-2 py-0.5 rounded-md">
+            <span className="verge-label-mono text-[8px] text-[#949494] uppercase">Metric X</span>
+            <span className="verge-label-mono text-[10px] text-white bg-white/5 px-2 py-1 border border-white/10">
               {formatNumber(data.x)}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-[9px] text-white/30 uppercase font-black">Performance Y</span>
-            <span className="text-xs font-mono text-emerald-400 font-black bg-emerald-500/10 px-2 py-0.5 rounded-md">
+            <span className="verge-label-mono text-[8px] text-[#949494] uppercase">Metric Y</span>
+            <span className="verge-label-mono text-[10px] text-[#3cffd0] bg-[#3cffd0]/10 px-2 py-1 border border-[#3cffd0]/20">
               {formatNumber(data.y)}
             </span>
           </div>
         </div>
-        <div className="mt-3 pt-2 border-t border-white/5 text-center">
-          <div className="text-[8px] text-white/20 uppercase font-bold tracking-tighter">
-            Clic: Focus • Double Clic: Fiche
+        <div className="mt-4 pt-3 border-t border-white/10 text-center">
+          <div className="verge-label-mono text-[7px] text-[#949494] uppercase">
+            Click: Focus • Double Click: Profile
           </div>
         </div>
       </div>
@@ -65,14 +60,14 @@ const ScatterTooltip = ({ active, payload }) => {
 };
 
 const ROLE_COLORS = {
-  'Gardien': '#facc15', // Jaune
-  'Defenseurs centraux': '#38bdf8', // Sky
-  'Latéraux': '#60a5fa', // Blue
-  'Milieux defensifs': '#22c55e', // Vert
-  'Milieux centraux': '#10b981', // Emeraude
-  'Milieux offensifs': '#8b5cf6', // Violet
-  'Ailiers': '#f59e0b', // Ambre
-  'Avant-centre': '#f97316', // Orange
+  'Gardien': '#facc15',
+  'Defenseurs centraux': '#3cffd0', // Jelly Mint
+  'Latéraux': '#5200ff', // Ultraviolet
+  'Milieux defensifs': '#22c55e',
+  'Milieux centraux': '#10b981',
+  'Milieux offensifs': '#a855f7',
+  'Ailiers': '#f59e0b',
+  'Avant-centre': '#f97316',
   'Autres': '#94a3b8'
 };
 
@@ -96,7 +91,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-# Données exportées depuis le Scouting Dashboard (The Analyst)
+# Data exported from Scouting App (Verge UI)
 data = ${JSON.stringify(chartData.map(p => ({
   name: p.name,
   team: p.team,
@@ -106,48 +101,19 @@ data = ${JSON.stringify(chartData.map(p => ({
 })), null, 2)}
 
 df = pd.DataFrame(data)
-
-# Configuration du style
 plt.style.use('dark_background')
 plt.figure(figsize=(14, 10))
-sns.set_theme(style="dark", palette="muted")
-
-# Création du Scatter Plot
-scatter = sns.scatterplot(
-    data=df, x='x', y='y', hue='role', 
-    s=100, alpha=0.7, edgecolors='white', linewidth=0.5
-)
-
-# Inversion des axes si nécessaire
+sns.scatterplot(data=df, x='x', y='y', hue='role', s=100)
 if ${invertX}: plt.gca().invert_xaxis()
 if ${invertY}: plt.gca().invert_yaxis()
-
-# Ajout des lignes de moyennes
-if ${showAvgX}: plt.axvline(df['x'].mean(), color='white', linestyle='--', alpha=0.3, label='Moyenne X')
-if ${showAvgY}: plt.axhline(df['y'].mean(), color='white', linestyle='--', alpha=0.3, label='Moyenne Y')
-
-# Labels et Titre
-plt.title(f"Analyse Scouting : ${xAxis.replace(/_/g, ' ')} vs ${yAxis.replace(/_/g, ' ')}", fontsize=16, pad=20)
-plt.xlabel("${xAxis.replace(/_/g, ' ').toUpperCase()}", fontsize=12)
-plt.ylabel("${yAxis.replace(/_/g, ' ').toUpperCase()}", fontsize=12)
-
-# Optimisation de la légende
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', title="Postes")
-plt.tight_layout()
-
-print("Graphique généré avec succès.")
 plt.show()
 `;
-
     const blob = new Blob([pythonScript], { type: 'text/x-python' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `scatter_export_${new Date().getTime()}.py`;
-    document.body.appendChild(a);
+    a.download = `verge_export_${new Date().getTime()}.py`;
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   const handleSavePreset = () => {
@@ -157,176 +123,152 @@ plt.show()
     setShowSave(false);
   };
 
-  const handleDeletePreset = (index) => {
-    setVisualPresets(visualPresets.filter((_, i) => i !== index));
-  };
-
   const selectStyles = {
     control: (base) => ({
       ...base,
-      background: 'rgba(255, 255, 255, 0.03)',
+      background: '#131313',
       borderColor: 'rgba(255, 255, 255, 0.1)',
-      borderRadius: '12px',
+      borderRadius: '4px',
       color: 'white',
-      minWidth: '180px',
-      fontSize: '11px'
+      minHeight: '44px',
+      fontSize: '10px',
+      fontFamily: 'PolySans Mono, monospace',
+      textTransform: 'uppercase'
     }),
     menu: (base) => ({
       ...base,
-      background: '#0f172a',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      borderRadius: '12px',
+      background: '#131313',
+      border: '1px solid rgba(255, 255, 255, 0.2)',
+      borderRadius: '4px',
       zIndex: 100
     }),
     option: (base, state) => ({
       ...base,
-      background: state.isFocused ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
-      color: state.isSelected ? '#38bdf8' : 'white',
-      fontSize: '11px'
+      background: state.isFocused ? '#3cffd0' : 'transparent',
+      color: state.isFocused ? 'black' : 'white',
+      fontSize: '9px',
+      fontFamily: 'PolySans Mono, monospace',
+      textTransform: 'uppercase'
     }),
     singleValue: (base) => ({ ...base, color: 'white' }),
-    multiValue: (base) => ({ ...base, background: 'rgba(56, 189, 248, 0.2)', borderRadius: '6px' }),
-    multiValueLabel: (base) => ({ ...base, color: '#38bdf8', fontSize: '10px', fontWeight: 'bold' }),
-    multiValueRemove: (base) => ({ ...base, color: '#38bdf8', ':hover': { background: '#38bdf8', color: 'white' } }),
+    multiValue: (base) => ({ ...base, background: '#3cffd0', borderRadius: '2px' }),
+    multiValueLabel: (base) => ({ ...base, color: 'black', fontSize: '9px', fontWeight: '900' }),
+    multiValueRemove: (base) => ({ ...base, color: 'black', ':hover': { background: 'black', color: '#3cffd0' } }),
     input: (base) => ({ ...base, color: 'white' }),
-    placeholder: (base) => ({ ...base, color: 'white/30' })
+    placeholder: (base) => ({ ...base, color: 'rgba(255,255,255,0.2)' })
   };
 
   const Toggle = ({ label, checked, onChange }) => (
-    <div className="flex items-center justify-between gap-4 py-1">
-      <span className="text-[10px] font-bold text-white/50 uppercase">{label}</span>
+    <div className="flex items-center justify-between gap-4 py-1.5">
+      <span className="verge-label-mono text-[8px] text-[#949494] uppercase">{label}</span>
       <button 
         onClick={() => onChange(!checked)}
-        className={`w-8 h-4 rounded-full p-0.5 transition-all ${checked ? 'bg-sky-500' : 'bg-white/10'}`}
+        className={`w-9 h-4 p-0.5 transition-all rounded-[2px] ${checked ? 'bg-[#3cffd0]' : 'bg-white/10'}`}
       >
-        <div className={`w-3 h-3 bg-white rounded-full transition-transform ${checked ? 'translate-x-4' : 'translate-x-0'}`} />
+        <div className={`w-3 h-3 transition-transform rounded-[1px] ${checked ? 'bg-black translate-x-5' : 'bg-[#949494] translate-x-0'}`} />
       </button>
     </div>
   );
 
   return (
-    <div className="flex flex-wrap gap-8 items-start p-6 glass-panel border border-white/5 relative z-[60]">
+    <div className="flex flex-wrap gap-8 items-start p-8 bg-[#2d2d2d] border border-white/5 rounded-[24px] relative z-[60]">
       <div className="flex items-center gap-4">
         <div className="flex flex-col">
-          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Axes X / Y</span>
-          <div className="flex gap-2">
-            <Select 
-              options={metricsList}
-              value={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
-              onChange={(opt) => setXAxis(opt.value)}
-              styles={selectStyles}
-              isSearchable
-            />
-            <Select 
-              options={metricsList}
-              value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
-              onChange={(opt) => setYAxis(opt.value)}
-              styles={selectStyles}
-              isSearchable
-            />
+          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">X / Y Mapping</span>
+          <div className="flex gap-3">
+            <div className="w-[200px]">
+              <Select 
+                options={metricsList}
+                value={metricsList.find(m => m.options?.some(o => o.value === xAxis))?.options?.find(o => o.value === xAxis)}
+                onChange={(opt) => setXAxis(opt.value)}
+                styles={selectStyles}
+                isSearchable
+              />
+            </div>
+            <div className="w-[200px]">
+              <Select 
+                options={metricsList}
+                value={metricsList.find(m => m.options?.some(o => o.value === yAxis))?.options?.find(o => o.value === yAxis)}
+                onChange={(opt) => setYAxis(opt.value)}
+                styles={selectStyles}
+                isSearchable
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col flex-1 min-w-[200px]">
-        <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Focus & Highlight</span>
+      <div className="flex flex-col flex-1 min-w-[250px]">
+        <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Subject Focus</span>
         <Select 
           isMulti
           options={chartData.map(p => ({ value: p.id, label: p.name }))}
           value={chartData.filter(p => focusedPlayerIds.includes(p.id)).map(p => ({ value: p.id, label: p.name }))}
           onChange={(opts) => setFocusedPlayerIds(opts ? opts.map(o => o.value) : [])}
           styles={selectStyles}
-          placeholder="Focus on players..."
-          className="w-full"
+          placeholder="Select profiles..."
         />
       </div>
 
-      <div className="flex flex-col border-l border-white/10 pl-6 min-w-[150px]">
-        <span className="text-[9px] text-white/30 uppercase font-black mb-2 ml-1">Affichage</span>
-        <div className="grid grid-cols-1 gap-x-6">
-          <Toggle label="Moyenne X" checked={showAvgX} onChange={setShowAvgX} />
-          <Toggle label="Moyenne Y" checked={showAvgY} onChange={setShowAvgY} />
-          <Toggle label="Inverser X" checked={invertX} onChange={setInvertX} />
-          <Toggle label="Inverser Y" checked={invertY} onChange={setInvertY} />
+      <div className="flex flex-col border-l border-white/10 pl-8 min-w-[150px]">
+        <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Display Options</span>
+        <div className="grid grid-cols-1">
+          <Toggle label="Mean X" checked={showAvgX} onChange={setShowAvgX} />
+          <Toggle label="Mean Y" checked={showAvgY} onChange={setShowAvgY} />
+          <Toggle label="Invert X" checked={invertX} onChange={setInvertX} />
+          <Toggle label="Invert Y" checked={invertY} onChange={setInvertY} />
         </div>
       </div>
 
-      <div className="flex items-start gap-6 border-l border-white/10 pl-6">
+      <div className="flex items-start gap-8 border-l border-white/10 pl-8">
         <div className="flex flex-col">
-          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Visual Presets</span>
+          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Presets</span>
           <div className="flex items-center gap-2">
-            <div className="relative group/presets">
-              <select 
-                className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white appearance-none outline-none focus:border-sky-500/50 min-w-[120px] pr-8"
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === "delete_mode") return;
-                  const preset = visualPresets[val];
-                  if (preset) {
-                    setXAxis(preset.x);
-                    setYAxis(preset.y);
-                  }
-                }}
-                defaultValue=""
-              >
-                <option value="" disabled>Load axes...</option>
-                {visualPresets.map((p, i) => (
-                  <option key={i} value={i}>{p.name}</option>
-                ))}
-              </select>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
-                <Search size={10} className="text-white" />
-              </div>
-            </div>
-            
+            <select 
+              className="bg-[#131313] border border-white/10 rounded-[4px] px-3 h-[44px] verge-label-mono text-[9px] text-white outline-none focus:border-[#3cffd0] min-w-[140px]"
+              onChange={(e) => {
+                const preset = visualPresets[e.target.value];
+                if (preset) { setXAxis(preset.x); setYAxis(preset.y); }
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled>Load Preset</option>
+              {visualPresets.map((p, i) => (
+                <option key={i} value={i}>{p.name}</option>
+              ))}
+            </select>
             <button 
               onClick={() => setShowSave(true)}
-              className="p-2 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-sky-400 hover:border-sky-500/30 transition-all"
-              title="Save current"
+              className="h-[44px] w-[44px] flex items-center justify-center bg-[#131313] border border-white/10 rounded-[4px] text-[#949494] hover:text-[#3cffd0] hover:border-[#3cffd0] transition-all"
             >
-              <Save size={14} />
+              <Save size={16} />
             </button>
-
-            {visualPresets.length > 0 && (
-              <button 
-                onClick={() => {
-                   const index = prompt("Entrez le nom du preset à supprimer ou son numéro (1, 2...):");
-                   if (!index) return;
-                   const foundIndex = visualPresets.findIndex((p, i) => p.name === index || (i + 1).toString() === index);
-                   if (foundIndex !== -1) handleDeletePreset(foundIndex);
-                }}
-                className="p-2 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-rose-400 hover:border-rose-500/30 transition-all"
-                title="Delete preset"
-              >
-                <Activity size={14} className="rotate-45" /> 
-              </button>
-            )}
           </div>
         </div>
 
         <div className="flex flex-col">
-          <span className="text-[9px] text-white/30 uppercase font-black mb-1 ml-1">Export</span>
+          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Export</span>
           <button 
             onClick={handleExportPython}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-xl text-[10px] font-black text-indigo-300 uppercase tracking-tighter hover:from-indigo-500/30 hover:to-purple-500/30 transition-all"
+            className="h-[44px] px-6 bg-white text-black rounded-[4px] verge-label-mono text-[9px] font-black hover:bg-[#3cffd0] transition-colors flex items-center gap-2"
           >
-            <Activity size={12} />
-            Python
+            <Activity size={14} /> PYTHON SCRIPT
           </button>
         </div>
       </div>
 
       {showSave && (
-        <div className="absolute top-full left-0 mt-2 p-4 glass-panel border border-sky-500/30 shadow-2xl z-[70]">
+        <div className="absolute top-full right-8 mt-4 p-6 bg-[#131313] border border-white/20 rounded-[12px] shadow-2xl z-[70] w-[250px]">
+          <span className="verge-label-mono text-[8px] text-[#3cffd0] mb-3 block">NEW PRESET NAME</span>
           <input 
-            type="text" placeholder="Preset name..." 
-            className="bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white mb-2 block w-full"
+            type="text" placeholder="..." 
+            className="bg-[#2d2d2d] border border-white/10 rounded-[4px] px-3 py-3 verge-label-mono text-[10px] text-white mb-4 block w-full outline-none focus:border-[#3cffd0]"
             value={newPresetName}
             onChange={(e) => setNewPresetName(e.target.value)}
           />
           <div className="flex gap-2">
-            <button onClick={handleSavePreset} className="flex-1 bg-sky-500 text-white text-[10px] font-bold py-2 rounded-lg">Save</button>
-            <button onClick={() => setShowSave(false)} className="flex-1 bg-white/5 text-white/40 text-[10px] font-bold py-2 rounded-lg">Cancel</button>
+            <button onClick={handleSavePreset} className="flex-1 bg-[#3cffd0] text-black verge-label-mono text-[9px] font-black py-3 rounded-[4px]">SAVE</button>
+            <button onClick={() => setShowSave(false)} className="flex-1 bg-white/5 text-[#949494] verge-label-mono text-[9px] py-3 rounded-[4px]">CANCEL</button>
           </div>
         </div>
       )}
@@ -341,26 +283,20 @@ const CustomScatterPoint = (props) => {
   const isFocused = focusedPlayerIds.includes(payload.id);
   const hasFocusActive = focusedPlayerIds.length > 0;
   
-  const opacity = hasFocusActive ? (isFocused ? 1 : 0.15) : 0.8;
-  const radius = isFocused ? 9 : 6;
-  const stroke = isFocused ? "white" : "rgba(255,255,255,0.1)";
-  const strokeWidth = isFocused ? 2.5 : 1;
+  const opacity = hasFocusActive ? (isFocused ? 1 : 0.1) : 0.8;
+  const radius = isFocused ? 10 : 6;
+  const stroke = isFocused ? "white" : "none";
+  const strokeWidth = 2;
 
-  // Gestion Single vs Double Click via useRef pour éviter les re-renders inutiles
-  // Mais ici on utilise une variable persistante simple via un timer local au closure du point
   const handleClick = (e) => {
     e.stopPropagation();
     if (e.detail === 2) {
-      // Double clic -> Ouverture fiche
       onPlayerClick(payload.originalPlayer);
     } else {
-      // Simple clic -> Toggle Focus (on attend un peu pour être sûr que ce n'est pas un double clic)
       setTimeout(() => {
         if (e.detail === 1) {
            setFocusedPlayerIds(prev => 
-            prev.includes(payload.id) 
-              ? prev.filter(id => id !== payload.id) 
-              : [...prev, payload.id]
+            prev.includes(payload.id) ? prev.filter(id => id !== payload.id) : [...prev, payload.id]
           );
         }
       }, 200);
@@ -373,17 +309,13 @@ const CustomScatterPoint = (props) => {
         cx={cx} cy={cy} r={radius} 
         fill={fill} opacity={opacity} 
         stroke={stroke} strokeWidth={strokeWidth}
-        style={{ 
-          filter: isFocused ? 'url(#scatterGlow)' : 'none',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-        }}
+        style={{ transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)' }}
       />
       {isFocused && (
         <text 
-          x={cx} y={cy - 14} 
+          x={cx} y={cy - 16} 
           textAnchor="middle" 
-          className="text-[10px] font-black fill-white pointer-events-none uppercase tracking-tighter"
-          style={{ textShadow: '0 2px 8px rgba(0,0,0,1)' }}
+          className="verge-label-mono text-[10px] fill-white pointer-events-none uppercase font-black"
         >
           {payload.name}
         </text>
@@ -434,16 +366,16 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
     return { 
       averages: { x: avgX, y: avgY }, 
       stats: [
-        { label: 'Élite (H/H)', count: qStats.q1, pct: ((qStats.q1/total)*100).toFixed(1), color: 'text-emerald-400' },
-        { label: 'Efficace (B/H)', count: qStats.q2, pct: ((qStats.q2/total)*100).toFixed(1), color: 'text-sky-400' },
-        { label: 'Volume (H/B)', count: qStats.q4, pct: ((qStats.q4/total)*100).toFixed(1), color: 'text-amber-400' },
-        { label: 'Critique (B/B)', count: qStats.q3, pct: ((qStats.q3/total)*100).toFixed(1), color: 'text-rose-400' },
+        { label: 'High Performers', count: qStats.q1, pct: ((qStats.q1/total)*100).toFixed(1), color: 'text-[#3cffd0]' },
+        { label: 'Efficiency Bias', count: qStats.q2, pct: ((qStats.q2/total)*100).toFixed(1), color: 'text-[#5200ff]' },
+        { label: 'Volume Bias', count: qStats.q4, pct: ((qStats.q4/total)*100).toFixed(1), color: 'text-[#facc15]' },
+        { label: 'Underperformers', count: qStats.q3, pct: ((qStats.q3/total)*100).toFixed(1), color: 'text-red-500' },
       ]
     };
   }, [chartData]);
 
   return (
-    <div className="flex flex-col h-full space-y-6">
+    <div className="flex flex-col h-full space-y-8">
       <ScatterControls 
         metricsList={metricsList}
         xAxis={xAxis} setXAxis={setXAxis}
@@ -457,29 +389,28 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
         focusedPlayerIds={focusedPlayerIds} setFocusedPlayerIds={setFocusedPlayerIds}
       />
 
-      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-2 border-b border-white/5">
+      <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 py-4 border-b border-white/10">
         {Object.entries(ROLE_COLORS).map(([role, color]) => (
-          <div key={role} className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}40` }} />
-            <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{role}</span>
+          <div key={role} className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-[1px]" style={{ backgroundColor: color }} />
+            <span className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-widest">{role}</span>
           </div>
         ))}
       </div>
 
-      <div className="flex-1 min-h-[500px] glass-panel p-8 relative overflow-hidden border border-white/5">
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
-             style={{ backgroundImage: 'radial-gradient(#38bdf8 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
-
+      <div className="flex-1 min-h-[600px] bg-[#131313] p-10 relative border border-white/10 rounded-[24px] overflow-hidden">
         {showAvgX && showAvgY && (
-          <div className="absolute top-8 right-8 z-10 w-48 p-4 rounded-2xl bg-slate-900/80 border border-white/10 backdrop-blur-xl shadow-2xl pointer-events-none">
-            <div className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] mb-3">Distribution</div>
-            <div className="space-y-3">
+          <div className="absolute top-10 right-10 z-10 w-56 p-6 bg-[#131313] border border-white/20 shadow-2xl">
+            <div className="verge-label-mono text-[9px] text-[#3cffd0] uppercase mb-4 font-black">Quadrant Distribution</div>
+            <div className="space-y-4">
               {stats.map(item => (
-                <div key={item.label} className="flex items-center justify-between">
-                  <span className={`text-[10px] font-bold uppercase ${item.color}`}>{item.label}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-black text-white">{item.count}</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-white/5 text-white/40 font-mono">{item.pct}%</span>
+                <div key={item.label} className="flex flex-col gap-1">
+                  <div className="flex justify-between items-center">
+                    <span className={`verge-label-mono text-[8px] uppercase font-bold ${item.color}`}>{item.label}</span>
+                    <span className="verge-label-mono text-[10px] text-white font-black">{item.count}</span>
+                  </div>
+                  <div className="w-full h-1 bg-white/5">
+                    <div className="h-full bg-white/20" style={{ width: `${item.pct}%` }} />
                   </div>
                 </div>
               ))}
@@ -489,58 +420,42 @@ const ScatterContent = ({ players, metricsList, onPlayerClick }) => {
 
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart margin={{ top: 20, right: 30, bottom: 40, left: 30 }}>
-            <defs>
-              <filter id="scatterGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="2.5" result="coloredBlur" />
-                <feMerge>
-                  <feMergeNode in="coloredBlur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+            <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.05)" vertical={true} horizontal={true} />
             <XAxis 
               type="number" dataKey="x" name={xAxis} 
               reversed={invertX}
-              stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }} 
-              axisLine={false} tickLine={false} domain={['auto', 'auto']}
+              stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: 'PolySans Mono' }} 
+              axisLine={true} tickLine={false} domain={['auto', 'auto']}
             >
-              <Label value={xAxis.replace(/_/g, ' ')} offset={-20} position="insideBottom" fill="rgba(255,255,255,0.2)" fontSize={10} fontWeight="900" style={{ textTransform: 'uppercase' }} />
+              <Label value={xAxis.replace(/_/g, ' ').toUpperCase()} offset={-25} position="insideBottom" fill="#3cffd0" fontSize={9} fontFamily="PolySans Mono" fontWeight="900" />
             </XAxis>
             <YAxis 
               type="number" dataKey="y" name={yAxis} 
               reversed={invertY}
-              stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 700 }} 
-              axisLine={false} tickLine={false} domain={['auto', 'auto']}
+              stroke="rgba(255,255,255,0.2)" tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: 'PolySans Mono' }} 
+              axisLine={true} tickLine={false} domain={['auto', 'auto']}
             >
-              <Label value={yAxis.replace(/_/g, ' ')} angle={-90} offset={-10} position="insideLeft" fill="rgba(255,255,255,0.2)" fontSize={10} fontWeight="900" style={{ textTransform: 'uppercase' }} />
+              <Label value={yAxis.replace(/_/g, ' ').toUpperCase()} angle={-90} offset={-15} position="insideLeft" fill="#3cffd0" fontSize={9} fontFamily="PolySans Mono" fontWeight="900" />
             </YAxis>
             <ZAxis type="number" range={[60, 60]} />
-            <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '3 3', stroke: '#38bdf8', strokeWidth: 1 }} isAnimationActive={false} />
+            <Tooltip content={<ScatterTooltip />} cursor={{ strokeDasharray: '4 4', stroke: '#3cffd0', strokeWidth: 1 }} />
             
             {showAvgX && showAvgY && averages.x && averages.y && (
               <>
-                <ReferenceArea x1={averages.x} y1={averages.y} fill="rgba(34, 197, 94, 0.05)" stroke="none" />
-                <ReferenceArea x2={averages.x} y1={averages.y} fill="rgba(56, 189, 248, 0.05)" stroke="none" />
-                <ReferenceArea x2={averages.x} y2={averages.y} fill="rgba(244, 63, 94, 0.05)" stroke="none" />
-                <ReferenceArea x1={averages.x} y2={averages.y} fill="rgba(245, 158, 11, 0.05)" stroke="none" />
+                <ReferenceArea x1={averages.x} y1={averages.y} fill="rgba(60, 255, 208, 0.03)" stroke="none" />
+                <ReferenceArea x2={averages.x} y2={averages.y} fill="rgba(239, 68, 68, 0.03)" stroke="none" />
               </>
             )}
 
             {showAvgX && averages.x && (
-              <ReferenceLine x={averages.x} stroke="rgba(255,255,255,0.15)" strokeDasharray="10 5">
-                 <Label value={`Moy. X: ${formatNumber(averages.x)}`} position="top" fill="rgba(255,255,255,0.3)" fontSize={9} fontWeight="bold" />
-              </ReferenceLine>
+              <ReferenceLine x={averages.x} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
             )}
             {showAvgY && averages.y && (
-              <ReferenceLine y={averages.y} stroke="rgba(255,255,255,0.15)" strokeDasharray="10 5">
-                 <Label value={`Moy. Y: ${formatNumber(averages.y)}`} position="insideLeft" fill="rgba(255,255,255,0.3)" fontSize={9} fontWeight="bold" dx={10} />
-              </ReferenceLine>
+              <ReferenceLine y={averages.y} stroke="rgba(255,255,255,0.1)" strokeWidth={1} />
             )}
 
             <Scatter 
               name="Players" data={chartData} 
-              cursor="pointer" isAnimationActive={false}
               shape={<CustomScatterPoint 
                 focusedPlayerIds={focusedPlayerIds} 
                 setFocusedPlayerIds={setFocusedPlayerIds}
