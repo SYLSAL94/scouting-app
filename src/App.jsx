@@ -396,7 +396,7 @@ function App() {
                 .then(() => setProfiles(prev => prev.filter(p => p.id !== id)))
                 .catch(err => console.error(err));
             }}
-            onPlayerClick={handlePlayerSelect}
+            onPlayerClick={handlePlayerClick}
           />
         )}
       </AnimatePresence>
