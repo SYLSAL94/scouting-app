@@ -1,0 +1,138 @@
+import os
+import json
+import urllib.parse
+from dotenv import load_dotenv
+from sqlalchemy import create_engine, text
+
+# Essayer d'importer la librairie MCP (Model Context Protocol)
+try:
+    from mcp.server.fastmcp import FastMCP
+except ImportError:
+    # Note pour le DevOps : Nécessite 'pip install mcp'
+    raise ImportError("La librairie 'mcp' est manquante. Exécutez 'pip install mcp' pour continuer.")
+
+# =================================================================
+# 1. LOGIQUE DE SÉCURITÉ & ENVIRONNEMENT
+# =================================================================
+# Chargement du fichier .env pour les credentials PostgreSQL
+load_dotenv()
+
+# Configuration PostgreSQL - Récupération sécurisée des variables
+raw_password = os.getenv('POSTGRES_PWD')
+db_password = urllib.parse.quote_plus(raw_password) if raw_password else ""
+db_user = os.getenv('POSTGRES_USER', 'analyst_admin')
+db_host = os.getenv('POSTGRES_HOST', '127.0.0.1')
+db_port = os.getenv('POSTGRES_PORT', '5432')
+db_name = os.getenv('POSTGRES_DB', 'datafoot_db')
+
+# Construction de l'URL SQLAlchemy
+DATABASE_URL = f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+# Création de l'engine avec pool_pre_ping pour la résilience
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+
+# =================================================================
+# 2. INITIALISATION DU SERVEUR MCP (Standard stdio)
+# =================================================================
+# FastMCP est la surcouche simplifiée du SDK Python MCP.
+# Il gère nativement la communication via stdio pour les outils (tools).
+mcp = FastMCP("Scouting-MCP-Server")
+
+@mcp.tool()
+def get_player_profile(player_name: str) -> str:
+    """
+    Récupère le profil statistique complet d'un joueur.
+    
+    Args:
+        player_name (str): Nom du joueur (supporte la recherche partielle ILIKE).
+        
+    Returns:
+        str: JSON contenant les statistiques enrichies du joueur.
+    """
+    try:
+        # Assouplissement de la recherche : remplace les espaces par des jokers %
+        safe_name = player_name.replace(' ', '%')
+        
+        with engine.connect() as conn:
+            # Récupération de TOUT l'historique (multi-saisons / multi-compétitions)
+            query = text("""
+                SELECT * FROM wyscout_data.players_enriched 
+                WHERE (name ILIKE :name OR full_name ILIKE :name)
+                ORDER BY season DESC
+            """)
+            
+            # Exécution et récupération de tous les résultats
+            results = conn.execute(query, {"name": f"%{safe_name}%"}).fetchall()
+            
+            if results:
+                # Conversion de tous les enregistrements en liste de dictionnaires
+                players_history = [dict(r._mapping) for r in results]
+                # Retourne la liste complète formatée en JSON
+                return json.dumps(players_history, indent=2, default=str)
+            else:
+                return f"Aucun historique trouvé pour '{player_name}' dans la base PostgreSQL."
+                
+    except Exception as e:
+        return f"Erreur lors de l'accès à la base de données : {str(e)}"
+
+@mcp.tool()
+def get_top_players_by_league(league: str, season: str, metric: str = "goals", limit: int = 5) -> str:
+    """
+    Récupère le classement des meilleurs joueurs d'un championnat pour une saison donnée selon une métrique spécifique.
+    """
+    try:
+        # Nettoyage minimal du nom de la métrique pour éviter l'injection (caractères alphanumériques et underscores uniquement)
+        safe_metric = "".join(c for c in metric if c.isalnum() or c == '_')
+        
+        with engine.connect() as conn:
+            query = text(f"""
+                SELECT name, current_team_name, position_category, {safe_metric} 
+                FROM wyscout_data.players_enriched 
+                WHERE competition ILIKE :league AND season = :season 
+                ORDER BY {safe_metric} DESC NULLS LAST 
+                LIMIT :limit
+            """)
+            
+            results = conn.execute(query, {
+                "league": f"%{league}%", 
+                "season": season, 
+                "limit": limit
+            }).fetchall()
+            
+            return json.dumps([dict(r._mapping) for r in results], indent=2, default=str)
+    except Exception as e:
+        return f"Erreur lors de la récupération du classement : {str(e)}"
+
+@mcp.tool()
+def compare_head_to_head(player1: str, player2: str) -> str:
+    """
+    Compare directement les statistiques de deux joueurs (version la plus récente disponible).
+    """
+    try:
+        # Assouplissement de la recherche : remplace les espaces par des jokers %
+        p1_safe = player1.replace(' ', '%')
+        p2_safe = player2.replace(' ', '%')
+        
+        with engine.connect() as conn:
+            # Requête pour extraire tout l'historique de chaque joueur
+            query = text("""
+                (SELECT * FROM wyscout_data.players_enriched 
+                 WHERE (name ILIKE :p1 OR full_name ILIKE :p1) 
+                 ORDER BY season DESC)
+                UNION ALL
+                (SELECT * FROM wyscout_data.players_enriched 
+                 WHERE (name ILIKE :p2 OR full_name ILIKE :p2) 
+                 ORDER BY season DESC)
+            """)
+            
+            results = conn.execute(query, {"p1": f"%{p1_safe}%", "p2": f"%{p2_safe}%"}).fetchall()
+            
+            return json.dumps([dict(r._mapping) for r in results], indent=2, default=str)
+    except Exception as e:
+        return f"Erreur lors de la comparaison : {str(e)}"
+
+# =================================================================
+# 3. LANCEMENT DU SERVEUR
+# =================================================================
+if __name__ == "__main__":
+    # Exécution du serveur (boucle d'écoute stdio)
+    mcp.run()

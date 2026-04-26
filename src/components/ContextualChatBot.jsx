@@ -26,13 +26,26 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
     if (!input.trim() || isLoading) return;
 
     const userMessage = input.trim();
+    const newUserMessage = { role: 'user', content: userMessage };
+    
+    // Mise à jour immédiate de l'interface avec le message utilisateur
+    const updatedMessages = [...messages, newUserMessage];
+    setMessages(updatedMessages);
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
     setIsLoading(true);
 
     try {
+      // Préparation de l'historique pour le Back-End (API-First)
+      // On exclut le premier message (bienvenue statique) et on mappe 'bot' -> 'assistant'
+      const historyForApi = updatedMessages
+        .slice(1) 
+        .map(msg => ({
+          role: msg.role === 'bot' ? 'assistant' : msg.role,
+          content: msg.content
+        }));
+
       const payload = {
-        message: userMessage,
+        messages: historyForApi,
         context_data: {
           filters: activeFilters,
           visible_players_count: players?.length,
@@ -63,6 +76,7 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
       if (!response.ok) throw new Error("Erreur de connexion à l'IA");
 
       const data = await response.json();
+      // On ajoute la réponse de l'IA à l'historique local
       setMessages(prev => [...prev, { role: 'bot', content: data.answer }]);
     } catch (error) {
       console.error("❌ Chatbot Error:", error);
