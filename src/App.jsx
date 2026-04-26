@@ -21,8 +21,7 @@ import GlobalPlayerSearch from './components/dashboard/GlobalPlayerSearch';
 import TrendsDashboard from './components/dashboard/TrendsDashboard';
 import UserMenu from './components/layout/UserMenu';
 import SettingsModal from './components/layout/SettingsModal';
-import { TrendingUp, Film } from 'lucide-react';
-import ClipMakerDashboard from './components/clipmaker/ClipMakerDashboard';
+import { TrendingUp } from 'lucide-react';
 import { API_BASE_URL } from './config';
 
 function App() {
@@ -149,13 +148,6 @@ function App() {
                      <span className="verge-label-mono text-[#3cffd0] text-[10px] mt-1">Intelligence Hub</span>
                   </div>
                </div>
-
-               <div 
-                 className={`hidden xl:flex items-center gap-2 cursor-pointer verge-label-mono text-[10px] hover:text-[#3cffd0] transition-colors ${view === 'CLIPMAKER' ? 'text-[#3cffd0]' : 'text-white/40'}`}
-                 onClick={() => setView('CLIPMAKER')}
-               >
-                 <Film size={14} /> CLIPMAKER
-               </div>
             </div>
             
             {/* Recherche Centrale */}
@@ -181,7 +173,7 @@ function App() {
 
       <AnimatePresence>
         {view === 'LANDING' ? (
-          <LandingPage key="landing" onEnter={() => setView('EXPLORATION')} />
+          <LandingPage key="landing" onEnter={(v) => setView(v)} />
         ) : view === 'EXPLORATION' ? (
           <ExplorationPath key="exploration" 
             onSelectPath={(p) => {
@@ -323,13 +315,6 @@ function App() {
                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
              </button>
              <LabDashboard activeFilters={activeFilters} metricsList={metricsList} onPlayerClick={handlePlayerClick} activeTab={activeTab} setActiveTab={setActiveTab} />
-          </div>
-        ) : view === 'CLIPMAKER' ? (
-          <div key="clipmaker" className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
-             <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-8 group self-start">
-               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
-             </button>
-             <ClipMakerDashboard />
           </div>
         ) : null}
       </AnimatePresence>

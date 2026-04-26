@@ -35,12 +35,23 @@ const LandingPage = ({ onEnter }) => {
           <div className="w-10 h-10 bg-[#3cffd0] flex items-center justify-center shadow-[0_0_20px_rgba(60,255,208,0.3)] rounded-[2px]">
             <Zap size={20} className="text-black" />
           </div>
-          <span className="text-2xl font-black tracking-tighter uppercase">The Analyst <span className="text-[#3cffd0]">Scout</span></span>
+          <span className="text-2xl font-black tracking-tighter uppercase">The Analyst <span className="text-[#3cffd0]">Hub</span></span>
         </div>
-        <div className="hidden md:flex items-center gap-10 verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.3em]">
-          <span className="hover:text-white cursor-pointer transition-colors">ARCHIVES V3.0</span>
-          <span className="hover:text-white cursor-pointer transition-colors">DEEPSEEK CORE</span>
-          <span className="hover:text-white cursor-pointer transition-colors">CLOUD INFRASTRUCTURE</span>
+        
+        <div className="hidden md:flex items-center gap-6">
+          <button 
+            onClick={() => onEnter('EXPLORATION')}
+            className="px-6 py-2 border border-white/10 hover:border-[#3cffd0] rounded-full verge-label-mono text-[9px] text-[#949494] hover:text-[#3cffd0] transition-all font-black tracking-widest"
+          >
+            WYSCOUT DATA
+          </button>
+          <div className="w-1 h-1 bg-white/20 rounded-full" />
+          <button 
+            onClick={() => onEnter('CLIPMAKER')}
+            className="px-6 py-2 border border-white/10 hover:border-[#3cffd0] rounded-full verge-label-mono text-[9px] text-[#949494] hover:text-[#3cffd0] transition-all font-black tracking-widest"
+          >
+            OPTA VISION
+          </button>
         </div>
       </nav>
 
@@ -65,30 +76,38 @@ const LandingPage = ({ onEnter }) => {
             </h1>
             
             <p className="verge-label-mono text-sm text-[#949494] max-w-xl leading-relaxed mb-16 lowercase italic opacity-80">
-              Exploitez 10 ans d'archives Wyscout avec la puissance de l'IA DeepSeek. 
-              Le premier moteur de scouting prédictif conçu pour les clubs de haut niveau.
+              Exploitez 10 ans d'archives multi-sources avec la puissance de l'IA DeepSeek. 
+              Choisissez votre univers de données pour commencer l'analyse.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center gap-8">
+            <div className="flex flex-col sm:flex-row items-center gap-6 mb-12">
               <button 
-                onClick={onEnter} 
+                onClick={() => onEnter('EXPLORATION')} 
                 className="w-full sm:w-auto group relative px-12 py-6 bg-[#3cffd0] text-black rounded-full verge-label-mono text-[11px] font-black tracking-[0.2em] transition-all hover:scale-105 active:scale-95 shadow-[0_20px_60px_rgba(60,255,208,0.2)] flex items-center justify-center gap-4"
               >
-                Lancer l'Analyse
+                WYSCOUT DATA
                 <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
               </button>
-              
-              <div className="flex items-center gap-6">
-                <div className="flex -space-x-3">
-                  {[1,2,3,4].map(i => (
-                    <div key={i} className="w-10 h-10 rounded-full border-2 border-[#131313] bg-[#2d2d2d] flex items-center justify-center overflow-hidden grayscale hover:grayscale-0 transition-all">
-                      <img src={`https://i.pravatar.cc/100?u=${i+10}`} alt="user" className="opacity-80" />
-                    </div>
-                  ))}
-                </div>
-                <div className="verge-label-mono text-[8px] font-black text-[#949494] uppercase tracking-[0.2em]">
-                  Utilisé par +50 Clubs
-                </div>
+
+              <button 
+                onClick={() => onEnter('CLIPMAKER')} 
+                className="w-full sm:w-auto group relative px-12 py-6 bg-white/5 border border-white/20 text-white rounded-full verge-label-mono text-[11px] font-black tracking-[0.2em] transition-all hover:bg-white/10 hover:border-[#3cffd0]/40 flex items-center justify-center gap-4"
+              >
+                OPTA VISION
+                <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-6">
+              <div className="flex -space-x-3">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="w-10 h-10 rounded-full border-2 border-[#131313] bg-[#2d2d2d] flex items-center justify-center overflow-hidden grayscale hover:grayscale-0 transition-all">
+                    <img src={`https://i.pravatar.cc/100?u=${i+10}`} alt="user" className="opacity-80" />
+                  </div>
+                ))}
+              </div>
+              <div className="verge-label-mono text-[8px] font-black text-[#949494] uppercase tracking-[0.2em]">
+                Utilisé par +50 Clubs
               </div>
             </div>
           </motion.div>
@@ -101,7 +120,6 @@ const LandingPage = ({ onEnter }) => {
             className="relative"
           >
             <div className="relative rounded-[4px] border border-white/10 bg-[#131313] p-10 overflow-hidden shadow-2xl">
-              {/* Internal Mockup Content */}
               <div className="flex gap-2 mb-8">
                 <div className="w-2 h-2 rounded-full bg-white/10" />
                 <div className="w-2 h-2 rounded-full bg-white/10" />
@@ -119,8 +137,6 @@ const LandingPage = ({ onEnter }) => {
                   <div className="h-40 bg-[#2d2d2d] rounded-[2px] border border-white/5" />
                 </div>
               </div>
-              
-              {/* Hazard Marker */}
               <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#3cffd0]/20" />
             </div>
           </motion.div>
