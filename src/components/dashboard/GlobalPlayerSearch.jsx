@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { API_BASE_URL } from '../../config';
 import { Search, User, ChevronRight, Loader2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { normalizeString } from '../../utils/stringUtils';
@@ -36,7 +37,7 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
     const timer = setTimeout(async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`https://api-scouting.theanalyst.cloud/api/players?search=${encodeURIComponent(query)}&limit=8`);
+        const response = await fetch(`${API_BASE_URL}/api/players?search=${encodeURIComponent(query)}&limit=8`);
         const data = await response.json();
         setResults(data.items || []);
         setIsOpen(true);

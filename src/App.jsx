@@ -21,7 +21,9 @@ import GlobalPlayerSearch from './components/dashboard/GlobalPlayerSearch';
 import TrendsDashboard from './components/dashboard/TrendsDashboard';
 import UserMenu from './components/layout/UserMenu';
 import SettingsModal from './components/layout/SettingsModal';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, Film } from 'lucide-react';
+import ClipMakerDashboard from './components/clipmaker/ClipMakerDashboard';
+import { API_BASE_URL } from './config';
 
 function App() {
   // --- ÉTATS DE SÉCURITÉ ---
@@ -66,18 +68,19 @@ function App() {
   const pageSize = 20;
 
   useEffect(() => {
-    fetch('https://api-scouting.theanalyst.cloud/api/meta/competitions').then(res => res.json()).then(data => setCompetitionsList(data));
-    fetch('https://api-scouting.theanalyst.cloud/api/meta/positions').then(res => res.json()).then(data => setPositionsList(data));
-    fetch('https://api-scouting.theanalyst.cloud/api/meta/teams').then(res => res.json()).then(data => setTeamsList(data));
-    fetch('https://api-scouting.theanalyst.cloud/api/meta/seasons').then(res => res.json()).then(data => setSeasonsList(data));
-    fetch('https://api-scouting.theanalyst.cloud/api/meta/metrics').then(res => res.json()).then(data => setMetricsList(data));
-    fetch('https://api-scouting.theanalyst.cloud/api/profiles').then(res => res.json()).then(data => setProfiles(data)).catch(err => console.error(err));
-  }, []);
+    if (!isAuthenticated) return;
+    fetch(`${API_BASE_URL}/api/meta/competitions`).then(res => res.json()).then(data => setCompetitionsList(data));
+    fetch(`${API_BASE_URL}/api/meta/positions`).then(res => res.json()).then(data => setPositionsList(data));
+    fetch(`${API_BASE_URL}/api/meta/teams`).then(res => res.json()).then(data => setTeamsList(data));
+    fetch(`${API_BASE_URL}/api/meta/seasons`).then(res => res.json()).then(data => setSeasonsList(data));
+    fetch(`${API_BASE_URL}/api/meta/metrics`).then(res => res.json()).then(data => setMetricsList(data));
+    fetch(`${API_BASE_URL}/api/profiles`).then(res => res.json()).then(data => setProfiles(data)).catch(err => console.error(err));
+  }, [isAuthenticated]);
 
   const fetchPlayers = useCallback(() => {
     setLoading(true);
     const currentLimit = dashboardView === 'SCATTER' ? 200 : pageSize;
-    let url = `https://api-scouting.theanalyst.cloud/api/players?limit=${currentLimit}&page=${currentPage}`;
+    let url = `${API_BASE_URL}/api/players?limit=${currentLimit}&page=${currentPage}`;
     if (activeFilters.search) url += `&search=${encodeURIComponent(activeFilters.search)}`;
     if (activeFilters.competitions.length > 0) url += `&competitions=${encodeURIComponent(activeFilters.competitions.join(','))}`;
     if (activeFilters.positions.length > 0) url += `&positions=${encodeURIComponent(activeFilters.positions.join(','))}`;
@@ -136,13 +139,22 @@ function App() {
           <div className="w-full max-w-[1700px] mx-auto grid grid-cols-2 md:grid-cols-3 items-center">
             
             {/* Logo - Colonne Gauche */}
-            <div className="flex items-center gap-4 cursor-pointer group w-fit" onClick={() => setView('EXPLORATION')}>
-               <div className="w-12 h-12 bg-white text-black rounded-[4px] flex items-center justify-center group-hover:bg-[#3cffd0] transition-colors">
-                  <Activity size={24} />
+            <div className="flex items-center gap-8">
+               <div className="flex items-center gap-4 cursor-pointer group w-fit" onClick={() => setView('EXPLORATION')}>
+                  <div className="w-12 h-12 bg-white text-black rounded-[4px] flex items-center justify-center group-hover:bg-[#3cffd0] transition-colors">
+                     <Activity size={24} />
+                  </div>
+                  <div className="hidden lg:flex flex-col">
+                     <span className="verge-h3 text-white leading-none tracking-tighter">The Analyst</span>
+                     <span className="verge-label-mono text-[#3cffd0] text-[10px] mt-1">Intelligence Hub</span>
+                  </div>
                </div>
-               <div className="hidden lg:flex flex-col">
-                  <span className="verge-h3 text-white leading-none tracking-tighter">The Analyst</span>
-                  <span className="verge-label-mono text-[#3cffd0] text-[10px] mt-1">Intelligence Hub</span>
+
+               <div 
+                 className={`hidden xl:flex items-center gap-2 cursor-pointer verge-label-mono text-[10px] hover:text-[#3cffd0] transition-colors ${view === 'CLIPMAKER' ? 'text-[#3cffd0]' : 'text-white/40'}`}
+                 onClick={() => setView('CLIPMAKER')}
+               >
+                 <Film size={14} /> CLIPMAKER
                </div>
             </div>
             
@@ -312,6 +324,13 @@ function App() {
              </button>
              <LabDashboard activeFilters={activeFilters} metricsList={metricsList} onPlayerClick={handlePlayerClick} activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
+        ) : view === 'CLIPMAKER' ? (
+          <div key="clipmaker" className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
+             <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-8 group self-start">
+               <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
+             </button>
+             <ClipMakerDashboard />
+          </div>
         ) : null}
       </AnimatePresence>
 
@@ -411,7 +430,7 @@ function App() {
             onUpdateUser={setUser}
             profiles={profiles}
             onProfileDeleted={(id) => {
-              fetch(`https://api-scouting.theanalyst.cloud/api/profiles/${id}`, { method: 'DELETE' })
+              fetch(`${API_BASE_URL}/api/profiles/${id}`, { method: 'DELETE' })
                 .then(res => res.json())
                 .then(() => setProfiles(prev => prev.filter(p => p.id !== id)))
                 .catch(err => console.error(err));

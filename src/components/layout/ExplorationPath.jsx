@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, BarChart2, TrendingUp, Activity, Users, Shield, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, BarChart2, TrendingUp, Activity, Users, Shield, Zap, Film } from 'lucide-react';
 
 const PathCard = ({ icon, title, desc, onClick, large }) => (
   <motion.div
@@ -139,6 +139,11 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
                   icon={<Zap />} title="Lab : Expérimentation" 
                   desc="Créez vos propres scores pondérés pour dénicher des pépites hors-radar." 
                   onClick={() => onSelectPath('LAB')} 
+                />
+                <PathCard 
+                  icon={<Film />} title="ClipMaker" 
+                  desc="Générez des clips vidéo automatisés basés sur les données Opta et xT." 
+                  onClick={() => onSelectPath('CLIPMAKER')} 
                 />
               </>
             )}
