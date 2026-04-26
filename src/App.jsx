@@ -106,8 +106,18 @@ function App() {
     });
   }, [currentPage, activeFilters, dashboardView]);
 
-  useEffect(() => { fetchPlayers(); }, [fetchPlayers, dashboardView]);
-  useEffect(() => { setCurrentPage(1); }, [activeFilters]);
+  useEffect(() => { 
+    if (view === 'DASHBOARD') {
+      fetchPlayers(); 
+    }
+  }, [fetchPlayers, view]);
+
+  // Réinitialiser la page quand les filtres changent sans déclencher de double fetch
+  useEffect(() => {
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [activeFilters]);
 
   const handleApplyFilters = () => { setActiveFilters(pendingFilters); setCurrentPage(1); setShowFilters(false); };
   const handleResetFilters = () => { setPendingFilters(defaultFilters); setActiveFilters(defaultFilters); setCurrentPage(1); };
@@ -163,8 +173,7 @@ function App() {
         ) : view === 'EXPLORATION' ? (
           <ExplorationPath key="exploration" 
             onSelectPath={(p) => {
-               setPlayers([]);
-               if (p === 'SCATTER') { setView('DASHBOARD'); setDashboardView('SCATTER'); }
+                if (p === 'SCATTER') { setView('DASHBOARD'); setDashboardView('SCATTER'); }
                else if (p === 'DASHBOARD') { setView('DASHBOARD'); setDashboardView('TABLE'); }
                else if (p === 'TRENDS') { setView('DASHBOARD'); setDashboardView('TRENDS'); }
                else if (p === 'TEAMBUILDER') { setView('TEAMBUILDER'); }
