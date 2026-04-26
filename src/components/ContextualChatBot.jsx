@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, Send, X, Bot, User, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer 
+} from 'recharts';
 
 /**
  * ContextualChatBot.jsx — Assistant IA contextuel (DeepSeek)
- * Version optimisée pour une visibilité maximale et un design Premium.
+ * Version optimisée avec capacités DataViz (Radar Charts).
  */
 const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +25,79 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
     }
   }, [messages]);
 
+  /**
+   * Parseur Visuel : Analyse le contenu du message pour extraire et rendre les graphiques
+   */
+  const renderMessageContent = (content) => {
+    const jsonRegex = /```json\s*([\s\S]*?)\s*```/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = jsonRegex.exec(content)) !== null) {
+      // Texte avant le bloc JSON
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', value: content.substring(lastIndex, match.index) });
+      }
+
+      try {
+        const jsonData = JSON.parse(match[1].trim());
+        if (jsonData.type === 'radar_chart') {
+          parts.push({ type: 'radar', value: jsonData.data });
+        } else {
+          parts.push({ type: 'text', value: match[0] });
+        }
+      } catch (e) {
+        parts.push({ type: 'text', value: match[0] });
+      }
+      lastIndex = jsonRegex.lastIndex;
+    }
+
+    // Texte restant après le dernier bloc
+    if (lastIndex < content.length) {
+      parts.push({ type: 'text', value: content.substring(lastIndex) });
+    }
+
+    return (
+      <div className="space-y-4">
+        {parts.map((part, index) => {
+          if (part.type === 'text') {
+            return <p key={index} className="whitespace-pre-wrap">{part.value}</p>;
+          }
+          if (part.type === 'radar') {
+            return (
+              <div key={index} className="my-4 p-4 bg-black/40 rounded-[2px] border border-white/10 h-[260px] w-full overflow-hidden shadow-inner">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={part.value}>
+                    <PolarGrid stroke="#313131" />
+                    <PolarAngleAxis 
+                      dataKey="subject" 
+                      tick={{ fill: '#949494', fontSize: 9, fontWeight: 700 }} 
+                    />
+                    <PolarRadiusAxis 
+                      angle={30} 
+                      domain={[0, 100]} 
+                      tick={false} 
+                      axisLine={false} 
+                    />
+                    <Radar
+                      name="Profil"
+                      dataKey="score"
+                      stroke="#00d2ff"
+                      fill="#00d2ff"
+                      fillOpacity={0.25}
+                    />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </div>
+            );
+          }
+          return null;
+        })}
+      </div>
+    );
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -36,7 +112,6 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
 
     try {
       // Préparation de l'historique pour le Back-End (API-First)
-      // On exclut le premier message (bienvenue statique) et on mappe 'bot' -> 'assistant'
       const historyForApi = updatedMessages
         .slice(1) 
         .map(msg => ({
@@ -95,13 +170,11 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="mb-6 w-[380px] md:w-[450px] h-[600px] flex flex-col overflow-hidden bg-[#131313] border-2 border-white/10 rounded-[4px] shadow-[0_30px_90px_rgba(0,0,0,0.8)]"
+            className="mb-6 w-[380px] md:w-[450px] h-[650px] flex flex-col overflow-hidden bg-[#131313] border-2 border-white/10 rounded-[4px] shadow-[0_30px_90px_rgba(0,0,0,0.8)]"
           >
-            {/* Header - Editorial Structure */}
+            {/* Header */}
             <div className="p-6 bg-[#2d2d2d] border-b border-white/10 flex justify-between items-center relative overflow-hidden">
-              {/* Hazard Pattern */}
               <div className="absolute top-0 right-0 w-16 h-16 bg-[#3cffd0]/5 rotate-45 translate-x-8 -translate-y-8" />
-              
               <div className="flex items-center gap-4 relative z-10">
                 <div className="p-2.5 bg-[#3cffd0] rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.4)]">
                   <Bot size={22} className="text-black" />
@@ -110,7 +183,7 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
                   <h3 className="verge-label-mono text-white text-[13px] font-black tracking-widest">Scouting <span className="text-[#3cffd0]">Assistant</span></h3>
                   <div className="flex items-center gap-2 mt-1">
                     <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-pulse"></div>
-                    <span className="verge-label-mono text-[8px] text-[#3cffd0] tracking-[0.2em] font-black uppercase">EN LIGNE • CONTEXTUAL INTELLIGENCE</span>
+                    <span className="verge-label-mono text-[8px] text-[#3cffd0] tracking-[0.2em] font-black uppercase">EN LIGNE • DATAVIZ ACTIVE</span>
                   </div>
                 </div>
               </div>
@@ -123,16 +196,16 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-8 styled-scrollbar bg-[#131313]">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex gap-4 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div className={`flex gap-4 max-w-[90%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                     <div className={`mt-1 p-2 rounded-[2px] h-fit border ${msg.role === 'user' ? 'bg-[#5200ff]/10 border-[#5200ff]/30' : 'bg-[#2d2d2d] border-white/10'}`}>
                       {msg.role === 'user' ? <User size={14} className="text-[#5200ff]" /> : <Sparkles size={14} className="text-[#3cffd0]" />}
                     </div>
-                    <div className={`p-5 rounded-[2px] text-xs leading-relaxed border ${
+                    <div className={`p-5 rounded-[2px] text-[11px] leading-relaxed border ${
                       msg.role === 'user' 
                         ? 'bg-[#5200ff] border-[#5200ff] text-white shadow-[0_10px_30px_rgba(82,0,255,0.2)]' 
                         : 'bg-[#2d2d2d] border-white/10 text-white/90'
                     }`}>
-                      {msg.content}
+                      {msg.role === 'bot' ? renderMessageContent(msg.content) : msg.content}
                     </div>
                   </div>
                 </div>
@@ -190,14 +263,11 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
         }`}
       >
         {isOpen ? <X size={28} className="text-white" /> : <MessageSquare size={28} className="text-white" />}
-        
         {!isOpen && (
           <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#3cffd0] rounded-[2px] flex items-center justify-center shadow-lg">
              <span className="text-[9px] font-black text-black">1</span>
           </div>
         )}
-        
-        {/* Glow effect */}
         {!isOpen && (
           <div className="absolute inset-0 rounded-[4px] bg-[#5200ff] opacity-0 group-hover:opacity-40 blur-xl transition-opacity"></div>
         )}
