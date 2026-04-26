@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+build_output.txt
 
 node_modules
 dist
@@ -24,9 +25,9 @@ dist-ssr
 *.sw?
 .env
 .env.local
+.env.*
 api_scouting.py
 init_wyscout_db.py
-Exemple"node_modules/" 
 workerConfig.js
 bck
 init_wyscout_db.txt
@@ -38,3 +39,9 @@ models
 core
 constants
 skills
+clipmaker
+DESIGN.md
+mcp_server.py
+venv/
+__pycache__/
+scouting.db
