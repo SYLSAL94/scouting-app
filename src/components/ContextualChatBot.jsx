@@ -11,12 +11,45 @@ import {
  */
 const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [size, setSize] = useState({ width: 450, height: 650 });
+  const [isResizing, setIsResizing] = useState(false);
+  
   const [messages, setMessages] = useState([
     { role: 'bot', content: "Bonjour ! Je suis votre assistant de scouting IA. Comment puis-je vous aider aujourd'hui ?" }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
+
+  // Gestion du redimensionnement manuel
+  const startResizing = (e) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing) return;
+      
+      // Calcul des nouvelles dimensions (ancrage en bas à droite)
+      const newWidth = Math.max(380, window.innerWidth - e.clientX - 24);
+      const newHeight = Math.max(400, window.innerHeight - e.clientY - 100);
+      
+      setSize({ width: newWidth, height: newHeight });
+    };
+
+    const handleMouseUp = () => setIsResizing(false);
+
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
 
   // Auto-scroll à chaque nouveau message
   useEffect(() => {
@@ -170,8 +203,17 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            className="mb-6 w-[380px] md:w-[450px] h-[650px] flex flex-col overflow-hidden bg-[#131313] border-2 border-white/10 rounded-[4px] shadow-[0_30px_90px_rgba(0,0,0,0.8)]"
+            style={{ width: size.width, height: size.height }}
+            className="mb-6 flex flex-col overflow-hidden bg-[#131313] border-2 border-white/10 rounded-[4px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] relative"
           >
+            {/* Resize Handle (Corner Left Top) */}
+            <div 
+              onMouseDown={startResizing}
+              className="absolute top-0 left-0 w-6 h-6 cursor-nw-resize z-[100] group"
+            >
+              <div className="absolute top-1 left-1 w-2 h-2 border-t-2 border-l-2 border-white/20 group-hover:border-[#3cffd0] transition-colors" />
+            </div>
+
             {/* Header */}
             <div className="p-6 bg-[#2d2d2d] border-b border-white/10 flex justify-between items-center relative overflow-hidden">
               <div className="absolute top-0 right-0 w-16 h-16 bg-[#3cffd0]/5 rotate-45 translate-x-8 -translate-y-8" />
