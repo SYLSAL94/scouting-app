@@ -51,13 +51,13 @@ export const RadarChartVisualization = ({
                     body: JSON.stringify(payload)
                 });
 
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.debug_info) {
-                        console.log("🔍 [Radar Debug]", data.debug_info);
-                    }
-                    setRadarChartData(data); // { entitiesInfo: [], radarData: [] }
+                if (!res.ok) throw new Error(`Erreur serveur (${res.status})`);
+                
+                const data = await res.json();
+                if (data.debug_info) {
+                    console.log("🔍 [Radar Debug]", data.debug_info);
                 }
+                setRadarChartData(data); // { entitiesInfo: [], radarData: [] }
             } catch (err) {
                 console.error("Erreur génération radar:", err);
             } finally {

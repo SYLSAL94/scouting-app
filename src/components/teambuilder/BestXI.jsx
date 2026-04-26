@@ -23,7 +23,10 @@ export default function BestXI({ activeFilters, onPlayerClick }) {
                 population_filters: activeFilters
             })
         })
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error(`Erreur serveur (${res.status})`);
+            return res.json();
+        })
         .then(data => {
             setBestXI(data.xi || []);
             setBenchPlayers(data.bench || []);

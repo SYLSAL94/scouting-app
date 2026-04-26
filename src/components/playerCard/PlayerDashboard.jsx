@@ -63,6 +63,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
         if (finalCompetitions) queryParams.push(`competitions=${encodeURIComponent(finalCompetitions)}`);
         if (finalSeasons) queryParams.push(`seasons=${encodeURIComponent(finalSeasons)}`);
         if (finalTeams) queryParams.push(`teams=${encodeURIComponent(finalTeams)}`);
+        if (activeFilters.consolidate) queryParams.push('consolidate=true');
         
         profileUrl += queryParams.join('&');
 

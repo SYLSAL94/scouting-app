@@ -57,7 +57,8 @@ function App() {
     minMinutes: 0, sortBy: 'xg_shot', teams: [], seasons: [],
     height: { min: 140, max: 210 }, weight: { min: 50, max: 110 },
     playtime: { min: 0, max: 100 }, foot: 'all', onLoan: false,
-    useSeasonAge: false, marketValue: { min: 0, max: 150000000 }, minMatches: 0
+    useSeasonAge: false, marketValue: { min: 0, max: 150000000 }, minMatches: 0,
+    consolidate: false
   };
 
   const [activeFilters, setActiveFilters] = useState(defaultFilters);
@@ -95,9 +96,13 @@ function App() {
     if (activeFilters.marketValue.min > 0) url += `&min_market_value=${activeFilters.marketValue.min}`;
     if (activeFilters.marketValue.max < 150000000) url += `&max_market_value=${activeFilters.marketValue.max}`;
     if (activeFilters.minMatches > 0) url += `&min_matches=${activeFilters.minMatches}`;
+    if (activeFilters.consolidate) url += `&consolidate=true`;
     url += `&sort_by=${activeFilters.sortBy}`;
 
-    fetch(url).then(res => res.json()).then(data => {
+    fetch(url).then(res => {
+      if (!res.ok) throw new Error(`Erreur serveur (${res.status})`);
+      return res.json();
+    }).then(data => {
       setPlayers(data.items || []);
       setTotalPlayers(data.total || 0);
       setLoading(false);

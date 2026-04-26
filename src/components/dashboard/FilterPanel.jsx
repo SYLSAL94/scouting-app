@@ -147,6 +147,7 @@ const FilterPanel = ({
     let parts = [];
     if (section === 'periode') {
       if (pendingFilters.seasons.length > 0) { count++; parts.push(`${pendingFilters.seasons.length} Saisons`); }
+      if (pendingFilters.consolidate) { count++; parts.push('Consolidé'); }
     }
     if (section === 'entites') {
       if (pendingFilters.competitions.length > 0) { count++; parts.push(`${pendingFilters.competitions.length} Ligues`); }
@@ -235,7 +236,25 @@ const FilterPanel = ({
           badge={getSectionStats('periode').count}
           subtitle={getSectionStats('periode').subtitle}
         >
-          <MultiSelectWithChips label="Saisons" options={seasonsList} selected={pendingFilters.seasons} onChange={(val) => updateFilters('seasons', val)} placeholder="Sélectionner..." />
+          <div className="space-y-8">
+            <MultiSelectWithChips label="Saisons" options={seasonsList} selected={pendingFilters.seasons} onChange={(val) => updateFilters('seasons', val)} placeholder="Sélectionner..." />
+            
+            <div className="p-8 bg-[#2d2d2d]/50 border border-white/5 rounded-[4px] relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#3cffd0]/10" />
+              <div className="flex items-center justify-between relative z-10">
+                <div className="flex flex-col">
+                  <span className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Vue Consolidée</span>
+                  <span className="verge-label-mono text-[8px] text-[#949494] mt-1.5 uppercase tracking-wider">Agréger les saisons multiples</span>
+                </div>
+                <button 
+                  onClick={() => updateFilters('consolidate', !pendingFilters.consolidate)} 
+                  className={`w-12 h-6 rounded-full p-1 transition-all duration-500 relative ${pendingFilters.consolidate ? 'bg-[#3cffd0]' : 'bg-[#131313]'}`}
+                >
+                  <div className={`w-4 h-4 rounded-full transition-transform duration-500 shadow-xl ${pendingFilters.consolidate ? 'translate-x-6 bg-white' : 'translate-x-0 bg-[#2d2d2d]'}`} />
+                </button>
+              </div>
+            </div>
+          </div>
         </AccordionSection>
 
         <AccordionSection 
