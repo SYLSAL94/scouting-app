@@ -374,7 +374,6 @@ function App() {
                       handleResetFilters={handleResetFilters} 
                       handleApplyFilters={() => { handleApplyFilters(); setShowFilters(false); }}
                       hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
-                      onSortChange={handleSortChange}
                     />
                  </div>
               </div>
