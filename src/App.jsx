@@ -226,7 +226,7 @@ function App() {
                     totalPages={Math.ceil(totalPlayers / pageSize)} 
                     setCurrentPage={setCurrentPage} 
                     handlePlayerClick={handlePlayerClick} 
-                    selectedSortBy={pendingFilters.sortBy} 
+                    selectedSortBy={activeFilters.sortBy} 
                     selectedPlayersToCompare={selectedPlayersToCompare} 
                     setSelectedPlayersToCompare={setSelectedPlayersToCompare} 
                     metricsList={metricsList} 

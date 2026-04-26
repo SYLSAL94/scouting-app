@@ -187,7 +187,7 @@ const RankingTable = ({
                    selectedSortBy === 'note_ponderee' ? 'IMPACT' : 
                    selectedSortBy === 'goals' ? 'GOALS' :
                    selectedSortBy === 'assists' ? 'ASSISTS' :
-                   selectedSortBy === 'expected_goals' ? 'XG' :
+                   selectedSortBy === 'expected_goals' || selectedSortBy === 'xg_shot' ? 'XG' :
                    selectedSortBy === 'age' ? 'AGE' : 'VALUE'}
                 </th>
               </tr>
