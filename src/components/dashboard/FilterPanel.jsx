@@ -5,6 +5,8 @@ import AccordionSection from './AccordionSection';
 import MultiSelectWithChips from '../ui/MultiSelectWithChips';
 import DualRangeSlider from '../ui/DualRangeSlider';
 import TacticalPositionPicker from './TacticalPositionPicker';
+import Select from 'react-select';
+import { WindowedMenuList } from 'react-windowed-select';
 
 const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved, onProfileDeleted }) => {
   const [isSaving, setIsSaving] = useState(false);
@@ -125,7 +127,8 @@ const FilterPanel = ({
   pendingFilters, setPendingFilters,
   competitionsList, positionsList, teamsList, seasonsList, metricsList,
   profiles, loadProfile, onProfileSaved, onProfileDeleted,
-  handleResetFilters, handleApplyFilters, hasChanges
+  handleResetFilters, handleApplyFilters, hasChanges,
+  onSortChange
 }) => {
   const [showPresets, setShowPresets] = useState(false);
   const defaults = {
@@ -229,7 +232,60 @@ const FilterPanel = ({
       </div>
 
       {/* Content Section */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-10 pt-4 md:pt-6 space-y-4 styled-scrollbar">
+      <div className="flex-1 overflow-y-auto p-4 md:p-10 pt-4 md:pt-6 space-y-8 styled-scrollbar">
+        
+        {/* Ranking Section - Bypass Pattern */}
+        <div className="bg-[#2d2d2d] border border-white/5 rounded-[4px] p-8 space-y-6 relative overflow-hidden">
+           <div className="absolute top-0 left-0 w-1 h-full bg-[#3cffd0]" />
+           <div className="flex items-center gap-4 mb-2">
+              <BarChart2 size={18} className="text-[#3cffd0]" />
+              <span className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Ranking Metric</span>
+           </div>
+           <div className="relative">
+              <Select 
+                components={{ MenuList: WindowedMenuList }}
+                options={metricsList}
+                value={metricsList.find(m => m.value === pendingFilters.sortBy)}
+                onChange={(opt) => onSortChange(opt.value)}
+                isSearchable={true}
+                placeholder="SEARCH RANKING METRIC..."
+                className="react-select-container"
+                classNamePrefix="react-select"
+                menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                  control: (base) => ({
+                    ...base,
+                    background: '#131313',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '2px',
+                    padding: '4px',
+                    fontSize: '11px',
+                    fontFamily: 'VergeMono, monospace',
+                    fontWeight: '900',
+                    boxShadow: 'none',
+                    '&:hover': { borderColor: '#3cffd0' }
+                  }),
+                  menu: (base) => ({ ...base, background: '#131313', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '2px' }),
+                  option: (base, state) => ({
+                    ...base,
+                    background: state.isFocused ? 'rgba(60,255,208,0.1)' : 'transparent',
+                    color: state.isFocused ? '#3cffd0' : '#949494',
+                    fontSize: '10px',
+                    fontFamily: 'VergeMono, monospace',
+                    fontWeight: '900',
+                    textTransform: 'uppercase',
+                    cursor: 'pointer'
+                  }),
+                  singleValue: (base) => ({ ...base, color: '#3cffd0' }),
+                  input: (base) => ({ ...base, color: 'white' }),
+                  placeholder: (base) => ({ ...base, color: '#949494', opacity: 0.5 })
+                }}
+              />
+           </div>
+           <p className="verge-label-mono text-[8px] text-[#949494] uppercase opacity-60">Le tri sera appliqué instantanément au dashboard.</p>
+        </div>
+
         <AccordionSection 
           id="periode" title="Période" icon={<Calendar size={18} />}
           isOpen={openSection === 'periode'} onToggle={() => setOpenSection(openSection === 'periode' ? null : 'periode')}

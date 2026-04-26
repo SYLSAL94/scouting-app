@@ -130,6 +130,11 @@ function App() {
   const handleResetFilters = () => { setPendingFilters(defaultFilters); setActiveFilters(defaultFilters); setCurrentPage(1); };
   const loadProfile = (config) => { setPendingFilters({ ...defaultFilters, ...config }); };
   const handlePlayerClick = (playerData) => { setSelectedPlayer(playerData); };
+  const handleSortChange = (newSortBy) => {
+    setPendingFilters(prev => ({ ...prev, sortBy: newSortBy }));
+    setActiveFilters(prev => ({ ...prev, sortBy: newSortBy }));
+    setCurrentPage(1);
+  };
 
   if (!isAuthenticated) {
     return <LoginScreen onLoginSuccess={(userData) => { setUser(userData); setIsAuthenticated(true); }} />;
@@ -240,7 +245,7 @@ function App() {
                     setSelectedPlayersToCompare={setSelectedPlayersToCompare} 
                     metricsList={metricsList} 
                     useSeasonAge={activeFilters.useSeasonAge} 
-                    onSortChange={(val) => setPendingFilters(prev => ({ ...prev, sortBy: val }))} 
+                    onSortChange={handleSortChange} 
                   />
                 )}
                 {dashboardView === 'SCATTER' && (
@@ -369,6 +374,7 @@ function App() {
                       handleResetFilters={handleResetFilters} 
                       handleApplyFilters={() => { handleApplyFilters(); setShowFilters(false); }}
                       hasChanges={JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters)}
+                      onSortChange={handleSortChange}
                     />
                  </div>
               </div>
