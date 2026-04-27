@@ -8,20 +8,20 @@ export default function TeamBuilderDashboard({ activeFilters, onPlayerClick, fil
     const [activeTab, setActiveTab] = useState('bestXI'); // 'bestXI' | 'monXI' | 'filters'
 
     return (
-        <div className="flex-1 flex flex-col min-h-0 bg-[#131313]">
+        <div className="flex-1 flex flex-col min-h-0 bg-canvas-black">
             {/* Tab Selector - Responsive Grid */}
             <div className="flex justify-center mb-8 md:mb-12 px-2">
-                <div className="flex bg-[#2d2d2d] border border-white/5 rounded-[2px] w-full max-w-2xl overflow-x-auto no-scrollbar shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                <div className="flex bg-surface-slate border border-hazard-white/5 rounded-[2px] w-full max-w-2xl overflow-x-auto no-scrollbar shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                     <button
                         onClick={() => setActiveTab('bestXI')}
                         className={`relative flex-1 min-w-[120px] px-6 md:px-12 py-4 verge-label-mono text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all ${
-                            activeTab === 'bestXI' ? 'text-black' : 'text-[#949494] hover:text-white'
+                            activeTab === 'bestXI' ? 'text-absolute-black' : 'text-secondary-text hover:text-hazard-white'
                         }`}
                     >
                         {activeTab === 'bestXI' && (
                             <motion.div
                                 layoutId="activeTabTeam"
-                                className="absolute inset-0 bg-[#3cffd0] -z-10 shadow-[0_0_20px_rgba(60,255,208,0.2)]"
+                                className="absolute inset-0 bg-jelly-mint -z-10 shadow-[0_0_20px_rgba(60,255,208,0.2)]"
                             />
                         )}
                         <span className="md:hidden">Best</span><span className="hidden md:inline">Optimisation Best XI</span>
@@ -29,13 +29,13 @@ export default function TeamBuilderDashboard({ activeFilters, onPlayerClick, fil
                     <button
                         onClick={() => setActiveTab('monXI')}
                         className={`relative flex-1 min-w-[120px] px-6 md:px-12 py-4 verge-label-mono text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] transition-all ${
-                            activeTab === 'monXI' ? 'text-black' : 'text-[#949494] hover:text-white'
+                            activeTab === 'monXI' ? 'text-absolute-black' : 'text-secondary-text hover:text-hazard-white'
                         }`}
                     >
                         {activeTab === 'monXI' && (
                             <motion.div
                                 layoutId="activeTabTeam"
-                                className="absolute inset-0 bg-[#3cffd0] -z-10 shadow-[0_0_20px_rgba(60,255,208,0.2)]"
+                                className="absolute inset-0 bg-jelly-mint -z-10 shadow-[0_0_20px_rgba(60,255,208,0.2)]"
                             />
                         )}
                         <span className="md:hidden">Custom</span><span className="hidden md:inline">Composition Manuelle</span>

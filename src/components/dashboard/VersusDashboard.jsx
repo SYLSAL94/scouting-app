@@ -49,14 +49,14 @@ export const VersusDashboard = ({
     const [activeMobileTab, setActiveMobileTab] = React.useState('visionnage');
 
     return (
-        <div className="p-4 md:p-8 max-w-[1700px] mx-auto min-h-screen flex flex-col bg-[#131313]">
+        <div className="p-4 md:p-8 max-w-[1700px] mx-auto min-h-screen flex flex-col bg-canvas-black">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-12 gap-4 md:gap-6">
                 <div className="flex flex-col w-full md:w-auto">
-                    <button onClick={onClose} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-2 md:mb-4 group text-[9px] md:text-[11px]">
+                    <button onClick={onClose} className="verge-label-mono text-deep-link-blue hover:text-hazard-white flex items-center gap-2 mb-2 md:mb-4 group text-[9px] md:text-[11px]">
                         <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
                     </button>
                     <div className="flex justify-between items-center md:block">
-                        <h1 className="verge-h2 md:verge-h1 text-white text-3xl md:text-6xl">Match-up <span className="text-[#3cffd0]">Simulator</span></h1>
+                        <h1 className="verge-h2 md:verge-h1 text-hazard-white text-3xl md:text-6xl">Match-up <span className="text-jelly-mint">Simulator</span></h1>
                         <button 
                             onClick={() => setSelectedPlayersToCompare([])}
                             className="md:hidden p-2 border border-[#f43f5e]/30 text-[#f43f5e] rounded-[2px]"
@@ -75,22 +75,22 @@ export const VersusDashboard = ({
             </div>
 
             {/* Tabs Mobile */}
-            <div className="flex md:hidden bg-[#1a1a1a] p-1 rounded-[4px] border border-white/10 mb-6 gap-1">
+            <div className="flex md:hidden bg-[#1a1a1a] p-1 rounded-[4px] border border-hazard-white/10 mb-6 gap-1">
                 <button 
                     onClick={() => setActiveMobileTab('visionnage')}
-                    className={`flex-1 py-3 verge-label-mono text-[8px] font-black transition-all rounded-[2px] ${activeMobileTab === 'visionnage' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+                    className={`flex-1 py-3 verge-label-mono text-[8px] font-black transition-all rounded-[2px] ${activeMobileTab === 'visionnage' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-secondary-text'}`}
                 >
                     Visionnage
                 </button>
                 <button 
                     onClick={() => setActiveMobileTab('joueurs')}
-                    className={`flex-1 py-3 verge-label-mono text-[8px] font-black transition-all rounded-[2px] ${activeMobileTab === 'joueurs' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+                    className={`flex-1 py-3 verge-label-mono text-[8px] font-black transition-all rounded-[2px] ${activeMobileTab === 'joueurs' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-secondary-text'}`}
                 >
                     Choix Joueurs
                 </button>
                 <button 
                     onClick={() => setActiveMobileTab('modeles')}
-                    className={`flex-1 py-3 verge-label-mono text-[8px] font-black transition-all rounded-[2px] ${activeMobileTab === 'modeles' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+                    className={`flex-1 py-3 verge-label-mono text-[8px] font-black transition-all rounded-[2px] ${activeMobileTab === 'modeles' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-secondary-text'}`}
                 >
                     Modèles
                 </button>
@@ -109,11 +109,11 @@ export const VersusDashboard = ({
 
             {/* Modèles tab (Mobile) - Exclusive on mobile */}
             <div className={`${activeMobileTab === 'modeles' ? 'block' : 'hidden'} md:hidden mt-4`}>
-                <h2 className="verge-label-mono text-[11px] font-black tracking-[0.3em] text-[#3cffd0] mb-6 flex items-center gap-4">
-                    <div className="w-2 h-2 bg-[#3cffd0]" />
+                <h2 className="verge-label-mono text-[11px] font-black tracking-[0.3em] text-jelly-mint mb-6 flex items-center gap-4">
+                    <div className="w-2 h-2 bg-jelly-mint" />
                     MODÈLES TACTIQUES
                 </h2>
-                <div className="p-4 rounded-[4px] border border-white/10 bg-[#2d2d2d]">
+                <div className="p-4 rounded-[4px] border border-hazard-white/10 bg-surface-slate">
                     <MetricSelectionPanel
                         cat={'joueurs'}
                         selectedTemplateLabels={selectedTemplateLabels}

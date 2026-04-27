@@ -52,7 +52,7 @@ const PlayerModal = ({ player, onClose }) => {
             </div>
             <div className="player-main-info">
               <div className="badge-blue mb-2" style={{ width: 'fit-content' }}>PRO SCOUTING PROFILE</div>
-              <h2 className="text-white">{playerName}</h2>
+              <h2 className="text-hazard-white">{playerName}</h2>
               <p className="text-2xl text-sky-400 font-bold tracking-tight">{teamName}</p>
             </div>
           </div>

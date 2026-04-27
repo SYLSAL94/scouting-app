@@ -56,17 +56,17 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
   };
 
   return (
-    <div className="mb-4 md:mb-8 p-4 md:p-6 bg-[#2d2d2d] border border-white/5 rounded-[4px] overflow-hidden">
+    <div className="mb-4 md:mb-8 p-4 md:p-6 bg-surface-slate border border-hazard-white/5 rounded-[4px] overflow-hidden">
       <div className="flex items-center justify-between mb-4 px-1">
-        <label className="verge-label-mono text-[9px] text-[#3cffd0] uppercase tracking-widest font-black">Analyse Presets</label>
-        {showConfirm && <span className="verge-label-mono text-[9px] text-[#3cffd0] animate-pulse">SAVED</span>}
+        <label className="verge-label-mono text-[9px] text-jelly-mint uppercase tracking-widest font-black">Analyse Presets</label>
+        {showConfirm && <span className="verge-label-mono text-[9px] text-jelly-mint animate-pulse">SAVED</span>}
       </div>
       
       <div className="space-y-4">
         <div className="flex gap-2">
           <div className="relative flex-1 group min-w-0">
             <select 
-              className="w-full bg-[#131313] border border-white/10 rounded-[2px] px-4 py-3 verge-label-mono text-[10px] text-white appearance-none outline-none focus:border-[#3cffd0] transition-all cursor-pointer truncate uppercase font-black"
+              className="w-full bg-canvas-black border border-hazard-white/10 rounded-[2px] px-4 py-3 verge-label-mono text-[10px] text-hazard-white appearance-none outline-none focus:border-jelly-mint transition-all cursor-pointer truncate uppercase font-black"
               value={selectedId}
               onChange={(e) => {
                 const id = e.target.value;
@@ -75,30 +75,30 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
                 if (profile) loadProfile(profile.filter_config);
               }}
             >
-              <option value="" disabled className="text-[#949494]">Charger un profil...</option>
+              <option value="" disabled className="text-secondary-text">Charger un profil...</option>
               {profiles?.map(p => (
-                <option key={p.id} value={p.id} className="bg-[#131313] text-white uppercase">{p.profile_name}</option>
+                <option key={p.id} value={p.id} className="bg-canvas-black text-hazard-white uppercase">{p.profile_name}</option>
               ))}
             </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-[#949494] pointer-events-none group-hover:text-[#3cffd0] transition-colors" size={14} />
+            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-secondary-text pointer-events-none group-hover:text-jelly-mint transition-colors" size={14} />
           </div>
           {selectedId && (
             <button 
               onClick={handleDelete}
-              className="w-12 h-12 flex items-center justify-center bg-[#131313] text-[#949494] border border-white/10 rounded-[2px] hover:bg-white hover:text-black transition-all shrink-0"
+              className="w-12 h-12 flex items-center justify-center bg-canvas-black text-secondary-text border border-hazard-white/10 rounded-[2px] hover:bg-hazard-white hover:text-absolute-black transition-all shrink-0"
             >
               <X size={16} />
             </button>
           )}
         </div>
 
-        <div className="bg-[#131313] rounded-[2px] border border-white/10 p-5 space-y-4">
-          <span className="verge-label-mono text-[8px] text-[#949494] block uppercase tracking-widest">Nouveau Preset</span>
+        <div className="bg-canvas-black rounded-[2px] border border-hazard-white/10 p-5 space-y-4">
+          <span className="verge-label-mono text-[8px] text-secondary-text block uppercase tracking-widest">Nouveau Preset</span>
           <div className="flex gap-2">
             <input 
               type="text" 
               placeholder="NOM DU PROFIL..." 
-              className="flex-1 bg-transparent border border-white/10 rounded-[2px] px-4 py-3 verge-label-mono text-[10px] text-white outline-none focus:border-[#3cffd0] transition-all min-w-0 uppercase"
+              className="flex-1 bg-transparent border border-hazard-white/10 rounded-[2px] px-4 py-3 verge-label-mono text-[10px] text-hazard-white outline-none focus:border-jelly-mint transition-all min-w-0 uppercase"
               value={profileName}
               onChange={(e) => setProfileName(e.target.value)}
             />
@@ -107,11 +107,11 @@ const ProfileSelector = ({ profiles, loadProfile, pendingFilters, onProfileSaved
               disabled={!profileName.trim() || isSaving}
               className={`px-5 flex items-center justify-center rounded-[2px] transition-all ${
                 profileName.trim() 
-                ? 'bg-[#3cffd0] text-black' 
-                : 'bg-white/5 text-[#949494] cursor-not-allowed border border-white/5'
+                ? 'bg-jelly-mint text-absolute-black' 
+                : 'bg-hazard-white/5 text-secondary-text cursor-not-allowed border border-hazard-white/5'
               }`}
             >
-              {isSaving ? <div className="w-3 h-3 border-2 border-black/30 border-t-black rounded-full animate-spin" /> : <Save size={16} />}
+              {isSaving ? <div className="w-3 h-3 border-2 border-absolute-black/30 border-t-black rounded-full animate-spin" /> : <Save size={16} />}
             </button>
           </div>
         </div>
@@ -171,21 +171,21 @@ const FilterPanel = ({
   };
 
   return (
-    <aside className="w-full h-full flex flex-col bg-[#131313] overflow-hidden">
+    <aside className="w-full h-full flex flex-col bg-canvas-black overflow-hidden">
       
       {/* Header Section */}
-      <div className="p-4 md:p-10 pb-4 md:pb-6 border-b border-white/10">
+      <div className="p-4 md:p-10 pb-4 md:pb-6 border-b border-hazard-white/10">
         <div className="flex items-center justify-between mb-6 md:mb-10">
           <div className="flex flex-col">
-            <h3 className="verge-h3 text-white flex items-center gap-4">
-              <Zap size={22} className="text-[#3cffd0]" />
+            <h3 className="verge-h3 text-hazard-white flex items-center gap-4">
+              <Zap size={22} className="text-jelly-mint" />
               Population
             </h3>
-            <p className="verge-label-mono text-[9px] text-[#949494] mt-2 uppercase tracking-widest">Configuration de l'échantillon</p>
+            <p className="verge-label-mono text-[9px] text-secondary-text mt-2 uppercase tracking-widest">Configuration de l'échantillon</p>
           </div>
           <button 
             onClick={handleResetFilters}
-            className="verge-label-mono text-[10px] text-[#949494] hover:text-white uppercase font-black transition-colors"
+            className="verge-label-mono text-[10px] text-secondary-text hover:text-hazard-white uppercase font-black transition-colors"
           >
             Reset
           </button>
@@ -197,12 +197,12 @@ const FilterPanel = ({
             className="flex items-center justify-between w-full group py-2"
           >
             <div className="flex items-center gap-2">
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${showPresets ? 'bg-[#3cffd0] shadow-[0_0_8px_#3cffd0]' : 'bg-[#949494]'}`} />
-              <label className={`verge-label-mono text-[9px] uppercase tracking-widest font-black transition-colors cursor-pointer ${showPresets ? 'text-[#3cffd0]' : 'text-[#949494] group-hover:text-white'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-500 ${showPresets ? 'bg-jelly-mint shadow-[0_0_8px_#3cffd0]' : 'bg-secondary-text'}`} />
+              <label className={`verge-label-mono text-[9px] uppercase tracking-widest font-black transition-colors cursor-pointer ${showPresets ? 'text-jelly-mint' : 'text-secondary-text group-hover:text-hazard-white'}`}>
                 Analyse Presets
               </label>
             </div>
-            <motion.div animate={{ rotate: showPresets ? 180 : 0 }} className={showPresets ? "text-[#3cffd0]" : "text-[#949494]"}>
+            <motion.div animate={{ rotate: showPresets ? 180 : 0 }} className={showPresets ? "text-jelly-mint" : "text-secondary-text"}>
               <ChevronDown size={12} />
             </motion.div>
           </button>
@@ -239,18 +239,18 @@ const FilterPanel = ({
           <div className="space-y-8">
             <MultiSelectWithChips label="Saisons" options={seasonsList} selected={pendingFilters.seasons} onChange={(val) => updateFilters('seasons', val)} placeholder="Sélectionner..." />
             
-            <div className="p-8 bg-[#2d2d2d]/50 border border-white/5 rounded-[4px] relative group overflow-hidden">
-              <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#3cffd0]/10" />
+            <div className="p-8 bg-surface-slate/50 border border-hazard-white/5 rounded-[4px] relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-jelly-mint/10" />
               <div className="flex items-center justify-between relative z-10">
                 <div className="flex flex-col">
-                  <span className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Vue Consolidée</span>
-                  <span className="verge-label-mono text-[8px] text-[#949494] mt-1.5 uppercase tracking-wider">Agréger les saisons multiples</span>
+                  <span className="verge-label-mono text-[10px] text-hazard-white font-black uppercase tracking-widest">Vue Consolidée</span>
+                  <span className="verge-label-mono text-[8px] text-secondary-text mt-1.5 uppercase tracking-wider">Agréger les saisons multiples</span>
                 </div>
                 <button 
                   onClick={() => updateFilters('consolidate', !pendingFilters.consolidate)} 
-                  className={`w-12 h-6 rounded-full p-1 transition-all duration-500 relative ${pendingFilters.consolidate ? 'bg-[#3cffd0]' : 'bg-[#131313]'}`}
+                  className={`w-12 h-6 rounded-full p-1 transition-all duration-500 relative ${pendingFilters.consolidate ? 'bg-jelly-mint' : 'bg-canvas-black'}`}
                 >
-                  <div className={`w-4 h-4 rounded-full transition-transform duration-500 shadow-xl ${pendingFilters.consolidate ? 'translate-x-6 bg-white' : 'translate-x-0 bg-[#2d2d2d]'}`} />
+                  <div className={`w-4 h-4 rounded-full transition-transform duration-500 shadow-xl ${pendingFilters.consolidate ? 'translate-x-6 bg-hazard-white' : 'translate-x-0 bg-surface-slate'}`} />
                 </button>
               </div>
             </div>
@@ -278,24 +278,24 @@ const FilterPanel = ({
           <div className="space-y-12">
             <DualRangeSlider label="Tranche d'Âge" min={15} max={45} currentMin={pendingFilters.minAge} currentMax={pendingFilters.maxAge} onChange={(min, max) => setPendingFilters(prev => ({ ...prev, minAge: min, maxAge: max }))} />
 
-            <div className="p-8 bg-[#2d2d2d]/50 border border-white/5 rounded-[4px] relative group overflow-hidden">
-              <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-[#3cffd0]/10" />
+            <div className="p-8 bg-surface-slate/50 border border-hazard-white/5 rounded-[4px] relative group overflow-hidden">
+              <div className="absolute top-0 right-0 w-12 h-12 border-t border-r border-jelly-mint/10" />
               <div className="flex items-center justify-between relative z-10">
                 <div className="flex flex-col">
-                  <span className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Âge de Saison</span>
-                  <span className="verge-label-mono text-[8px] text-[#949494] mt-1.5 uppercase tracking-wider">Basé sur l'année de saison</span>
+                  <span className="verge-label-mono text-[10px] text-hazard-white font-black uppercase tracking-widest">Âge de Saison</span>
+                  <span className="verge-label-mono text-[8px] text-secondary-text mt-1.5 uppercase tracking-wider">Basé sur l'année de saison</span>
                 </div>
                 <button 
                   onClick={() => updateFilters('useSeasonAge', !pendingFilters.useSeasonAge)} 
-                  className={`w-12 h-6 rounded-full p-1 transition-all duration-500 relative ${pendingFilters.useSeasonAge ? 'bg-[#3cffd0]' : 'bg-[#131313]'}`}
+                  className={`w-12 h-6 rounded-full p-1 transition-all duration-500 relative ${pendingFilters.useSeasonAge ? 'bg-jelly-mint' : 'bg-canvas-black'}`}
                 >
-                  <div className={`w-4 h-4 rounded-full transition-transform duration-500 shadow-xl ${pendingFilters.useSeasonAge ? 'translate-x-6 bg-white' : 'translate-x-0 bg-[#2d2d2d]'}`} />
+                  <div className={`w-4 h-4 rounded-full transition-transform duration-500 shadow-xl ${pendingFilters.useSeasonAge ? 'translate-x-6 bg-hazard-white' : 'translate-x-0 bg-surface-slate'}`} />
                 </button>
               </div>
             </div>
 
             <div className="filter-group">
-              <label className="verge-label-mono text-[10px] text-[#949494] mb-6 block uppercase tracking-[0.2em] font-black">Préférence Latérale</label>
+              <label className="verge-label-mono text-[10px] text-secondary-text mb-6 block uppercase tracking-[0.2em] font-black">Préférence Latérale</label>
               <div className="grid grid-cols-4 gap-4">
                 {[
                   { id: 'all', label: 'ALL' },
@@ -308,8 +308,8 @@ const FilterPanel = ({
                     onClick={() => updateFilters('foot', f.id)} 
                     className={`aspect-square rounded-[2px] verge-label-mono text-[11px] font-black uppercase transition-all duration-300 border ${
                       pendingFilters.foot === f.id 
-                      ? 'bg-[#3cffd0] text-black border-[#3cffd0] shadow-[0_0_20px_rgba(60,255,208,0.3)]' 
-                      : 'bg-[#2d2d2d] text-[#949494] border-white/5 hover:border-white/20 hover:text-white'
+                      ? 'bg-jelly-mint text-absolute-black border-jelly-mint shadow-[0_0_20px_rgba(60,255,208,0.3)]' 
+                      : 'bg-surface-slate text-secondary-text border-hazard-white/5 hover:border-hazard-white/20 hover:text-hazard-white'
                     }`}
                   >
                     {f.label}
@@ -339,32 +339,32 @@ const FilterPanel = ({
               />
             </div>
             
-            <div className="p-10 bg-[#2d2d2d]/50 border border-white/5 rounded-[4px] space-y-12 relative overflow-hidden">
-               <div className="absolute top-0 left-0 w-12 h-12 border-t border-l border-[#3cffd0]/10" />
+            <div className="p-10 bg-surface-slate/50 border border-hazard-white/5 rounded-[4px] space-y-12 relative overflow-hidden">
+               <div className="absolute top-0 left-0 w-12 h-12 border-t border-l border-jelly-mint/10" />
                
                <div className="filter-group">
                   <div className="flex justify-between items-center mb-6">
-                    <label className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Temps de Jeu (%)</label>
-                    <span className="verge-label-mono text-[11px] text-[#3cffd0] font-black">{(pendingFilters.playtime?.min || 0)}%+</span>
+                    <label className="verge-label-mono text-[10px] text-hazard-white font-black uppercase tracking-widest">Temps de Jeu (%)</label>
+                    <span className="verge-label-mono text-[11px] text-jelly-mint font-black">{(pendingFilters.playtime?.min || 0)}%+</span>
                   </div>
                   <input 
                     type="range" min="0" max="100" step="5" 
                     value={pendingFilters.playtime?.min || 0} 
                     onChange={e => updateFilters('playtime', { ...(pendingFilters.playtime || {}), min: Number(e.target.value) })} 
-                    className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" 
+                    className="w-full h-1 bg-hazard-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" 
                   />
                </div>
 
                <div className="filter-group">
                   <div className="flex justify-between items-center mb-6">
-                    <label className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest">Matchs Min</label>
-                    <span className="verge-label-mono text-[11px] text-[#3cffd0] font-black">{pendingFilters.minMatches}+</span>
+                    <label className="verge-label-mono text-[10px] text-hazard-white font-black uppercase tracking-widest">Matchs Min</label>
+                    <span className="verge-label-mono text-[11px] text-jelly-mint font-black">{pendingFilters.minMatches}+</span>
                   </div>
                   <input 
                     type="range" min="0" max="60" step="1" 
                     value={pendingFilters.minMatches} 
                     onChange={e => updateFilters('minMatches', Number(e.target.value))} 
-                    className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" 
+                    className="w-full h-1 bg-hazard-white/10 rounded-full appearance-none cursor-pointer accent-[#3cffd0]" 
                   />
                </div>
             </div>
@@ -382,13 +382,13 @@ const FilterPanel = ({
           subtitle={getSectionStats('contrat').subtitle}
         >
           <div className="space-y-12 py-4">
-            <div className="flex items-center justify-between p-8 bg-[#2d2d2d] rounded-[4px] border border-white/5">
+            <div className="flex items-center justify-between p-8 bg-surface-slate rounded-[4px] border border-hazard-white/5">
               <div className="flex flex-col">
-                <span className="verge-label-mono text-[11px] text-white uppercase font-black">En Prêt</span>
-                <span className="verge-label-mono text-[8px] text-[#949494] mt-1 uppercase">Exclure les transferts secs</span>
+                <span className="verge-label-mono text-[11px] text-hazard-white uppercase font-black">En Prêt</span>
+                <span className="verge-label-mono text-[8px] text-secondary-text mt-1 uppercase">Exclure les transferts secs</span>
               </div>
-              <button onClick={() => updateFilters('onLoan', !pendingFilters.onLoan)} className={`w-12 h-6 rounded-full p-1 transition-all duration-500 ${pendingFilters.onLoan ? 'bg-[#3cffd0]' : 'bg-[#131313]'}`}>
-                <div className={`w-4 h-4 bg-white rounded-full transition-transform duration-500 ${pendingFilters.onLoan ? 'translate-x-6' : 'translate-x-0'}`} />
+              <button onClick={() => updateFilters('onLoan', !pendingFilters.onLoan)} className={`w-12 h-6 rounded-full p-1 transition-all duration-500 ${pendingFilters.onLoan ? 'bg-jelly-mint' : 'bg-canvas-black'}`}>
+                <div className={`w-4 h-4 bg-hazard-white rounded-full transition-transform duration-500 ${pendingFilters.onLoan ? 'translate-x-6' : 'translate-x-0'}`} />
               </button>
             </div>
             
@@ -400,14 +400,14 @@ const FilterPanel = ({
       </div>
 
       {/* Footer Section */}
-      <div className="p-4 md:p-10 bg-[#131313] border-t border-white/10">
+      <div className="p-4 md:p-10 bg-canvas-black border-t border-hazard-white/10">
         <button 
           onClick={handleApplyFilters} 
           disabled={!hasChanges} 
           className={`w-full py-4 md:py-6 rounded-[4px] flex items-center justify-center gap-4 transition-all duration-500 relative group overflow-hidden ${
             hasChanges 
-            ? 'bg-[#3cffd0] text-black hover:bg-white' 
-            : 'bg-white/5 text-[#949494] cursor-not-allowed border border-white/5'
+            ? 'bg-jelly-mint text-absolute-black hover:bg-hazard-white' 
+            : 'bg-hazard-white/5 text-secondary-text cursor-not-allowed border border-hazard-white/5'
           }`}
         >
           <span className="verge-label-mono text-[11px] font-black uppercase tracking-widest">Appliquer les filtres</span>

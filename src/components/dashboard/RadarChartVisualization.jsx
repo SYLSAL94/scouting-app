@@ -98,7 +98,7 @@ export const RadarChartVisualization = ({
                     <div className="text-sky-500 text-sm animate-pulse font-bold tracking-widest uppercase">Génération Cloud-Native Zéro-Calcul...</div>
                 </div>
             ) : !radarChartData || !radarChartData.radarData || radarChartData.radarData.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-center p-6 border-2 border-dashed border-white/10 rounded-3xl m-4">
+                <div className="flex-1 flex items-center justify-center text-center p-6 border-2 border-dashed border-hazard-white/10 rounded-3xl m-4">
                     <h3 className="text-lg font-bold text-slate-500">Sélectionnez au moins un joueur et une métrique pour générer le radar.</h3>
                 </div>
             ) : (
@@ -141,7 +141,7 @@ export const RadarChartVisualization = ({
                                         {/* Avatar Wrapper */}
                                         <div className="relative shrink-0">
                                             <div
-                                                className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-white/10 bg-black/40 overflow-hidden transition-all duration-500 flex items-center justify-center"
+                                                className="w-10 h-10 md:w-14 md:h-14 rounded-full border border-hazard-white/10 bg-absolute-black/40 overflow-hidden transition-all duration-500 flex items-center justify-center"
                                                 style={{ 
                                                     borderColor: isHovered ? strokeColor : 'rgba(255,255,255,0.1)',
                                                     boxShadow: isHovered ? `0 0 20px ${strokeColor}20` : 'none'
@@ -150,7 +150,7 @@ export const RadarChartVisualization = ({
                                                 {ent.image ? (
                                                     <img src={ent.image} alt={label} className="w-full h-full object-contain bg-transparent" />
                                                 ) : (
-                                                    <div className="verge-label-mono text-[14px] font-black text-white/20">
+                                                    <div className="verge-label-mono text-[14px] font-black text-hazard-white/20">
                                                         {label.charAt(0)}
                                                     </div>
                                                 )}
@@ -162,7 +162,7 @@ export const RadarChartVisualization = ({
                                                 <div className="flex justify-between items-center gap-2">
                                                     <span 
                                                         className={`verge-label-mono text-[9px] md:text-[11px] font-black truncate transition-colors uppercase tracking-widest ${
-                                                        isHovered ? 'text-white' : 'text-white/80'
+                                                        isHovered ? 'text-hazard-white' : 'text-hazard-white/80'
                                                     }`} 
                                                     style={{ color: isHovered ? '#fff' : undefined }}
                                                     title={label}
@@ -172,13 +172,13 @@ export const RadarChartVisualization = ({
                                             </div>
                                             
                                             <div className="flex flex-col gap-0.5">
-                                                <div className="verge-label-mono text-[9px] font-black uppercase tracking-wider text-[#3cffd0]/80 truncate">
+                                                <div className="verge-label-mono text-[9px] font-black uppercase tracking-wider text-jelly-mint/80 truncate">
                                                     {ent.team || '—'}
                                                 </div>
-                                                <div className="verge-label-mono text-[9px] font-black uppercase tracking-widest text-white/40 truncate">
+                                                <div className="verge-label-mono text-[9px] font-black uppercase tracking-widest text-hazard-white/40 truncate">
                                                     {ent.position}
                                                 </div>
-                                                <div className="verge-label-mono text-[8px] font-black uppercase tracking-[0.2em] text-white/20 mt-1">
+                                                <div className="verge-label-mono text-[8px] font-black uppercase tracking-[0.2em] text-hazard-white/20 mt-1">
                                                     {ent.season || '—'} {ent.competition ? `• ${ent.competition}` : ''}
                                                 </div>
                                             </div>
@@ -227,9 +227,9 @@ export const RadarChartVisualization = ({
                                     content={({ active, payload, label }) => {
                                         if (!active || !payload || !payload.length) return null;
                                         return (
-                                            <div className="bg-[#131313]/95 backdrop-blur-xl border border-white/10 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 min-w-[220px] animate-in fade-in zoom-in-95 duration-200">
-                                                <div className="mb-4 pb-3 border-b border-white/5">
-                                                    <h4 className="verge-label-mono text-[10px] font-black text-white text-center uppercase tracking-[0.2em]">{label}</h4>
+                                            <div className="bg-canvas-black/95 backdrop-blur-xl border border-hazard-white/10 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-4 min-w-[220px] animate-in fade-in zoom-in-95 duration-200">
+                                                <div className="mb-4 pb-3 border-b border-hazard-white/5">
+                                                    <h4 className="verge-label-mono text-[10px] font-black text-hazard-white text-center uppercase tracking-[0.2em]">{label}</h4>
                                                 </div>
                                                 <div className="space-y-3">
                                                     {payload
@@ -248,16 +248,16 @@ export const RadarChartVisualization = ({
                                                                             className="w-2 h-2 rounded-full shadow-[0_0_10px_rgba(60,255,208,0.2)] flex-shrink-0" 
                                                                             style={{ backgroundColor: entry.color }} 
                                                                         />
-                                                                        <span className="verge-label-mono text-[9px] font-black text-white/70 uppercase truncate tracking-wider" title={entry.name}>
+                                                                        <span className="verge-label-mono text-[9px] font-black text-hazard-white/70 uppercase truncate tracking-wider" title={entry.name}>
                                                                             {entry.name}
                                                                         </span>
                                                                     </div>
-                                                                    <div className="flex items-baseline gap-1 bg-white/5 px-2 py-1 rounded-[1px] border border-white/5">
-                                                                        <span className="verge-label-mono text-[10px] font-black text-[#3cffd0]">
+                                                                    <div className="flex items-baseline gap-1 bg-hazard-white/5 px-2 py-1 rounded-[1px] border border-hazard-white/5">
+                                                                        <span className="verge-label-mono text-[10px] font-black text-jelly-mint">
                                                                             {Number.isFinite(+valueToDisplay) ? (+valueToDisplay).toFixed(2) : valueToDisplay}
                                                                         </span>
                                                                         {metricDisplayMode === 'percentile' && (
-                                                                            <span className="verge-label-mono text-[7px] text-white/30 font-black">%</span>
+                                                                            <span className="verge-label-mono text-[7px] text-hazard-white/30 font-black">%</span>
                                                                         )}
                                                                     </div>
                                                                 </div>

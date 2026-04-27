@@ -44,59 +44,59 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
 
   if (selectedPlayersToCompare.length < 2) {
     return (
-      <div className="h-[600px] flex flex-col items-center justify-center bg-[#131313] rounded-[4px] border border-dashed border-white/10 relative overflow-hidden">
+      <div className="h-[600px] flex flex-col items-center justify-center bg-canvas-black rounded-[4px] border border-dashed border-hazard-white/10 relative overflow-hidden">
         {/* Background Texture */}
         <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         
-        <div className="p-10 bg-[#131313] border border-[#3cffd0]/20 rounded-[2px] mb-8 relative group">
-          <div className="absolute -inset-4 bg-[#3cffd0]/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-          <Activity size={64} className="text-[#3cffd0] relative z-10" />
+        <div className="p-10 bg-canvas-black border border-jelly-mint/20 rounded-[2px] mb-8 relative group">
+          <div className="absolute -inset-4 bg-jelly-mint/5 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Activity size={64} className="text-jelly-mint relative z-10" />
         </div>
-        <h3 className="verge-h3 text-white mb-4">SÉLECTION INSUFFISANTE</h3>
-        <p className="verge-label-mono text-[11px] font-black text-[#949494] tracking-[0.2em] uppercase text-center max-w-sm px-6 leading-relaxed">
-          Veuillez sélectionner au moins <span className="text-[#3cffd0]">deux joueurs</span> dans le tableau pour activer la comparaison directe.
+        <h3 className="verge-h3 text-hazard-white mb-4">SÉLECTION INSUFFISANTE</h3>
+        <p className="verge-label-mono text-[11px] font-black text-secondary-text tracking-[0.2em] uppercase text-center max-w-sm px-6 leading-relaxed">
+          Veuillez sélectionner au moins <span className="text-jelly-mint">deux joueurs</span> dans le tableau pour activer la comparaison directe.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#131313] rounded-[4px] p-4 md:p-12 lg:p-16 border border-white/10 space-y-8 md:space-y-16 relative overflow-hidden">
+    <div className="bg-canvas-black rounded-[4px] p-4 md:p-12 lg:p-16 border border-hazard-white/10 space-y-8 md:space-y-16 relative overflow-hidden">
       {/* Editorial Watermark */}
-      <div className="hidden md:block absolute top-0 right-0 w-64 h-64 border-t border-r border-[#3cffd0]/5 pointer-events-none" />
-      <div className="hidden md:block absolute bottom-0 left-0 w-64 h-64 border-b border-l border-[#5200ff]/5 pointer-events-none" />
+      <div className="hidden md:block absolute top-0 right-0 w-64 h-64 border-t border-r border-jelly-mint/5 pointer-events-none" />
+      <div className="hidden md:block absolute bottom-0 left-0 w-64 h-64 border-b border-l border-verge-ultraviolet/5 pointer-events-none" />
 
       {/* Header Layout */}
-      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 border-b border-white/10 pb-6 md:pb-12">
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 border-b border-hazard-white/10 pb-6 md:pb-12">
         <div className="space-y-3 md:space-y-4">
           <div className="flex items-center gap-2 md:gap-3">
-            <span className="w-8 md:w-12 h-[2px] bg-[#3cffd0]" />
-            <span className="verge-kicker text-[10px] md:text-[19px] text-[#3cffd0]">Versus System</span>
+            <span className="w-8 md:w-12 h-[2px] bg-jelly-mint" />
+            <span className="verge-kicker text-[10px] md:text-[19px] text-jelly-mint">Versus System</span>
           </div>
-          <h2 className="verge-h2 md:verge-h1 text-white text-2xl md:text-6xl m-0">COMPARAISON</h2>
+          <h2 className="verge-h2 md:verge-h1 text-hazard-white text-2xl md:text-6xl m-0">COMPARAISON</h2>
           <div className="flex flex-wrap items-center gap-4 mt-2 md:mt-4">
              {selectedPlayersToCompare.map((p, i) => (
                <div key={p.id} className="flex items-center gap-2">
                  <div className="w-2 h-2 md:w-3 md:h-3" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                 <span className="verge-label-mono text-[8px] md:text-[10px] text-white font-black">{`${p.full_name || p.name}`.toUpperCase()}</span>
+                 <span className="verge-label-mono text-[8px] md:text-[10px] text-hazard-white font-black">{`${p.full_name || p.name}`.toUpperCase()}</span>
                </div>
              ))}
           </div>
         </div>
         
         <div className="hidden md:flex flex-col items-end gap-2">
-          <div className="px-6 py-3 bg-[#2d2d2d] border border-white/10 text-white verge-label-mono text-[10px] font-black tracking-[0.3em] rounded-[2px] uppercase">
+          <div className="px-6 py-3 bg-surface-slate border border-hazard-white/10 text-hazard-white verge-label-mono text-[10px] font-black tracking-[0.3em] rounded-[2px] uppercase">
             ZERO-DISQUE NODE v.4.0
           </div>
-          <span className="verge-label-mono text-[9px] text-[#949494]">LATENCY: 12MS</span>
+          <span className="verge-label-mono text-[9px] text-secondary-text">LATENCY: 12MS</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-12 lg:gap-16">
         
         {/* Radar Chart Card */}
-        <div className="bg-[#131313] rounded-[4px] p-4 md:p-10 border border-white/10 relative group flex flex-col h-[400px] md:h-[600px]">
-          <div className="absolute top-4 left-4 md:top-6 md:left-6 verge-label-mono text-[8px] md:text-[10px] text-[#3cffd0] font-black tracking-[0.3em] uppercase">
+        <div className="bg-canvas-black rounded-[4px] p-4 md:p-10 border border-hazard-white/10 relative group flex flex-col h-[400px] md:h-[600px]">
+          <div className="absolute top-4 left-4 md:top-6 md:left-6 verge-label-mono text-[8px] md:text-[10px] text-jelly-mint font-black tracking-[0.3em] uppercase">
             01 / RADIAL
           </div>
           <div className="flex-1 mt-8 md:mt-12">
@@ -136,15 +136,15 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
               </RadarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-center">
-            <span className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-widest">Performance Radar Mapping</span>
-            <Target size={14} className="text-[#3cffd0] opacity-50" />
+          <div className="mt-6 border-t border-hazard-white/5 pt-6 flex justify-between items-center">
+            <span className="verge-label-mono text-[9px] text-secondary-text uppercase tracking-widest">Performance Radar Mapping</span>
+            <Target size={14} className="text-jelly-mint opacity-50" />
           </div>
         </div>
 
         {/* Bar Chart Card */}
-        <div className="bg-[#131313] rounded-[4px] p-4 md:p-10 border border-white/10 relative group flex flex-col h-[400px] md:h-[600px]">
-          <div className="absolute top-4 left-4 md:top-6 md:left-6 verge-label-mono text-[8px] md:text-[10px] text-[#5200ff] font-black tracking-[0.3em] uppercase">
+        <div className="bg-canvas-black rounded-[4px] p-4 md:p-10 border border-hazard-white/10 relative group flex flex-col h-[400px] md:h-[600px]">
+          <div className="absolute top-4 left-4 md:top-6 md:left-6 verge-label-mono text-[8px] md:text-[10px] text-verge-ultraviolet font-black tracking-[0.3em] uppercase">
             02 / BAR_CHART
           </div>
           <div className="flex-1 mt-8 md:mt-12">
@@ -186,18 +186,18 @@ export const HeadToHeadContent = ({ selectedPlayersToCompare = [], selectedMetri
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-6 border-t border-white/5 pt-6 flex justify-between items-center">
-            <span className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-widest">Comparative Bar Analysis</span>
-            <Zap size={14} className="text-[#5200ff] opacity-50" />
+          <div className="mt-6 border-t border-hazard-white/5 pt-6 flex justify-between items-center">
+            <span className="verge-label-mono text-[9px] text-secondary-text uppercase tracking-widest">Comparative Bar Analysis</span>
+            <Zap size={14} className="text-verge-ultraviolet opacity-50" />
           </div>
         </div>
 
       </div>
 
       {/* Security Footer Note */}
-      <div className="hidden md:flex items-center justify-center gap-4 py-8 border-t border-white/5 opacity-30">
-        <Shield size={12} className="text-[#949494]" />
-        <span className="verge-label-mono text-[8px] text-[#949494] tracking-[0.5em] uppercase">
+      <div className="hidden md:flex items-center justify-center gap-4 py-8 border-t border-hazard-white/5 opacity-30">
+        <Shield size={12} className="text-secondary-text" />
+        <span className="verge-label-mono text-[8px] text-secondary-text tracking-[0.5em] uppercase">
           Secured Data Feed / Analysis Node
         </span>
       </div>

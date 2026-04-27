@@ -36,36 +36,36 @@ const LoginScreen = ({ onLoginSuccess }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#131313] text-white p-6 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-canvas-black text-hazard-white p-6 relative overflow-hidden">
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       
       {/* Decorative Radial Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#3cffd0]/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-jelly-mint/5 blur-[120px] rounded-full pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }} 
         animate={{ opacity: 1, scale: 1 }} 
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-[420px] bg-[#2d2d2d] border border-white/10 rounded-[4px] p-10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative z-10"
+        className="w-full max-w-[420px] bg-surface-slate border border-hazard-white/10 rounded-[4px] p-10 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative z-10"
       >
         {/* Terminal Corner Marker */}
-        <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-[#3cffd0]/20 rounded-tr-[4px]" />
+        <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-jelly-mint/20 rounded-tr-[4px]" />
         
         <div className="flex flex-col items-center mb-12">
-          <div className="w-16 h-16 bg-[#131313] border border-[#3cffd0]/30 flex items-center justify-center mb-8 shadow-2xl">
-            <Terminal className="text-[#3cffd0]" size={32} />
+          <div className="w-16 h-16 bg-canvas-black border border-jelly-mint/30 flex items-center justify-center mb-8 shadow-2xl">
+            <Terminal className="text-jelly-mint" size={32} />
           </div>
           <h1 className="verge-label-mono text-3xl font-black uppercase tracking-tighter mb-2">
-            THE ANALYST <span className="text-[#3cffd0]">HUB</span>
+            THE ANALYST <span className="text-jelly-mint">HUB</span>
           </h1>
           <div className="flex items-center gap-3">
-            <div className="h-px w-8 bg-white/10" />
-            <p className="verge-label-mono text-[9px] text-[#949494] font-black uppercase tracking-[0.3em] opacity-50">
+            <div className="h-px w-8 bg-hazard-white/10" />
+            <p className="verge-label-mono text-[9px] text-secondary-text font-black uppercase tracking-[0.3em] opacity-50">
               Scouting Access Terminal
             </p>
-            <div className="h-px w-8 bg-white/10" />
+            <div className="h-px w-8 bg-hazard-white/10" />
           </div>
         </div>
 
@@ -82,30 +82,30 @@ const LoginScreen = ({ onLoginSuccess }) => {
         <form onSubmit={handleLogin} className="space-y-8">
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <label className="verge-label-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#949494]">Utilisateur</label>
-              <User size={12} className="text-white/20" />
+              <label className="verge-label-mono text-[9px] font-black uppercase tracking-[0.2em] text-secondary-text">Utilisateur</label>
+              <User size={12} className="text-hazard-white/20" />
             </div>
             <input 
               type="text" 
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="ENTER CREDENTIALS..."
-              className="w-full bg-[#131313] border border-white/5 rounded-[1px] px-5 py-4 text-white verge-label-mono text-[11px] font-black placeholder:text-white/10 focus:outline-none focus:border-[#3cffd0]/50 transition-all uppercase tracking-widest"
+              className="w-full bg-canvas-black border border-hazard-white/5 rounded-[1px] px-5 py-4 text-hazard-white verge-label-mono text-[11px] font-black placeholder:text-hazard-white/10 focus:outline-none focus:border-jelly-mint/50 transition-all uppercase tracking-widest"
               required 
             />
           </div>
           
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <label className="verge-label-mono text-[9px] font-black uppercase tracking-[0.2em] text-[#949494]">Mot de Passe</label>
-              <Lock size={12} className="text-white/20" />
+              <label className="verge-label-mono text-[9px] font-black uppercase tracking-[0.2em] text-secondary-text">Mot de Passe</label>
+              <Lock size={12} className="text-hazard-white/20" />
             </div>
             <input 
               type="password" 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-[#131313] border border-white/5 rounded-[1px] px-5 py-4 text-white verge-label-mono text-[11px] font-black placeholder:text-white/10 focus:outline-none focus:border-[#3cffd0]/50 transition-all tracking-widest"
+              className="w-full bg-canvas-black border border-hazard-white/5 rounded-[1px] px-5 py-4 text-hazard-white verge-label-mono text-[11px] font-black placeholder:text-hazard-white/10 focus:outline-none focus:border-jelly-mint/50 transition-all tracking-widest"
               required 
               autoComplete="current-password"
             />
@@ -114,20 +114,20 @@ const LoginScreen = ({ onLoginSuccess }) => {
           <button 
             type="submit" 
             disabled={isLoading}
-            className="w-full group relative flex items-center justify-center py-5 bg-[#3cffd0] hover:bg-[#3cffd0]/90 disabled:bg-[#131313] disabled:text-[#444] transition-all duration-300 rounded-[2px] shadow-[0_20px_40px_rgba(60,255,208,0.2)] active:scale-[0.98]"
+            className="w-full group relative flex items-center justify-center py-5 bg-jelly-mint hover:bg-jelly-mint/90 disabled:bg-canvas-black disabled:text-[#444] transition-all duration-300 rounded-[2px] shadow-[0_20px_40px_rgba(60,255,208,0.2)] active:scale-[0.98]"
           >
             {isLoading ? (
-              <div className="w-5 h-5 border-2 border-black/10 border-t-black rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-absolute-black/10 border-t-black rounded-full animate-spin" />
             ) : (
-              <span className="verge-label-mono text-[12px] font-black uppercase tracking-[0.4em] text-black">
+              <span className="verge-label-mono text-[12px] font-black uppercase tracking-[0.4em] text-absolute-black">
                 SE CONNECTER
               </span>
             )}
           </button>
         </form>
         
-        <div className="mt-12 pt-8 border-t border-white/5 text-center">
-          <p className="verge-label-mono text-[8px] text-[#949494] font-black uppercase tracking-[0.2em] opacity-30">
+        <div className="mt-12 pt-8 border-t border-hazard-white/5 text-center">
+          <p className="verge-label-mono text-[8px] text-secondary-text font-black uppercase tracking-[0.2em] opacity-30">
             © 2026 The Analyst Hub // Industrial Scouting Systems
           </p>
         </div>

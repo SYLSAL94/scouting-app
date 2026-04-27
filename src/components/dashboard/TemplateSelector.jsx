@@ -53,38 +53,38 @@ export const TemplateSelector = ({
 
     return (
         <div className="space-y-4 relative" ref={containerRef}>
-            <label className="verge-label-mono text-[10px] font-black uppercase text-white/40 tracking-[0.2em] mb-4 block group-hover:text-white transition-colors">
+            <label className="verge-label-mono text-[10px] font-black uppercase text-hazard-white/40 tracking-[0.2em] mb-4 block group-hover:text-hazard-white transition-colors">
                 Modèles Tactiques (DS)
             </label>
             
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className={`w-full min-h-[50px] p-4 bg-[#131313] border rounded-[2px] flex items-center justify-between transition-all duration-300 ${
-                    isOpen ? 'border-[#3cffd0] shadow-[0_0_25px_rgba(60,255,208,0.1)]' : 'border-white/5 hover:border-white/20'
+                className={`w-full min-h-[50px] p-4 bg-canvas-black border rounded-[2px] flex items-center justify-between transition-all duration-300 ${
+                    isOpen ? 'border-jelly-mint shadow-[0_0_25px_rgba(60,255,208,0.1)]' : 'border-hazard-white/5 hover:border-hazard-white/20'
                 }`}
             >
                 <div className="flex items-center gap-4 overflow-hidden">
-                    <div className={`p-1.5 rounded-[2px] ${selectedTemplateLabels.size > 0 ? 'bg-[#3cffd0] text-black' : 'bg-white/5 text-white/20'}`}>
+                    <div className={`p-1.5 rounded-[2px] ${selectedTemplateLabels.size > 0 ? 'bg-jelly-mint text-absolute-black' : 'bg-hazard-white/5 text-hazard-white/20'}`}>
                         <LayoutGrid size={14} />
                     </div>
                     <div className="flex flex-col items-start overflow-hidden">
-                        <span className="verge-label-mono text-[10px] font-black text-white uppercase tracking-widest truncate w-full">
+                        <span className="verge-label-mono text-[10px] font-black text-hazard-white uppercase tracking-widest truncate w-full">
                             {selectedTemplateLabels.size === 0 
                                 ? "Choisir un profil..." 
                                 : Array.from(selectedTemplateLabels).join(', ')}
                         </span>
                         {selectedTemplateLabels.size > 0 && (
-                            <span className="verge-label-mono text-[8px] text-[#3cffd0] font-black uppercase tracking-widest mt-1">
+                            <span className="verge-label-mono text-[8px] text-jelly-mint font-black uppercase tracking-widest mt-1">
                                 {selectedTemplateLabels.size} ARCHÉTYPE(S) ACTIF(S)
                             </span>
                         )}
                     </div>
                 </div>
-                <ChevronDown size={16} className={`text-[#949494] transition-all duration-500 ${isOpen ? 'rotate-180 text-[#3cffd0]' : ''}`} />
+                <ChevronDown size={16} className={`text-secondary-text transition-all duration-500 ${isOpen ? 'rotate-180 text-jelly-mint' : ''}`} />
             </button>
 
             {isOpen && (
-                <div className="absolute top-full left-0 w-full mt-2 z-[100] bg-[#131313]/95 backdrop-blur-xl border border-white/10 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="absolute top-full left-0 w-full mt-2 z-[100] bg-canvas-black/95 backdrop-blur-xl border border-hazard-white/10 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="max-h-[350px] overflow-y-auto py-3 styled-scrollbar">
                         {Object.keys(TEMPLATE_MAPPING).map((key, index) => {
                             const isActive = selectedTemplateLabels.has(key);
@@ -94,17 +94,17 @@ export const TemplateSelector = ({
                                     onClick={() => handleTemplateClick(key)}
                                     className={`px-6 py-4 flex items-center justify-between cursor-pointer transition-all verge-label-mono text-[10px] uppercase tracking-wider ${
                                         isActive 
-                                        ? 'bg-[#3cffd0] text-black font-black' 
-                                        : 'text-[#949494] hover:bg-white/5 hover:text-white'
+                                        ? 'bg-jelly-mint text-absolute-black font-black' 
+                                        : 'text-secondary-text hover:bg-hazard-white/5 hover:text-hazard-white'
                                     }`}
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-black' : 'border-white/5'}`}>
-                                            {isActive && <div className="w-1.5 h-1.5 rounded-full bg-black" />}
+                                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-absolute-black' : 'border-hazard-white/5'}`}>
+                                            {isActive && <div className="w-1.5 h-1.5 rounded-full bg-absolute-black" />}
                                         </div>
                                         <span>{key}</span>
                                     </div>
-                                    {isActive && <Check size={14} className="text-black" />}
+                                    {isActive && <Check size={14} className="text-absolute-black" />}
                                 </div>
                             );
                         })}

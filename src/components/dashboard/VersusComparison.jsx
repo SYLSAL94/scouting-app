@@ -36,27 +36,27 @@ const FaceToFaceComparison = ({ player1, player2, metrics, availableMetrics }) =
                 return (
                     <div key={metricId} className="group flex flex-col items-center">
                         <div className="w-full flex justify-between items-end mb-3 px-1">
-                            <span className={`text-2xl font-black tabular-nums transition-all ${isP1Winner ? 'text-[#3cffd0]' : 'text-[#949494]'}`}>
+                            <span className={`text-2xl font-black tabular-nums transition-all ${isP1Winner ? 'text-jelly-mint' : 'text-secondary-text'}`}>
                                 {v1.toFixed(2)}
                             </span>
-                            <span className="verge-label-mono text-[9px] text-[#949494] tracking-[0.2em] mb-1 px-6 text-center border-b border-white/5 pb-1">
+                            <span className="verge-label-mono text-[9px] text-secondary-text tracking-[0.2em] mb-1 px-6 text-center border-b border-hazard-white/5 pb-1">
                                 {metricLabel}
                             </span>
-                            <span className={`text-2xl font-black tabular-nums transition-all ${isP2Winner ? 'text-[#5200ff]' : 'text-[#949494]'}`}>
+                            <span className={`text-2xl font-black tabular-nums transition-all ${isP2Winner ? 'text-verge-ultraviolet' : 'text-secondary-text'}`}>
                                 {v2.toFixed(2)}
                             </span>
                         </div>
-                        <div className="w-full h-2 bg-[#2d2d2d] rounded-[1px] overflow-hidden flex relative">
-                            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-white/20 z-10"></div>
+                        <div className="w-full h-2 bg-surface-slate rounded-[1px] overflow-hidden flex relative">
+                            <div className="absolute left-1/2 top-0 bottom-0 w-px bg-hazard-white/20 z-10"></div>
                             <div className="w-1/2 flex justify-end">
                                 <div
-                                    className={`h-full transition-all duration-700 ease-out ${isP1Winner ? 'bg-[#3cffd0] shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'bg-[#131313] border-r border-white/5'}`}
+                                    className={`h-full transition-all duration-700 ease-out ${isP1Winner ? 'bg-jelly-mint shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'bg-canvas-black border-r border-hazard-white/5'}`}
                                     style={{ width: `${Math.min(100, (v1 / denominator) * 100)}%` }}
                                 ></div>
                             </div>
                             <div className="w-1/2 flex justify-start">
                                 <div
-                                    className={`h-full transition-all duration-700 ease-out ${isP2Winner ? 'bg-[#5200ff] shadow-[0_0_15px_rgba(82,0,255,0.3)]' : 'bg-[#131313] border-l border-white/5'}`}
+                                    className={`h-full transition-all duration-700 ease-out ${isP2Winner ? 'bg-verge-ultraviolet shadow-[0_0_15px_rgba(82,0,255,0.3)]' : 'bg-canvas-black border-l border-hazard-white/5'}`}
                                     style={{ width: `${Math.min(100, (v2 / denominator) * 100)}%` }}
                                 ></div>
                             </div>
@@ -139,26 +139,26 @@ const ComparisonTable = ({ players, metrics, availableMetrics }) => {
     const playerColStyle = { width: `${(100 - FIRST_COL_PCT) / playersCount}%` };
 
     return (
-        <div ref={scrollRef} className="h-[75vh] overflow-y-auto styled-scrollbar rounded-[4px] border border-white/10 bg-[#131313]" onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}>
+        <div ref={scrollRef} className="h-[75vh] overflow-y-auto styled-scrollbar rounded-[4px] border border-hazard-white/10 bg-canvas-black" onScroll={(e) => setScrollTop(e.currentTarget.scrollTop)}>
             <table className="w-full table-fixed text-sm text-left border-collapse">
-                <thead className="sticky top-0 z-20 bg-[#2d2d2d] border-b border-[#3cffd0]/20">
+                <thead className="sticky top-0 z-20 bg-surface-slate border-b border-jelly-mint/20">
                     <tr>
-                        <th style={metricColStyle} className="p-5 verge-label-mono text-[10px] text-[#949494] tracking-[0.2em] font-black">
+                        <th style={metricColStyle} className="p-5 verge-label-mono text-[10px] text-secondary-text tracking-[0.2em] font-black">
                             MÉTRIQUE DS
                         </th>
                         {sortedPlayers.map((p) => (
                             <th
                                 key={p.id || p.unique_id}
                                 style={playerColStyle}
-                                className="p-5 font-black text-white text-center cursor-pointer select-none hover:bg-white/5 transition-colors border-l border-white/5"
+                                className="p-5 font-black text-hazard-white text-center cursor-pointer select-none hover:bg-hazard-white/5 transition-colors border-l border-hazard-white/5"
                                 onClick={() => handleSort(p.id || p.unique_id)}
                             >
                                 <div className="flex flex-col items-center gap-1">
                                     <span className="verge-label-mono text-[11px] truncate w-full tracking-tight">{p.full_name || p.name}</span>
-                                    <span className="verge-label-mono text-[8px] text-[#949494] font-black opacity-60">
+                                    <span className="verge-label-mono text-[8px] text-secondary-text font-black opacity-60">
                                         {p.competition || 'N/A'} • {p.season || 'N/A'}
                                     </span>
-                                    {sortConfig.key === (p.id || p.unique_id) && <span className="text-[10px] text-[#3cffd0] mt-1">{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>}
+                                    {sortConfig.key === (p.id || p.unique_id) && <span className="text-[10px] text-jelly-mint mt-1">{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>}
                                 </div>
                             </th>
                         ))}
@@ -181,17 +181,17 @@ const ComparisonTable = ({ players, metrics, availableMetrics }) => {
                         };
 
                         return (
-                            <tr key={metric.id} className="border-t border-white/5 hover:bg-white/[0.02] transition-colors" style={{ height: ROW_H }}>
-                                <td style={metricColStyle} className="px-5 py-2 verge-label-mono text-[10px] text-[#949494] font-black cursor-pointer hover:text-[#3cffd0]" onClick={() => handleSort(metric.id)}>
+                            <tr key={metric.id} className="border-t border-hazard-white/5 hover:bg-hazard-white/[0.02] transition-colors" style={{ height: ROW_H }}>
+                                <td style={metricColStyle} className="px-5 py-2 verge-label-mono text-[10px] text-secondary-text font-black cursor-pointer hover:text-jelly-mint" onClick={() => handleSort(metric.id)}>
                                     {metric.label}
-                                    {sortConfig.key === metric.id && <span className="ml-2 text-[#3cffd0]">{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>}
+                                    {sortConfig.key === metric.id && <span className="ml-2 text-jelly-mint">{sortConfig.direction === 'desc' ? '▼' : '▲'}</span>}
                                 </td>
                                 {sortedPlayers.map((p) => {
                                     const v = Number(p[metric.id] || 0);
                                     const isMax = v === max && v !== min;
                                     return (
-                                        <td key={p.id || p.unique_id} style={playerColStyle} className="px-3 py-2 text-center relative border-l border-white/5">
-                                            <div className={`w-full h-8 rounded-[1px] flex items-center justify-center font-black text-xs transition-all ${isMax ? 'text-[#3cffd0] scale-105 z-10 border border-[#3cffd0]/30' : 'text-[#949494]'}`}
+                                        <td key={p.id || p.unique_id} style={playerColStyle} className="px-3 py-2 text-center relative border-l border-hazard-white/5">
+                                            <div className={`w-full h-8 rounded-[1px] flex items-center justify-center font-black text-xs transition-all ${isMax ? 'text-jelly-mint scale-105 z-10 border border-jelly-mint/30' : 'text-secondary-text'}`}
                                                 style={{ backgroundColor: getColorForValue(v, min, max) }}>
                                                 {v.toFixed(2)}
                                             </div>
@@ -235,14 +235,14 @@ export const VersusComparison = ({
     }, [selectedMetrics, metricDisplayMode]);
 
     return (
-        <div className="flex-shrink-0 pt-12 mt-12 border-t border-white/10">
+        <div className="flex-shrink-0 pt-12 mt-12 border-t border-hazard-white/10">
             <div className="flex flex-col xl:flex-row gap-12 items-start">
                 <div className="hidden xl:block w-full xl:w-1/4">
-                    <h2 className="verge-label-mono text-[11px] font-black tracking-[0.3em] text-[#3cffd0] mb-8 flex items-center gap-4">
-                        <div className="w-2 h-2 bg-[#3cffd0]" />
+                    <h2 className="verge-label-mono text-[11px] font-black tracking-[0.3em] text-jelly-mint mb-8 flex items-center gap-4">
+                        <div className="w-2 h-2 bg-jelly-mint" />
                         ANALYSE TACTIQUE (DS)
                     </h2>
-                    <div className="h-[75vh] overflow-y-auto styled-scrollbar p-6 rounded-[4px] border border-white/10 bg-[#2d2d2d]">
+                    <div className="h-[75vh] overflow-y-auto styled-scrollbar p-6 rounded-[4px] border border-hazard-white/10 bg-surface-slate">
                         <MetricSelectionPanel
                             cat={'joueurs'}
                             selectedTemplateLabels={selectedTemplateLabels}
@@ -264,16 +264,16 @@ export const VersusComparison = ({
                 </div>
                 <div className="w-full xl:w-3/4">
                     {selectedPlayers.length < 2 ? (
-                        <div className="h-[400px] md:h-[600px] flex flex-col items-center justify-center bg-[#2d2d2d] rounded-[4px] border border-dashed border-white/10">
-                            <div className="p-4 md:p-8 bg-[#131313] border border-white/10 rounded-[2px] mb-4 md:mb-8">
-                                <Activity size={32} className="md:size-[56px] text-[#3cffd0] opacity-50" />
+                        <div className="h-[400px] md:h-[600px] flex flex-col items-center justify-center bg-surface-slate rounded-[4px] border border-dashed border-hazard-white/10">
+                            <div className="p-4 md:p-8 bg-canvas-black border border-hazard-white/10 rounded-[2px] mb-4 md:mb-8">
+                                <Activity size={32} className="md:size-[56px] text-jelly-mint opacity-50" />
                             </div>
-                            <p className="px-6 text-center verge-label-mono text-[10px] md:text-[12px] font-black text-[#949494] tracking-[0.2em] uppercase">Sélectionnez au moins 2 joueurs.</p>
+                            <p className="px-6 text-center verge-label-mono text-[10px] md:text-[12px] font-black text-secondary-text tracking-[0.2em] uppercase">Sélectionnez au moins 2 joueurs.</p>
                         </div>
                     ) : activeMetrics.length > 0 ? (
-                        <div className="bg-[#131313] border border-white/10 rounded-[4px] p-4 md:p-10 relative overflow-hidden">
+                        <div className="bg-canvas-black border border-hazard-white/10 rounded-[4px] p-4 md:p-10 relative overflow-hidden">
                              {/* Hazard Corner */}
-                             <div className="absolute top-0 right-0 w-8 h-8 md:w-16 md:h-16 border-t-2 border-r-2 border-[#3cffd0]/20" />
+                             <div className="absolute top-0 right-0 w-8 h-8 md:w-16 md:h-16 border-t-2 border-r-2 border-jelly-mint/20" />
                              
                             {selectedPlayers.length === 2 ? (
                                 <HeadToHeadContent 
@@ -285,8 +285,8 @@ export const VersusComparison = ({
                             )}
                         </div>
                     ) : (
-                        <div className="h-[600px] flex flex-col items-center justify-center bg-[#2d2d2d] rounded-[4px] border border-dashed border-white/10">
-                             <p className="verge-label-mono text-[12px] font-black text-[#949494] tracking-[0.2em] uppercase">Sélectionnez un Modèle Tactique pour décomposer les sous-variables.</p>
+                        <div className="h-[600px] flex flex-col items-center justify-center bg-surface-slate rounded-[4px] border border-dashed border-hazard-white/10">
+                             <p className="verge-label-mono text-[12px] font-black text-secondary-text tracking-[0.2em] uppercase">Sélectionnez un Modèle Tactique pour décomposer les sous-variables.</p>
                         </div>
                     )}
                 </div>

@@ -30,13 +30,13 @@ const TacticalPositionPicker = ({ selectedPositions, onChange }) => {
   };
 
   return (
-    <div className="relative w-full aspect-[3/4] bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden p-4">
+    <div className="relative w-full aspect-[3/4] bg-canvas-black border border-hazard-white/10 rounded-[4px] overflow-hidden p-4">
       {/* Pitch Lines */}
-      <div className="absolute inset-4 border border-white/5 rounded-[4px] pointer-events-none">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-b border-x border-white/5" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-t border-x border-white/5" />
-        <div className="absolute top-1/2 left-0 w-full h-px bg-white/5" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 aspect-square border border-white/5 rounded-full" />
+      <div className="absolute inset-4 border border-hazard-white/5 rounded-[4px] pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-b border-x border-hazard-white/5" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-1/6 border-t border-x border-hazard-white/5" />
+        <div className="absolute top-1/2 left-0 w-full h-px bg-hazard-white/5" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/3 aspect-square border border-hazard-white/5 rounded-full" />
       </div>
 
       <div className="relative w-full h-full">
@@ -51,10 +51,10 @@ const TacticalPositionPicker = ({ selectedPositions, onChange }) => {
               onClick={() => togglePosition(zone.codes)}
               className={`absolute -translate-x-1/2 -translate-y-1/2 w-8 md:w-10 h-8 md:h-10 rounded-[2px] border flex items-center justify-center transition-all duration-300 ${
                 isActive 
-                ? 'bg-[#3cffd0] border-[#3cffd0] text-black shadow-[0_0_20px_rgba(60,255,208,0.2)]' 
+                ? 'bg-jelly-mint border-jelly-mint text-absolute-black shadow-[0_0_20px_rgba(60,255,208,0.2)]' 
                 : isPartiallyActive
-                ? 'bg-[#3cffd0]/30 border-[#3cffd0]/50 text-white border-dashed'
-                : 'bg-[#2d2d2d] border-white/10 text-[#949494] hover:border-white/30 hover:bg-white hover:text-black'
+                ? 'bg-jelly-mint/30 border-jelly-mint/50 text-hazard-white border-dashed'
+                : 'bg-surface-slate border-hazard-white/10 text-secondary-text hover:border-hazard-white/30 hover:bg-hazard-white hover:text-absolute-black'
               }`}
               style={{ top: zone.top, left: zone.left }}
             >
@@ -66,7 +66,7 @@ const TacticalPositionPicker = ({ selectedPositions, onChange }) => {
 
       {/* Legend / Tip */}
       <div className="absolute bottom-4 left-0 w-full text-center">
-        <p className="verge-label-mono text-[8px] text-white/20">Select tactical zones</p>
+        <p className="verge-label-mono text-[8px] text-hazard-white/20">Select tactical zones</p>
       </div>
     </div>
   );

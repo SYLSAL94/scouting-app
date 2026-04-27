@@ -6,10 +6,10 @@ import { PlayerSearchTile } from './PlayerSearchTile';
 import { useMetricSelection } from '../../hooks/useMetricSelection';
 
 const Step = ({ number, title, children }) => (
-    <div className="p-6 rounded-[4px] bg-[#2d2d2d]/50 border border-white/5 relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-[#3cffd0]/10" />
-        <h3 className="flex items-center verge-label-mono text-[10px] font-black mb-6 text-white uppercase tracking-widest group-hover:text-[#3cffd0] transition-colors">
-            <span className="flex items-center justify-center w-6 h-6 mr-4 text-[9px] font-black rounded-[2px] bg-[#3cffd0] text-black">
+    <div className="p-6 rounded-[4px] bg-surface-slate/50 border border-hazard-white/5 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-8 h-8 border-t border-r border-jelly-mint/10" />
+        <h3 className="flex items-center verge-label-mono text-[10px] font-black mb-6 text-hazard-white uppercase tracking-widest group-hover:text-jelly-mint transition-colors">
+            <span className="flex items-center justify-center w-6 h-6 mr-4 text-[9px] font-black rounded-[2px] bg-jelly-mint text-absolute-black">
                 {number}
             </span>
             {title}
@@ -97,24 +97,24 @@ export const RadarDashboard = ({
     };
 
     return (
-        <div className="flex flex-col gap-6 h-full min-h-0 xl:min-h-[800px] bg-[#131313]">
+        <div className="flex flex-col gap-6 h-full min-h-0 xl:min-h-[800px] bg-canvas-black">
             {/* Mobile Tab Bar */}
-            <div className="flex xl:hidden bg-[#2d2d2d] p-1 rounded-[4px] border border-white/5 mb-2 gap-1">
+            <div className="flex xl:hidden bg-surface-slate p-1 rounded-[4px] border border-hazard-white/5 mb-2 gap-1">
                 <button 
                     onClick={() => setActiveTab('CHART')}
-                    className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[8px] font-black uppercase transition-all duration-300 ${activeTab === 'CHART' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+                    className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[8px] font-black uppercase transition-all duration-300 ${activeTab === 'CHART' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-secondary-text'}`}
                 >
                     Visionnage
                 </button>
                 <button 
                     onClick={() => setActiveTab('ENTITIES')}
-                    className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[8px] font-black uppercase transition-all duration-300 ${activeTab === 'ENTITIES' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+                    className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[8px] font-black uppercase transition-all duration-300 ${activeTab === 'ENTITIES' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-secondary-text'}`}
                 >
                     Entités
                 </button>
                 <button 
                     onClick={() => setActiveTab('METRICS')}
-                    className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[8px] font-black uppercase transition-all duration-300 ${activeTab === 'METRICS' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+                    className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[8px] font-black uppercase transition-all duration-300 ${activeTab === 'METRICS' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-secondary-text'}`}
                 >
                     Métriques
                 </button>
@@ -122,15 +122,15 @@ export const RadarDashboard = ({
 
             <div className="flex flex-col xl:flex-row gap-8 h-auto xl:h-full min-h-screen xl:min-h-0">
                 {/* LEFT PANEL: Control Panel */}
-                <div className={`w-full xl:w-[480px] flex flex-col h-auto xl:h-full bg-[#131313] rounded-[4px] border border-white/10 overflow-hidden flex-shrink-0 ${activeTab !== 'CHART' ? 'flex' : 'hidden xl:flex'}`}>
-                    <div className="p-6 md:p-8 flex-shrink-0 border-b border-white/10 bg-[#131313]">
+                <div className={`w-full xl:w-[480px] flex flex-col h-auto xl:h-full bg-canvas-black rounded-[4px] border border-hazard-white/10 overflow-hidden flex-shrink-0 ${activeTab !== 'CHART' ? 'flex' : 'hidden xl:flex'}`}>
+                    <div className="p-6 md:p-8 flex-shrink-0 border-b border-hazard-white/10 bg-canvas-black">
                         <div className="flex items-center">
-                            <div className="mr-4 md:mr-6 p-3 md:p-4 rounded-[4px] bg-[#3cffd0]/10 border border-[#3cffd0]/20">
-                                <Target size={24} className="text-[#3cffd0]" />
+                            <div className="mr-4 md:mr-6 p-3 md:p-4 rounded-[4px] bg-jelly-mint/10 border border-jelly-mint/20">
+                                <Target size={24} className="text-jelly-mint" />
                             </div>
                             <div>
-                                <h2 className="verge-h3 text-white text-xl md:text-3xl">Radar <span className="text-[#3cffd0]">Studio</span></h2>
-                                <p className="verge-label-mono text-[8px] md:text-[9px] text-[#949494] mt-1 md:mt-2 uppercase tracking-widest">Normalisation Active</p>
+                                <h2 className="verge-h3 text-hazard-white text-xl md:text-3xl">Radar <span className="text-jelly-mint">Studio</span></h2>
+                                <p className="verge-label-mono text-[8px] md:text-[9px] text-secondary-text mt-1 md:mt-2 uppercase tracking-widest">Normalisation Active</p>
                             </div>
                         </div>
                     </div>
@@ -149,18 +149,18 @@ export const RadarDashboard = ({
                                     {selectedEntities.length > 0 && (
                                         <div className="space-y-2 mt-4">
                                             {selectedEntities.map((p, idx) => (
-                                                <div key={idx} className="flex items-center justify-between bg-[#131313] p-3 rounded-[2px] border border-white/5">
-                                                    <div className="verge-label-mono text-[9px] font-black text-white uppercase truncate mr-4">{p.name || p.full_name}</div>
+                                                <div key={idx} className="flex items-center justify-between bg-canvas-black p-3 rounded-[2px] border border-hazard-white/5">
+                                                    <div className="verge-label-mono text-[9px] font-black text-hazard-white uppercase truncate mr-4">{p.name || p.full_name}</div>
                                                     <button onClick={() => handlePlayerRemove(p.id || p.unique_id)} className="text-[#f43f5e] verge-label-mono text-[8px] font-black">RETIRER</button>
                                                 </div>
                                             ))}
                                         </div>
                                     )}
 
-                                    <label className={`flex items-center space-x-3 mt-4 p-4 rounded-[2px] bg-[#131313] border border-white/5 ${selectedEntities.length !== 1 ? 'opacity-30' : 'cursor-pointer hover:border-[#3cffd0]/30'}`}>
+                                    <label className={`flex items-center space-x-3 mt-4 p-4 rounded-[2px] bg-canvas-black border border-hazard-white/5 ${selectedEntities.length !== 1 ? 'opacity-30' : 'cursor-pointer hover:border-jelly-mint/30'}`}>
                                         <input
                                             type="checkbox"
-                                            className="h-4 w-4 rounded-[2px] border-white/10 text-[#3cffd0] bg-black accent-[#3cffd0]"
+                                            className="h-4 w-4 rounded-[2px] border-hazard-white/10 text-jelly-mint bg-absolute-black accent-[#3cffd0]"
                                             checked={compareWithMedian}
                                             onChange={(e) => {
                                                 setCompareWithMedian(e.target.checked);
@@ -168,7 +168,7 @@ export const RadarDashboard = ({
                                             }}
                                             disabled={selectedEntities.length !== 1}
                                         />
-                                        <span className="verge-label-mono text-[9px] text-[#949494] uppercase tracking-widest font-black leading-none">Comparer au profil médian</span>
+                                        <span className="verge-label-mono text-[9px] text-secondary-text uppercase tracking-widest font-black leading-none">Comparer au profil médian</span>
                                     </label>
                                 </div>
                             </Step>
@@ -204,8 +204,8 @@ export const RadarDashboard = ({
                                 disabled={!canGenerate || appliedConfig !== null}
                                 className={`w-full py-5 rounded-[4px] verge-label-mono text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
                                     canGenerate && appliedConfig === null
-                                        ? 'bg-[#3cffd0] text-black shadow-[0_0_40px_rgba(60,255,208,0.2)]'
-                                        : 'bg-white/5 text-[#949494] border border-white/5'
+                                        ? 'bg-jelly-mint text-absolute-black shadow-[0_0_40px_rgba(60,255,208,0.2)]'
+                                        : 'bg-hazard-white/5 text-secondary-text border border-hazard-white/5'
                                 }`}
                             >
                                 {appliedConfig !== null ? 'Radar à jour' : 'Générer'}
@@ -215,7 +215,7 @@ export const RadarDashboard = ({
                 </div>
 
                 {/* RIGHT PANEL: Visualization */}
-                <div className={`flex-grow xl:flex-1 bg-[#131313] border border-white/10 rounded-[4px] flex flex-col p-4 md:p-10 min-h-[500px] md:min-h-[700px] min-w-0 relative overflow-hidden ${activeTab === 'CHART' ? 'flex' : 'hidden xl:flex'}`}>
+                <div className={`flex-grow xl:flex-1 bg-canvas-black border border-hazard-white/10 rounded-[4px] flex flex-col p-4 md:p-10 min-h-[500px] md:min-h-[700px] min-w-0 relative overflow-hidden ${activeTab === 'CHART' ? 'flex' : 'hidden xl:flex'}`}>
                     <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
                     
                     {appliedConfig ? (
@@ -230,12 +230,12 @@ export const RadarDashboard = ({
                             onPlayerSelect={undefined} 
                         />
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-center p-6 md:p-12 border border-dashed border-white/10 rounded-[4px] m-4 relative z-10">
-                            <div className="w-16 h-16 md:w-20 md:h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 md:mb-10 border border-white/5">
-                                <Target className="text-[#3cffd0]/40" size={32} md:size={40} />
+                        <div className="flex-1 flex flex-col items-center justify-center text-center p-6 md:p-12 border border-dashed border-hazard-white/10 rounded-[4px] m-4 relative z-10">
+                            <div className="w-16 h-16 md:w-20 md:h-20 bg-hazard-white/5 rounded-full flex items-center justify-center mb-6 md:mb-10 border border-hazard-white/5">
+                                <Target className="text-jelly-mint/40" size={32} md:size={40} />
                             </div>
-                            <h3 className="verge-h2 text-white mb-4 md:mb-6 uppercase tracking-tighter text-xl md:text-4xl">PRÊT POUR L'ANALYSE</h3>
-                            <p className="verge-label-mono text-[#949494] text-[9px] md:text-[10px] max-w-sm uppercase tracking-widest leading-relaxed">
+                            <h3 className="verge-h2 text-hazard-white mb-4 md:mb-6 uppercase tracking-tighter text-xl md:text-4xl">PRÊT POUR L'ANALYSE</h3>
+                            <p className="verge-label-mono text-secondary-text text-[9px] md:text-[10px] max-w-sm uppercase tracking-widest leading-relaxed">
                                 Configurez vos cibles et vos métriques tactiques pour générer le radar.
                             </p>
                         </div>

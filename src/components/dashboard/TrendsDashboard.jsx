@@ -89,14 +89,14 @@ const TrendsDashboard = ({ metricsList = [] }) => {
   return (
     <div className="flex flex-col gap-8 min-h-screen pb-20">
       {/* Header & Search */}
-      <div className="relative z-50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 bg-[#2d2d2d] p-8 border border-white/5 rounded-[4px]">
+      <div className="relative z-50 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-10 bg-surface-slate p-8 border border-hazard-white/5 rounded-[4px]">
         <div className="flex items-center gap-6">
-          <div className="p-3 bg-[#3cffd0] rounded-[2px] shadow-[0_0_20px_rgba(60,255,208,0.3)]">
-            <TrendingUp size={24} className="text-black" />
+          <div className="p-3 bg-jelly-mint rounded-[2px] shadow-[0_0_20px_rgba(60,255,208,0.3)]">
+            <TrendingUp size={24} className="text-absolute-black" />
           </div>
           <div>
-            <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none">Market <span className="text-[#3cffd0]">Trends</span></h2>
-            <p className="verge-label-mono text-[9px] text-[#3cffd0] tracking-[0.3em] font-black mt-2">ANALYSE COMPARATIVE DES TRAJECTOIRES</p>
+            <h2 className="text-4xl font-black uppercase tracking-tighter text-hazard-white leading-none">Market <span className="text-jelly-mint">Trends</span></h2>
+            <p className="verge-label-mono text-[9px] text-jelly-mint tracking-[0.3em] font-black mt-2">ANALYSE COMPARATIVE DES TRAJECTOIRES</p>
           </div>
         </div>
 
@@ -106,43 +106,43 @@ const TrendsDashboard = ({ metricsList = [] }) => {
       </div>
 
       {/* Main Chart Section */}
-      <div className="bg-[#131313] border border-white/10 p-10 rounded-[4px] relative overflow-hidden">
+      <div className="bg-canvas-black border border-hazard-white/10 p-10 rounded-[4px] relative overflow-hidden">
         {/* Technical Hazard Corner */}
-        <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-[#3cffd0]/20" />
+        <div className="absolute top-0 right-0 w-20 h-20 border-t-2 border-r-2 border-jelly-mint/20" />
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
           
           <div className="relative" ref={menuRef}>
             <button 
               onClick={() => setIsMetricMenuOpen(!isMetricMenuOpen)}
-              className="flex items-center gap-5 bg-[#2d2d2d] border border-white/10 rounded-[2px] px-6 py-4 hover:border-[#3cffd0]/50 transition-all min-w-[340px]"
+              className="flex items-center gap-5 bg-surface-slate border border-hazard-white/10 rounded-[2px] px-6 py-4 hover:border-jelly-mint/50 transition-all min-w-[340px]"
             >
-              <BarChart size={18} className="text-[#3cffd0]" />
+              <BarChart size={18} className="text-jelly-mint" />
               <div className="flex-1 text-left">
-                <p className="verge-label-mono text-[8px] text-[#3cffd0] tracking-[0.2em] font-black mb-1">MÉTRIQUE ACTIVE</p>
-                <p className="text-sm font-black text-white uppercase truncate tracking-tight">{currentMetricLabel}</p>
+                <p className="verge-label-mono text-[8px] text-jelly-mint tracking-[0.2em] font-black mb-1">MÉTRIQUE ACTIVE</p>
+                <p className="text-sm font-black text-hazard-white uppercase truncate tracking-tight">{currentMetricLabel}</p>
               </div>
-              <ChevronDown size={18} className={`text-[#949494] transition-transform ${isMetricMenuOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown size={18} className={`text-secondary-text transition-transform ${isMetricMenuOpen ? 'rotate-180' : ''}`} />
             </button>
 
             <AnimatePresence>
               {isMetricMenuOpen && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
-                  className="absolute top-full left-0 mt-3 w-[400px] max-h-[500px] bg-[#2d2d2d] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] z-50 flex flex-col overflow-hidden"
+                  className="absolute top-full left-0 mt-3 w-[400px] max-h-[500px] bg-surface-slate border border-jelly-mint/30 rounded-[2px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] z-50 flex flex-col overflow-hidden"
                 >
-                  <div className="p-5 border-b border-white/10 bg-[#131313]">
+                  <div className="p-5 border-b border-hazard-white/10 bg-canvas-black">
                     <div className="relative">
-                      <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#949494]" />
-                      <input autoFocus placeholder="RECHERCHER UNE MÉTRIQUE..." className="w-full bg-[#2d2d2d] border border-white/10 rounded-[1px] py-3 pl-11 pr-4 text-[10px] verge-label-mono text-white outline-none focus:border-[#3cffd0] transition-all" value={metricSearch} onChange={(e) => setMetricSearch(e.target.value)} />
+                      <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-text" />
+                      <input autoFocus placeholder="RECHERCHER UNE MÉTRIQUE..." className="w-full bg-surface-slate border border-hazard-white/10 rounded-[1px] py-3 pl-11 pr-4 text-[10px] verge-label-mono text-hazard-white outline-none focus:border-jelly-mint transition-all" value={metricSearch} onChange={(e) => setMetricSearch(e.target.value)} />
                     </div>
                   </div>
                   <div className="flex-1 overflow-y-auto p-3 styled-scrollbar">
                     {filteredMetrics.map((group, gIdx) => (
                       <div key={group.label || gIdx} className="mb-6 last:mb-0">
-                        <div className="px-3 py-2 verge-label-mono text-[9px] text-[#3cffd0] tracking-[0.3em] font-black mb-2 flex items-center gap-2 border-l-2 border-[#3cffd0]">{group.label}</div>
+                        <div className="px-3 py-2 verge-label-mono text-[9px] text-jelly-mint tracking-[0.3em] font-black mb-2 flex items-center gap-2 border-l-2 border-jelly-mint">{group.label}</div>
                         {group.options.map(m => (
                           <button key={m.value} onClick={() => { setSelectedMetric(m.value); setIsMetricMenuOpen(false); }}
-                            className={`w-full text-left px-4 py-3 rounded-[1px] text-[11px] font-black verge-label-mono flex items-center justify-between transition-all mb-1 ${selectedMetric === m.value ? 'bg-[#3cffd0] text-black shadow-[0_0_20px_rgba(60,255,208,0.2)]' : 'text-[#949494] hover:bg-white/5 hover:text-white'}`}
+                            className={`w-full text-left px-4 py-3 rounded-[1px] text-[11px] font-black verge-label-mono flex items-center justify-between transition-all mb-1 ${selectedMetric === m.value ? 'bg-jelly-mint text-absolute-black shadow-[0_0_20px_rgba(60,255,208,0.2)]' : 'text-secondary-text hover:bg-hazard-white/5 hover:text-hazard-white'}`}
                           >
                             {m.label}
                             {selectedMetric === m.value && <Check size={14} />}
@@ -160,13 +160,13 @@ const TrendsDashboard = ({ metricsList = [] }) => {
             <AnimatePresence>
               {selectedPlayers.map((p, idx) => (
                 <motion.div key={p.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex items-center gap-3 bg-[#2d2d2d] border border-white/10 rounded-[2px] px-3 py-2"
+                  className="flex items-center gap-3 bg-surface-slate border border-hazard-white/10 rounded-[2px] px-3 py-2"
                 >
                   <div className="w-6 h-6 rounded-full border-2 overflow-hidden" style={{ borderColor: COLORS[idx % COLORS.length] }}>
-                    {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#131313] flex items-center justify-center text-[8px] font-black text-white">{p.name.charAt(0)}</div>}
+                    {p.image ? <img src={p.image} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-canvas-black flex items-center justify-center text-[8px] font-black text-hazard-white">{p.name.charAt(0)}</div>}
                   </div>
-                  <span className="verge-label-mono text-[10px] font-black text-white truncate max-w-[100px] uppercase">{p.name}</span>
-                  <button onClick={() => removePlayer(p.id)} className="text-[#949494] hover:text-[#f43f5e] transition-colors"><X size={14} /></button>
+                  <span className="verge-label-mono text-[10px] font-black text-hazard-white truncate max-w-[100px] uppercase">{p.name}</span>
+                  <button onClick={() => removePlayer(p.id)} className="text-secondary-text hover:text-[#f43f5e] transition-colors"><X size={14} /></button>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -197,28 +197,28 @@ const TrendsDashboard = ({ metricsList = [] }) => {
 
       {/* Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-         <div className="bg-[#2d2d2d] border border-[#3cffd0]/30 rounded-[4px] p-8 text-white relative overflow-hidden group">
+         <div className="bg-surface-slate border border-jelly-mint/30 rounded-[4px] p-8 text-hazard-white relative overflow-hidden group">
             {/* Corner Hazard */}
-            <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#3cffd0] opacity-40" />
+            <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-jelly-mint opacity-40" />
             
             <div className="relative z-10">
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 bg-[#3cffd0] flex items-center justify-center rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.3)]">
-                  <Activity size={24} className="text-black" />
+                <div className="w-12 h-12 bg-jelly-mint flex items-center justify-center rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.3)]">
+                  <Activity size={24} className="text-absolute-black" />
                 </div>
-                <h4 className="text-2xl font-black uppercase tracking-tighter italic leading-none">Analyse de <span className="text-[#3cffd0]">Momentum</span></h4>
+                <h4 className="text-2xl font-black uppercase tracking-tighter italic leading-none">Analyse de <span className="text-jelly-mint">Momentum</span></h4>
               </div>
-              <p className="verge-label-mono text-[10px] text-[#949494] leading-relaxed font-black uppercase tracking-wider mb-10 opacity-70">
+              <p className="verge-label-mono text-[10px] text-secondary-text leading-relaxed font-black uppercase tracking-wider mb-10 opacity-70">
                 Détectez les ruptures de croissance, les cycles de méforme ou les accélérations de carrière grâce à la corrélation temporelle des trajectoires de performance.
               </p>
-              <div className="flex items-center gap-3 verge-label-mono text-[9px] font-black text-[#3cffd0] tracking-[0.2em] uppercase">
+              <div className="flex items-center gap-3 verge-label-mono text-[9px] font-black text-jelly-mint tracking-[0.2em] uppercase">
                 <ArrowUpRight size={16} /> Synchronisation multi-joueurs active
               </div>
             </div>
          </div>
 
-         <div className="lg:col-span-2 bg-[#2d2d2d] border border-white/5 rounded-[4px] p-8 relative">
-            <h4 className="verge-label-mono text-[10px] font-black uppercase tracking-[0.3em] text-[#3cffd0] mb-8 flex items-center gap-3">
+         <div className="lg:col-span-2 bg-surface-slate border border-hazard-white/5 rounded-[4px] p-8 relative">
+            <h4 className="verge-label-mono text-[10px] font-black uppercase tracking-[0.3em] text-jelly-mint mb-8 flex items-center gap-3">
               <Calendar size={14} /> Highlights de performance par joueur
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -231,15 +231,15 @@ const TrendsDashboard = ({ metricsList = [] }) => {
                   const val = last ? (last[selectedMetric] !== undefined ? last[selectedMetric] : (last.metrics ? last.metrics[selectedMetric] : null)) : null;
                   
                   return (
-                    <div key={p.id} className="flex items-center justify-between p-5 rounded-[2px] bg-[#131313] border border-white/5 hover:border-[#3cffd0]/40 transition-all group">
+                    <div key={p.id} className="flex items-center justify-between p-5 rounded-[2px] bg-canvas-black border border-hazard-white/5 hover:border-jelly-mint/40 transition-all group">
                       <div className="flex items-center gap-4">
                         <div className="w-1.5 h-10 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
                         <div className="flex flex-col">
-                          <span className="verge-label-mono text-[11px] font-black text-white truncate max-w-[120px] uppercase">{p.name}</span>
-                          <span className="verge-label-mono text-[8px] text-[#949494] font-black tracking-[0.1em]">{last?.season || '—'}</span>
+                          <span className="verge-label-mono text-[11px] font-black text-hazard-white truncate max-w-[120px] uppercase">{p.name}</span>
+                          <span className="verge-label-mono text-[8px] text-secondary-text font-black tracking-[0.1em]">{last?.season || '—'}</span>
                         </div>
                       </div>
-                      <div className="text-lg font-black text-[#3cffd0] font-mono group-hover:scale-110 transition-transform">
+                      <div className="text-lg font-black text-jelly-mint font-mono group-hover:scale-110 transition-transform">
                         {val !== null ? Number(val).toFixed(2) : '—'}
                       </div>
                     </div>

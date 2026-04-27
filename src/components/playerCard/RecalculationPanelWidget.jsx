@@ -9,13 +9,13 @@ const API_BASE_URL = 'https://api-scouting.theanalyst.cloud';
  -------------------------------------------- */
 const SectionHeader = ({ icon: Icon, title, subtitle }) => (
     <div className="flex items-center gap-3 mb-4">
-        <div className="flex items-center justify-center w-9 h-9 rounded-[8px] bg-[#2d2d2d] border border-white/5">
-            <Icon size={16} className="text-[#949494]" />
+        <div className="flex items-center justify-center w-9 h-9 rounded-[8px] bg-surface-slate border border-hazard-white/5">
+            <Icon size={16} className="text-secondary-text" />
         </div>
         <div className="flex flex-col">
-            <h4 className="verge-label-mono text-[10px] uppercase font-black tracking-widest text-white leading-none mb-1">{title}</h4>
+            <h4 className="verge-label-mono text-[10px] uppercase font-black tracking-widest text-hazard-white leading-none mb-1">{title}</h4>
             {subtitle && (
-                <p className="verge-label-mono text-[7px] text-[#949494] uppercase tracking-wider font-black">{subtitle}</p>
+                <p className="verge-label-mono text-[7px] text-secondary-text uppercase tracking-wider font-black">{subtitle}</p>
             )}
         </div>
     </div>
@@ -25,7 +25,7 @@ const SectionHeader = ({ icon: Icon, title, subtitle }) => (
    Filter Section Wrapper
  -------------------------------------------- */
 const FilterSection = ({ children, className = '' }) => (
-    <div className={`relative p-6 rounded-[4px] bg-[#2d2d2d]/30 border border-white/5 hover:border-white/10 transition-all duration-300 group overflow-hidden ${className}`}>
+    <div className={`relative p-6 rounded-[4px] bg-surface-slate/30 border border-hazard-white/5 hover:border-hazard-white/10 transition-all duration-300 group overflow-hidden ${className}`}>
         <div className="relative z-10">
             {children}
         </div>
@@ -121,19 +121,19 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
                     <FilterSection>
                         <SectionHeader icon={Filter} title="Âge" subtitle="Min/Max" />
                         <div className="flex items-center gap-2 mt-2">
-                            <div className="flex-1 bg-[#131313] border border-white/10 rounded-[8px] p-2 flex items-center justify-center">
+                            <div className="flex-1 bg-canvas-black border border-hazard-white/10 rounded-[8px] p-2 flex items-center justify-center">
                                 <input 
                                     type="number" value={filters.min_age} 
                                     onChange={(e) => setFilters({...filters, min_age: parseFloat(e.target.value)})}
-                                    className="w-full bg-transparent verge-label-mono text-[11px] text-white text-center outline-none font-black"
+                                    className="w-full bg-transparent verge-label-mono text-[11px] text-hazard-white text-center outline-none font-black"
                                 />
                             </div>
-                            <span className="text-[#949494] text-xs">—</span>
-                            <div className="flex-1 bg-[#131313] border border-white/10 rounded-[8px] p-2 flex items-center justify-center">
+                            <span className="text-secondary-text text-xs">—</span>
+                            <div className="flex-1 bg-canvas-black border border-hazard-white/10 rounded-[8px] p-2 flex items-center justify-center">
                                 <input 
                                     type="number" value={filters.max_age} 
                                     onChange={(e) => setFilters({...filters, max_age: parseFloat(e.target.value)})}
-                                    className="w-full bg-transparent verge-label-mono text-[11px] text-white text-center outline-none font-black"
+                                    className="w-full bg-transparent verge-label-mono text-[11px] text-hazard-white text-center outline-none font-black"
                                 />
                             </div>
                         </div>
@@ -142,13 +142,13 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
                     {/* Temps de Jeu */}
                     <FilterSection>
                         <SectionHeader icon={SlidersHorizontal} title="Playtime %" subtitle="Seuil représentatif" />
-                        <div className="relative mt-2 flex items-center justify-center bg-[#131313] border border-white/10 rounded-[8px] p-2">
+                        <div className="relative mt-2 flex items-center justify-center bg-canvas-black border border-hazard-white/10 rounded-[8px] p-2">
                             <input 
                                 type="number" value={filters.min_playtime_percent} 
                                 onChange={(e) => setFilters({...filters, min_playtime_percent: parseFloat(e.target.value)})}
-                                className="w-full bg-transparent verge-label-mono text-[11px] text-white text-center outline-none font-black"
+                                className="w-full bg-transparent verge-label-mono text-[11px] text-hazard-white text-center outline-none font-black"
                             />
-                            <span className="verge-label-mono text-[9px] text-[#949494] font-black ml-1">%</span>
+                            <span className="verge-label-mono text-[9px] text-secondary-text font-black ml-1">%</span>
                         </div>
                     </FilterSection>
                 </div>
@@ -156,13 +156,13 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
 
             {/* Metadata Feedback */}
             {recalcMetadata && !isRecalculating && (
-                <div className="p-5 rounded-[12px] bg-[#3cffd0]/10 border border-[#3cffd0]/20 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-[4px] bg-[#3cffd0] flex items-center justify-center text-black">
+                <div className="p-5 rounded-[12px] bg-jelly-mint/10 border border-jelly-mint/20 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-[4px] bg-jelly-mint flex items-center justify-center text-absolute-black">
                         <TrendingUp size={18} />
                     </div>
                     <div>
-                        <h5 className="verge-label-mono text-[10px] font-black uppercase text-[#3cffd0] tracking-widest">Calcul Contextuel Terminé</h5>
-                        <p className="verge-label-mono text-[8px] text-[#3cffd0]/80 uppercase font-black mt-0.5">
+                        <h5 className="verge-label-mono text-[10px] font-black uppercase text-jelly-mint tracking-widest">Calcul Contextuel Terminé</h5>
+                        <p className="verge-label-mono text-[8px] text-jelly-mint/80 uppercase font-black mt-0.5">
                             Rang Estimé : {recalcMetadata.rank} sur {recalcMetadata.populationCount}
                         </p>
                     </div>
@@ -170,13 +170,13 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
             )}
 
             {/* Actions Section matching Screenshot */}
-            <div className="flex items-center gap-5 pt-6 border-t border-white/5">
+            <div className="flex items-center gap-5 pt-6 border-t border-hazard-white/5">
                 <button 
                     onClick={handleReset}
-                    className="flex items-center gap-2.5 px-2 hover:text-white transition-colors group"
+                    className="flex items-center gap-2.5 px-2 hover:text-hazard-white transition-colors group"
                 >
-                    <RotateCcw size={16} className="text-[#949494] group-hover:rotate-[-45deg] transition-transform" />
-                    <span className="verge-label-mono text-[10px] font-black uppercase tracking-widest text-[#949494]">Reset</span>
+                    <RotateCcw size={16} className="text-secondary-text group-hover:rotate-[-45deg] transition-transform" />
+                    <span className="verge-label-mono text-[10px] font-black uppercase tracking-widest text-secondary-text">Reset</span>
                 </button>
                 
                 <button 
@@ -184,13 +184,13 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
                     disabled={isRecalculating}
                     className={`flex-1 relative overflow-hidden flex items-center justify-center gap-3 py-4 px-8 rounded-full transition-all duration-500 ${
                         isRecalculating 
-                        ? 'bg-[#2d2d2d] text-[#949494] cursor-not-allowed' 
-                        : 'bg-[#3cffd0] text-black hover:bg-white shadow-[0_0_30px_rgba(60,255,208,0.2)]'
+                        ? 'bg-surface-slate text-secondary-text cursor-not-allowed' 
+                        : 'bg-jelly-mint text-absolute-black hover:bg-hazard-white shadow-[0_0_30px_rgba(60,255,208,0.2)]'
                     }`}
                 >
                     {isRecalculating ? (
                         <>
-                            <div className="w-4 h-4 border-2 border-[#949494] border-t-transparent rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-2 border-secondary-text border-t-transparent rounded-full animate-spin" />
                             <span className="verge-label-mono text-[10px] font-black uppercase tracking-widest">Calcul en cours...</span>
                         </>
                     ) : (
@@ -201,7 +201,7 @@ export default function RecalculationPanelWidget({ playerId, onRecalculated }) {
                     )}
                     
                     {!isRecalculating && (
-                        <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                        <div className="absolute inset-0 bg-hazard-white/20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                     )}
                 </button>
             </div>

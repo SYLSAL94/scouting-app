@@ -2,18 +2,18 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors - The Verge 2024 Palette */
-  --color-canvas-black: #131313;
-  --color-surface-slate: #2d2d2d;
-  --color-image-frame: #313131;
-  --color-jelly-mint: #3cffd0;
-  --color-verge-ultraviolet: #5200ff;
-  --color-console-mint: #309875;
-  --color-deep-link-blue: #3860be;
-  --color-purple-rule: #3d00bf;
-  --color-hazard-white: #ffffff;
-  --color-secondary-text: #949494;
-  --color-muted-text: #e9e9e9;
+  /* Colors - The Verge 2024 Palette (Dynamic) */
+  --color-canvas-black: var(--canvas-black);
+  --color-surface-slate: var(--surface-slate);
+  --color-image-frame: var(--image-frame);
+  --color-jelly-mint: var(--jelly-mint);
+  --color-verge-ultraviolet: var(--verge-ultraviolet);
+  --color-console-mint: var(--console-mint-border);
+  --color-deep-link-blue: var(--deep-link-blue);
+  --color-purple-rule: var(--purple-rule);
+  --color-hazard-white: var(--hazard-white);
+  --color-secondary-text: var(--secondary-text);
+  --color-muted-text: var(--muted-text);
 
   /* Typography - Klim/PanGram Substitutes */
   --font-display: "Oswald", "Impact", "Helvetica Neue", sans-serif;
@@ -54,6 +54,22 @@
 
   font-family: var(--font-ui);
   color-scheme: dark;
+}
+
+[data-theme='light'] {
+  --canvas-black: #ffffff;
+  --surface-slate: #f3f4f6;
+  --image-frame: #e5e7eb;
+  --jelly-mint: #3cffd0;
+  --verge-ultraviolet: #5200ff;
+  --console-mint-border: #309875;
+  --deep-link-blue: #3860be;
+  --purple-rule: #3d00bf;
+  --hazard-white: #131313; /* Inverted for light mode */
+  --secondary-text: #5e5e5e;
+  --muted-text: #2d2d2d;
+  --absolute-black: #000000;
+  color-scheme: light;
 }
 
 @utility verge-card {

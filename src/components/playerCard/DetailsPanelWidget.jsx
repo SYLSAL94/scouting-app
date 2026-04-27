@@ -41,34 +41,34 @@ export default function DetailsPanelWidget({ player, onSelectProfile }) {
     }, [player]);
 
     return (
-        <div className="bg-[#131313] border border-white/10 rounded-[4px] p-6">
-            <h3 className="verge-label-mono text-[#3cffd0] mb-6 flex items-center gap-2">
-                <span className="w-1 h-3 bg-[#3cffd0]"></span> Details & Contexte
+        <div className="bg-canvas-black border border-hazard-white/10 rounded-[4px] p-6">
+            <h3 className="verge-label-mono text-jelly-mint mb-6 flex items-center gap-2">
+                <span className="w-1 h-3 bg-jelly-mint"></span> Details & Contexte
             </h3>
             
             <div className="grid grid-cols-2 gap-3 mb-8">
                 {infoItems.map((item, idx) => (
-                    <div key={idx} className="bg-[#2d2d2d] p-4 border border-white/5 hover:border-[#3cffd0] transition-all duration-300 group rounded-[2px]">
-                        <div className="verge-label-mono text-[8px] mb-2 text-[#949494] group-hover:text-[#3cffd0] transition-colors uppercase tracking-widest">{item.label}</div>
-                        <div className="text-sm font-black text-white flex items-baseline gap-1">
+                    <div key={idx} className="bg-surface-slate p-4 border border-hazard-white/5 hover:border-jelly-mint transition-all duration-300 group rounded-[2px]">
+                        <div className="verge-label-mono text-[8px] mb-2 text-secondary-text group-hover:text-jelly-mint transition-colors uppercase tracking-widest">{item.label}</div>
+                        <div className="text-sm font-black text-hazard-white flex items-baseline gap-1">
                             {item.value || '—'} 
-                            <span className="verge-label-mono text-[8px] text-[#949494] uppercase">{item.unit}</span>
+                            <span className="verge-label-mono text-[8px] text-secondary-text uppercase">{item.unit}</span>
                         </div>
                     </div>
                 ))}
             </div>
 
             <div className="space-y-4 mb-8">
-                <div className="verge-label-mono text-[9px] text-white/40 border-b border-white/10 pb-2 uppercase tracking-widest">Points Forts — Stats Brutes</div>
+                <div className="verge-label-mono text-[9px] text-hazard-white/40 border-b border-hazard-white/10 pb-2 uppercase tracking-widest">Points Forts — Stats Brutes</div>
                 <div className="grid grid-cols-2 gap-3">
                     {topPercentiles.map((stat, idx) => (
-                        <div key={idx} className="bg-[#131313] p-3 border border-white/10 group hover:border-[#3cffd0] transition-all rounded-[2px]">
-                            <div className="verge-label-mono text-[7px] text-[#949494] mb-1 truncate uppercase" title={stat.label}>{stat.label}</div>
+                        <div key={idx} className="bg-canvas-black p-3 border border-hazard-white/10 group hover:border-jelly-mint transition-all rounded-[2px]">
+                            <div className="verge-label-mono text-[7px] text-secondary-text mb-1 truncate uppercase" title={stat.label}>{stat.label}</div>
                             <div className="flex items-baseline justify-between">
-                                <div className="text-[11px] font-black text-white">
+                                <div className="text-[11px] font-black text-hazard-white">
                                     {typeof stat.rawValue === 'number' ? stat.rawValue.toFixed(2) : stat.rawValue || '—'}
                                 </div>
-                                <div className="verge-label-mono text-[8px] text-[#3cffd0]">P{Math.round(stat.percentile)}</div>
+                                <div className="verge-label-mono text-[8px] text-jelly-mint">P{Math.round(stat.percentile)}</div>
                             </div>
                         </div>
                     ))}
@@ -76,24 +76,24 @@ export default function DetailsPanelWidget({ player, onSelectProfile }) {
             </div>
 
             <div className="space-y-4">
-                <div className="verge-label-mono text-[9px] text-white/40 border-b border-white/10 pb-2 uppercase tracking-widest">Profils du poste — Affinité</div>
+                <div className="verge-label-mono text-[9px] text-hazard-white/40 border-b border-hazard-white/10 pb-2 uppercase tracking-widest">Profils du poste — Affinité</div>
                 <div className="grid grid-cols-3 gap-3">
                     {affinityProfiles.length > 0 ? (
                         affinityProfiles.map((profile, i) => (
                             <div 
                                 key={profile.role} 
                                 onClick={() => onSelectProfile && onSelectProfile(profile.role)}
-                                className={`bg-[#2d2d2d] p-3 border cursor-pointer transition-all duration-300 hover:bg-[#3cffd0] hover:text-black group rounded-[2px] ${
-                                    i===0?'border-[#3cffd0]':
-                                    i===1?'border-white/20':
-                                    'border-[#5200ff]'
+                                className={`bg-surface-slate p-3 border cursor-pointer transition-all duration-300 hover:bg-jelly-mint hover:text-absolute-black group rounded-[2px] ${
+                                    i===0?'border-jelly-mint':
+                                    i===1?'border-hazard-white/20':
+                                    'border-verge-ultraviolet'
                                 } text-center flex flex-col justify-between h-[80px]`}
                             >
-                                <div className={`verge-label-mono text-[7px] ${i===0?'text-[#3cffd0]':i===1?'text-[#949494]':'text-[#5200ff]'} group-hover:text-black`}>
+                                <div className={`verge-label-mono text-[7px] ${i===0?'text-jelly-mint':i===1?'text-secondary-text':'text-verge-ultraviolet'} group-hover:text-absolute-black`}>
                                     {i===0?'01':i===1?'02':'03'}
                                 </div>
-                                <div className="text-[9px] font-black truncate mt-1 group-hover:text-black uppercase leading-tight" title={profile.role}>{profile.role}</div>
-                                <div className="verge-label-mono text-[8px] text-[#949494] group-hover:text-black font-black">{profile.pct.toFixed(1)}%</div>
+                                <div className="text-[9px] font-black truncate mt-1 group-hover:text-absolute-black uppercase leading-tight" title={profile.role}>{profile.role}</div>
+                                <div className="verge-label-mono text-[8px] text-secondary-text group-hover:text-absolute-black font-black">{profile.pct.toFixed(1)}%</div>
                             </div>
                         ))
                     ) : (

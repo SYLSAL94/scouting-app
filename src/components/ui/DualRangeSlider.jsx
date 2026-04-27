@@ -17,9 +17,9 @@ const DualRangeSlider = ({ label, min, max, currentMin, currentMax, onChange, st
   return (
     <div className="filter-group group">
       <div className="flex justify-between items-center mb-6">
-        <label className="verge-label-mono text-[10px] text-white font-black uppercase tracking-widest group-hover:text-[#3cffd0] transition-colors">{label}</label>
-        <div className="bg-[#131313] border border-[#3cffd0]/20 px-4 py-1.5 rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.05)]">
-          <span className="text-[10px] font-black verge-label-mono text-[#3cffd0]">
+        <label className="verge-label-mono text-[10px] text-hazard-white font-black uppercase tracking-widest group-hover:text-jelly-mint transition-colors">{label}</label>
+        <div className="bg-canvas-black border border-jelly-mint/20 px-4 py-1.5 rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.05)]">
+          <span className="text-[10px] font-black verge-label-mono text-jelly-mint">
             {currentMin}{unit} — {currentMax}{unit}
           </span>
         </div>
@@ -27,7 +27,7 @@ const DualRangeSlider = ({ label, min, max, currentMin, currentMax, onChange, st
 
       <div className="relative h-6 flex items-center px-1">
         {/* Track Background */}
-        <div className="absolute w-full h-1 bg-white/5 rounded-full" />
+        <div className="absolute w-full h-1 bg-hazard-white/5 rounded-full" />
         
         {/* Selected Range Highlight */}
         <div 
@@ -56,8 +56,8 @@ const DualRangeSlider = ({ label, min, max, currentMin, currentMax, onChange, st
       </div>
       
       <div className="flex justify-between mt-2 px-1">
-        <span className="verge-label-mono text-[9px] text-white/20 font-black tracking-tighter">{min}{unit}</span>
-        <span className="verge-label-mono text-[9px] text-white/20 font-black tracking-tighter">{max}{unit}</span>
+        <span className="verge-label-mono text-[9px] text-hazard-white/20 font-black tracking-tighter">{min}{unit}</span>
+        <span className="verge-label-mono text-[9px] text-hazard-white/20 font-black tracking-tighter">{max}{unit}</span>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `

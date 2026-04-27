@@ -21,13 +21,13 @@ const TrendsWidget = ({ player }) => {
   if (loading || data.length === 0) return null;
 
   return (
-    <div className="bg-[#131313] border border-white/10 rounded-[4px] p-6 hover:border-[#3cffd0] transition-all group">
+    <div className="bg-canvas-black border border-hazard-white/10 rounded-[4px] p-6 hover:border-jelly-mint transition-all group">
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-3">
-          <TrendingUp size={14} className="text-[#3cffd0]" />
-          <span className="verge-label-mono text-[9px] uppercase tracking-widest text-[#949494]">Évolution</span>
+          <TrendingUp size={14} className="text-jelly-mint" />
+          <span className="verge-label-mono text-[9px] uppercase tracking-widest text-secondary-text">Évolution</span>
         </div>
-        <ArrowRight size={12} className="text-[#949494] group-hover:text-[#3cffd0] transition-colors" />
+        <ArrowRight size={12} className="text-secondary-text group-hover:text-jelly-mint transition-colors" />
       </div>
 
       <div className="h-28 w-full">
@@ -47,16 +47,16 @@ const TrendsWidget = ({ player }) => {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-4 flex justify-between items-end border-t border-white/5 pt-4">
+      <div className="mt-4 flex justify-between items-end border-t border-hazard-white/5 pt-4">
         <div>
-          <p className="verge-label-mono text-[8px] text-[#949494] uppercase tracking-tighter">Progression</p>
-          <p className="verge-label-mono text-[10px] font-black text-white uppercase italic">HISTORIQUE</p>
+          <p className="verge-label-mono text-[8px] text-secondary-text uppercase tracking-tighter">Progression</p>
+          <p className="verge-label-mono text-[10px] font-black text-hazard-white uppercase italic">HISTORIQUE</p>
         </div>
         <div className="text-right">
-          <span className="verge-label-mono text-2xl font-black text-white">
+          <span className="verge-label-mono text-2xl font-black text-hazard-white">
             {Math.round(data[data.length-1]?.note_ponderee || 0)}
           </span>
-          <span className="verge-label-mono text-[8px] font-black text-[#3cffd0] ml-2">PTS</span>
+          <span className="verge-label-mono text-[8px] font-black text-jelly-mint ml-2">PTS</span>
         </div>
       </div>
     </div>

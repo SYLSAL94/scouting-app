@@ -89,18 +89,18 @@ const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds, activeF
     };
 
     return (
-        <div className="h-full flex flex-col items-center justify-center bg-[#131313] rounded-[4px] border border-dashed border-white/10 p-10 transition-all hover:border-[#3cffd0]/50 hover:bg-white/[0.02] group relative min-h-[460px]">
+        <div className="h-full flex flex-col items-center justify-center bg-canvas-black rounded-[4px] border border-dashed border-hazard-white/10 p-10 transition-all hover:border-jelly-mint/50 hover:bg-hazard-white/[0.02] group relative min-h-[460px]">
             {/* Corner Markers */}
-            <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-white/10 group-hover:border-[#3cffd0]/30 transition-colors" />
-            <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-white/10 group-hover:border-[#3cffd0]/30 transition-colors" />
+            <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-hazard-white/10 group-hover:border-jelly-mint/30 transition-colors" />
+            <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-hazard-white/10 group-hover:border-jelly-mint/30 transition-colors" />
             
-            <div className="p-6 bg-[#2d2d2d] border border-white/5 rounded-[1px] mb-8 group-hover:scale-105 transition-all duration-500 shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
-                <PlusCircle size={40} className="text-[#949494] group-hover:text-[#3cffd0] transition-colors" />
+            <div className="p-6 bg-surface-slate border border-hazard-white/5 rounded-[1px] mb-8 group-hover:scale-105 transition-all duration-500 shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
+                <PlusCircle size={40} className="text-secondary-text group-hover:text-jelly-mint transition-colors" />
             </div>
             
             <div className="w-full max-w-[280px] relative z-10">
-                <div className={`relative transition-all duration-300 border-b ${isOpen ? 'border-[#3cffd0]' : 'border-white/10'}`}>
-                    <Search size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-[#949494]" />
+                <div className={`relative transition-all duration-300 border-b ${isOpen ? 'border-jelly-mint' : 'border-hazard-white/10'}`}>
+                    <Search size={14} className="absolute left-0 top-1/2 -translate-y-1/2 text-secondary-text" />
                     <input
                         type="text"
                         value={query}
@@ -109,44 +109,44 @@ const PlayerSelector = ({ onPlayerSelect, placeholder, excludePlayerIds, activeF
                         onBlur={() => setTimeout(() => setIsOpen(false), 200)}
                         onKeyDown={handleKeyDown}
                         placeholder="AJOUTER UN JOUEUR..."
-                        className="w-full bg-transparent verge-label-mono py-4 pl-8 pr-4 text-[10px] font-black text-white focus:outline-none placeholder-[#949494]/30 uppercase tracking-[0.1em]"
+                        className="w-full bg-transparent verge-label-mono py-4 pl-8 pr-4 text-[10px] font-black text-hazard-white focus:outline-none placeholder-[#949494]/30 uppercase tracking-[0.1em]"
                     />
                 </div>
                 
                 {isOpen && (
                     <div
                         ref={listRef}
-                        className="absolute top-full left-0 right-0 mt-2 max-h-72 overflow-y-auto styled-scrollbar z-50 p-2 rounded-[2px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] bg-[#2d2d2d] border border-[#3cffd0]/20"
+                        className="absolute top-full left-0 right-0 mt-2 max-h-72 overflow-y-auto styled-scrollbar z-50 p-2 rounded-[2px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] bg-surface-slate border border-jelly-mint/20"
                     >
                         {isSearching ? (
-                            <div className="p-4 verge-label-mono text-[9px] text-[#3cffd0] text-center font-black animate-pulse">RECHERCHE EN COURS...</div>
+                            <div className="p-4 verge-label-mono text-[9px] text-jelly-mint text-center font-black animate-pulse">RECHERCHE EN COURS...</div>
                         ) : results.length > 0 ? (
                             results.map((opt, index) => (
                                 <div
                                     key={`${opt.id || opt.unique_id}-${index}`}
                                     onMouseDown={() => handleSelect(opt)}
                                     onMouseOver={() => setHighlightedIndex(index)}
-                                    className={`px-4 py-3 rounded-[1px] cursor-pointer flex items-center justify-between transition-all ${Math.max(0, highlightedIndex) === index ? 'bg-[#3cffd0] text-black' : 'hover:bg-white/5 text-[#949494]'}`}
+                                    className={`px-4 py-3 rounded-[1px] cursor-pointer flex items-center justify-between transition-all ${Math.max(0, highlightedIndex) === index ? 'bg-jelly-mint text-absolute-black' : 'hover:bg-hazard-white/5 text-secondary-text'}`}
                                 >
                                     <div className="flex flex-col min-w-0">
-                                        <span className={`verge-label-mono text-[10px] font-black uppercase truncate ${Math.max(0, highlightedIndex) === index ? 'text-black' : 'text-white'}`}>
+                                        <span className={`verge-label-mono text-[10px] font-black uppercase truncate ${Math.max(0, highlightedIndex) === index ? 'text-absolute-black' : 'text-hazard-white'}`}>
                                             {displayNameOf(opt)}
                                         </span>
-                                        <span className={`verge-label-mono text-[8px] font-black opacity-60 uppercase truncate ${Math.max(0, highlightedIndex) === index ? 'text-black/70' : 'text-[#949494]'}`}>
+                                        <span className={`verge-label-mono text-[8px] font-black opacity-60 uppercase truncate ${Math.max(0, highlightedIndex) === index ? 'text-absolute-black/70' : 'text-secondary-text'}`}>
                                             {opt.competition || 'N/A'} • {opt.season || 'N/A'}
                                         </span>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="p-4 verge-label-mono text-[9px] text-[#949494] text-center font-black">
+                            <div className="p-4 verge-label-mono text-[9px] text-secondary-text text-center font-black">
                                 {query.length >= 3 ? `AUCUN RÉSULTAT` : "TAPEZ 3 LETTRES MIN..."}
                             </div>
                         )}
                     </div>
                 )}
             </div>
-            <p className="mt-8 verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.2em] uppercase opacity-40">
+            <p className="mt-8 verge-label-mono text-[9px] text-secondary-text font-black tracking-[0.2em] uppercase opacity-40">
                 {placeholder}
             </p>
         </div>
@@ -159,19 +159,19 @@ const PlayerCard = ({ player, onClear, rank, score, points }) => {
     const initial = dn ? dn.charAt(0) : '?';
 
     return (
-        <div className={`h-full group relative flex flex-col bg-[#131313] border border-white/10 rounded-[4px] overflow-hidden transition-all duration-500 hover:border-[#3cffd0]/30 min-h-[460px] shadow-[0_20px_50px_rgba(0,0,0,0.5)]`}>
+        <div className={`h-full group relative flex flex-col bg-canvas-black border border-hazard-white/10 rounded-[4px] overflow-hidden transition-all duration-500 hover:border-jelly-mint/30 min-h-[460px] shadow-[0_20px_50px_rgba(0,0,0,0.5)]`}>
             {/* Status Header */}
-            <div className="w-full flex justify-between items-center p-4 border-b border-white/5 bg-white/[0.02]">
+            <div className="w-full flex justify-between items-center p-4 border-b border-hazard-white/5 bg-hazard-white/[0.02]">
                 {isWinner ? (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-[#3cffd0] text-black verge-label-mono text-[9px] font-black tracking-[0.2em]">
+                    <div className="flex items-center gap-2 px-3 py-1 bg-jelly-mint text-absolute-black verge-label-mono text-[9px] font-black tracking-[0.2em]">
                         <Trophy size={10} fill="currentColor" />
                         <span>MVP</span>
                     </div>
-                ) : <div className="verge-label-mono text-[9px] text-[#949494] font-black tracking-[0.1em] px-2 opacity-50 uppercase">Simulateur</div>}
+                ) : <div className="verge-label-mono text-[9px] text-secondary-text font-black tracking-[0.1em] px-2 opacity-50 uppercase">Simulateur</div>}
 
                 <button
                     onClick={onClear}
-                    className="p-1.5 text-[#949494] hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    className="p-1.5 text-secondary-text hover:text-hazard-white transition-all opacity-0 group-hover:opacity-100"
                     title="Retirer ce joueur"
                 >
                     <IconX size={14} />
@@ -181,8 +181,8 @@ const PlayerCard = ({ player, onClear, rank, score, points }) => {
             <div className="flex-1 flex flex-col items-center w-full p-8">
                 {/* Image Section */}
                 <div className="relative mb-10 w-full flex justify-center">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#3cffd0]/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                    <div className="w-36 h-36 relative rounded-[2px] overflow-hidden border border-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.4)] bg-[#2d2d2d]">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-jelly-mint/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                    <div className="w-36 h-36 relative rounded-[2px] overflow-hidden border border-hazard-white/10 shadow-[0_25px_50px_rgba(0,0,0,0.4)] bg-surface-slate">
                         <img
                             src={player.image}
                             alt={dn}
@@ -193,7 +193,7 @@ const PlayerCard = ({ player, onClear, rank, score, points }) => {
                             }}
                         />
                         {rank && (
-                            <div className={`absolute bottom-0 right-0 px-2 py-1 bg-black/80 backdrop-blur-md verge-label-mono text-[10px] font-black text-[#3cffd0] border-t border-l border-white/10`}>
+                            <div className={`absolute bottom-0 right-0 px-2 py-1 bg-absolute-black/80 backdrop-blur-md verge-label-mono text-[10px] font-black text-jelly-mint border-t border-l border-hazard-white/10`}>
                                 #{rank}
                             </div>
                         )}
@@ -202,31 +202,31 @@ const PlayerCard = ({ player, onClear, rank, score, points }) => {
 
                 {/* Info Section */}
                 <div className="text-center w-full mb-8">
-                    <h3 className="text-xl font-black text-white leading-tight mb-2 tracking-tight uppercase">
+                    <h3 className="text-xl font-black text-hazard-white leading-tight mb-2 tracking-tight uppercase">
                         {dn}
                     </h3>
                     <div className="flex flex-col items-center gap-1">
-                        <span className="verge-label-mono text-[10px] font-black text-[#949494] tracking-[0.1em] uppercase">{player.last_club_name}</span>
-                        <div className="h-px w-8 bg-[#3cffd0]/30 my-1" />
-                        <span className="verge-label-mono text-[9px] font-black text-[#3cffd0] uppercase tracking-widest">{player.competition || 'N/A'} • {player.season || 'N/A'}</span>
+                        <span className="verge-label-mono text-[10px] font-black text-secondary-text tracking-[0.1em] uppercase">{player.last_club_name}</span>
+                        <div className="h-px w-8 bg-jelly-mint/30 my-1" />
+                        <span className="verge-label-mono text-[9px] font-black text-jelly-mint uppercase tracking-widest">{player.competition || 'N/A'} • {player.season || 'N/A'}</span>
                     </div>
                 </div>
 
                 {/* Stats Grid */}
-                <div className="w-full grid grid-cols-2 gap-px bg-white/5 border border-white/5">
-                    <div className="flex flex-col items-center p-4 bg-[#131313]">
-                        <span className="verge-label-mono text-[8px] text-[#949494] font-black tracking-[0.2em] mb-1">ÂGE</span>
-                        <span className="text-sm font-black text-white tabular-nums">{player.age ?? '-'}</span>
+                <div className="w-full grid grid-cols-2 gap-px bg-hazard-white/5 border border-hazard-white/5">
+                    <div className="flex flex-col items-center p-4 bg-canvas-black">
+                        <span className="verge-label-mono text-[8px] text-secondary-text font-black tracking-[0.2em] mb-1">ÂGE</span>
+                        <span className="text-sm font-black text-hazard-white tabular-nums">{player.age ?? '-'}</span>
                     </div>
-                    <div className="flex flex-col items-center p-4 bg-[#131313]">
-                        <span className="verge-label-mono text-[8px] text-[#949494] font-black tracking-[0.2em] mb-1">MINS</span>
-                        <span className="text-sm font-black text-white tabular-nums">{player.minutes_on_field ?? '-'}</span>
+                    <div className="flex flex-col items-center p-4 bg-canvas-black">
+                        <span className="verge-label-mono text-[8px] text-secondary-text font-black tracking-[0.2em] mb-1">MINS</span>
+                        <span className="text-sm font-black text-hazard-white tabular-nums">{player.minutes_on_field ?? '-'}</span>
                     </div>
                 </div>
             </div>
             
             {/* Bottom Accent */}
-            <div className={`h-1 w-full transition-all duration-500 ${isWinner ? 'bg-[#3cffd0]' : 'bg-white/5 group-hover:bg-[#3cffd0]/30'}`} />
+            <div className={`h-1 w-full transition-all duration-500 ${isWinner ? 'bg-jelly-mint' : 'bg-hazard-white/5 group-hover:bg-jelly-mint/30'}`} />
         </div>
     );
 };
@@ -253,8 +253,8 @@ export const VersusPlayerGrid = ({
                             />
                             {selectedPlayers.length === 2 && index === 0 && (
                                 <div className="hidden md:flex absolute -right-10 top-1/2 -translate-y-1/2 z-20 items-center justify-center pointer-events-none">
-                                    <div className="w-12 h-12 bg-black border border-[#3cffd0]/30 flex items-center justify-center shadow-[0_0_20px_rgba(60,255,208,0.2)] z-20 relative">
-                                        <span className="verge-label-mono font-black text-[#3cffd0] text-xs italic tracking-tighter">VS</span>
+                                    <div className="w-12 h-12 bg-absolute-black border border-jelly-mint/30 flex items-center justify-center shadow-[0_0_20px_rgba(60,255,208,0.2)] z-20 relative">
+                                        <span className="verge-label-mono font-black text-jelly-mint text-xs italic tracking-tighter">VS</span>
                                     </div>
                                     <div className="w-10 h-px bg-gradient-to-r from-[#3cffd0]/30 to-transparent absolute left-12"></div>
                                     <div className="w-10 h-px bg-gradient-to-l from-[#3cffd0]/30 to-transparent absolute right-12"></div>

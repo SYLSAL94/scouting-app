@@ -34,8 +34,8 @@ export const MetricSelectionPanel = ({
                 key={mode}
                 onClick={() => onMetricModeChange(mode)}
                 className={`flex items-center justify-center flex-1 px-4 py-3 text-[11px] font-black verge-label-mono rounded-[2px] transition-all ${isActive
-                    ? 'text-black bg-[#3cffd0] shadow-[0_0_15px_rgba(60,255,208,0.3)]'
-                    : 'bg-[#131313] text-[#949494] hover:bg-white/5 border border-white/5'
+                    ? 'text-absolute-black bg-jelly-mint shadow-[0_0_15px_rgba(60,255,208,0.3)]'
+                    : 'bg-canvas-black text-secondary-text hover:bg-hazard-white/5 border border-hazard-white/5'
                     }`}
             >
                 <Icon size={14} className="mr-2" />
@@ -47,7 +47,7 @@ export const MetricSelectionPanel = ({
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <div className="w-2 h-2 bg-[#3cffd0]" />
+                <div className="w-2 h-2 bg-jelly-mint" />
                 <button
                     onClick={onResetMetrics}
                     className="flex items-center gap-2 px-4 py-2 verge-label-mono text-[9px] font-black tracking-[0.2em] text-[#f43f5e] hover:bg-[#f43f5e]/10 border border-[#f43f5e]/30 rounded-[2px] transition-all"
@@ -69,9 +69,9 @@ export const MetricSelectionPanel = ({
             />
 
             {!hideModeSelector && (
-                <div className="space-y-4 pt-6 border-t border-white/5">
+                <div className="space-y-4 pt-6 border-t border-hazard-white/5">
                     <div className="flex items-center justify-between">
-                        <label className="verge-label-mono text-[10px] text-[#949494] tracking-[0.2em] font-black uppercase">
+                        <label className="verge-label-mono text-[10px] text-secondary-text tracking-[0.2em] font-black uppercase">
                             Type de données
                         </label>
                         <div className="relative">
@@ -81,24 +81,24 @@ export const MetricSelectionPanel = ({
                                 onMouseEnter={() => setIsTooltipOpen(true)}
                                 onMouseLeave={() => setIsTooltipOpen(false)}
                             >
-                                <Info size={14} className={`transition-colors ${isTooltipOpen ? 'text-[#3cffd0]' : 'text-[#949494]'}`} />
+                                <Info size={14} className={`transition-colors ${isTooltipOpen ? 'text-jelly-mint' : 'text-secondary-text'}`} />
                             </button>
                             {isTooltipOpen && (
-                                <div className="absolute right-0 bottom-full mb-3 w-72 p-6 bg-[#131313] border border-[#3cffd0]/30 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 pointer-events-none animate-in fade-in duration-200">
+                                <div className="absolute right-0 bottom-full mb-3 w-72 p-6 bg-canvas-black border border-jelly-mint/30 rounded-[2px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] z-50 pointer-events-none animate-in fade-in duration-200">
                                     <div className="space-y-3">
-                                        <p className="verge-label-mono text-[9px] text-[#3cffd0] font-black tracking-[0.2em] uppercase">Guide Analytique</p>
-                                        <p className="text-[11px] leading-relaxed text-[#949494]">
-                                            <strong className="text-white">PERCENTILES :</strong> Compare les joueurs dynamiquement au sein de votre population filtrée actuelle.
+                                        <p className="verge-label-mono text-[9px] text-jelly-mint font-black tracking-[0.2em] uppercase">Guide Analytique</p>
+                                        <p className="text-[11px] leading-relaxed text-secondary-text">
+                                            <strong className="text-hazard-white">PERCENTILES :</strong> Compare les joueurs dynamiquement au sein de votre population filtrée actuelle.
                                         </p>
-                                        <p className="text-[11px] leading-relaxed text-[#949494]">
-                                            <strong className="text-white">VALEURS BRUTES :</strong> Affiche les statistiques réelles (par 90 min) sans aucune transformation.
+                                        <p className="text-[11px] leading-relaxed text-secondary-text">
+                                            <strong className="text-hazard-white">VALEURS BRUTES :</strong> Affiche les statistiques réelles (par 90 min) sans aucune transformation.
                                         </p>
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 p-1 bg-[#131313] border border-white/5 rounded-[2px]">
+                    <div className="flex items-center gap-2 p-1 bg-canvas-black border border-hazard-white/5 rounded-[2px]">
                         {renderModeButton('percentile', 'Percentiles', Percent)}
                         {renderModeButton('standard', 'Valeurs Brutes', Hash)}
                     </div>

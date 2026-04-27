@@ -100,17 +100,17 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
     if (!playerId) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center md:p-6 overflow-hidden">
-            <div className="w-full h-full md:max-w-7xl md:max-h-[95vh] bg-[#131313] border-t border-white md:border md:border-white/20 flex flex-col relative overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)]">
+        <div className="fixed inset-0 z-[100] bg-absolute-black/95 flex items-center justify-center md:p-6 overflow-hidden">
+            <div className="w-full h-full md:max-w-7xl md:max-h-[95vh] bg-canvas-black border-t border-hazard-white md:border md:border-hazard-white/20 flex flex-col relative overflow-hidden shadow-[0_0_100px_rgba(0,0,0,1)]">
                 
                 {/* Header Actions */}
                 <div className="absolute top-8 right-8 z-20 flex gap-4">
                     {/* Context Switcher - VERGE STYLE */}
                     {availableContexts.length > 1 && (
-                        <div className="flex items-center gap-3 bg-[#2d2d2d] border border-white/10 rounded-[4px] px-4 py-2">
-                            <span className="verge-label-mono text-[9px] text-[#3cffd0] uppercase">Contexte</span>
+                        <div className="flex items-center gap-3 bg-surface-slate border border-hazard-white/10 rounded-[4px] px-4 py-2">
+                            <span className="verge-label-mono text-[9px] text-jelly-mint uppercase">Contexte</span>
                             <select 
-                                className="bg-transparent text-white text-[11px] font-black outline-none cursor-pointer verge-label-mono"
+                                className="bg-transparent text-hazard-white text-[11px] font-black outline-none cursor-pointer verge-label-mono"
                                 value={availableContexts.findIndex(c => 
                                     c.competition === (selectedContext?.competition || rowContext?.competition) && 
                                     c.season === (selectedContext?.season || rowContext?.season)
@@ -118,7 +118,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                 onChange={(e) => setSelectedContext(availableContexts[e.target.value])}
                             >
                                 {availableContexts.map((ctx, idx) => (
-                                    <option key={idx} value={idx} className="bg-[#131313] text-white">
+                                    <option key={idx} value={idx} className="bg-canvas-black text-hazard-white">
                                         {ctx.competition} ({ctx.season})
                                     </option>
                                 ))}
@@ -127,7 +127,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                     )}
                     <button 
                         onClick={onClose} 
-                        className="w-10 h-10 flex items-center justify-center bg-[#2d2d2d] text-white hover:bg-white hover:text-black transition-all border border-white/10 rounded-[4px]"
+                        className="w-10 h-10 flex items-center justify-center bg-surface-slate text-hazard-white hover:bg-hazard-white hover:text-absolute-black transition-all border border-hazard-white/10 rounded-[4px]"
                     >
                         ✕
                     </button>
@@ -136,35 +136,35 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                 {/* Content */}
                 <div className="flex-1 overflow-y-auto styled-scrollbar p-0">
                     {loading ? (
-                        <div className="flex items-center justify-center h-full flex-col gap-6 bg-[#131313]">
-                            <div className="w-12 h-12 border-2 border-[#3cffd0] border-t-transparent animate-spin"></div>
-                            <p className="verge-label-mono text-[#949494] text-xs uppercase tracking-widest">Initialisation Cloud-Native...</p>
+                        <div className="flex items-center justify-center h-full flex-col gap-6 bg-canvas-black">
+                            <div className="w-12 h-12 border-2 border-jelly-mint border-t-transparent animate-spin"></div>
+                            <p className="verge-label-mono text-secondary-text text-xs uppercase tracking-widest">Initialisation Cloud-Native...</p>
                         </div>
                     ) : error ? (
-                        <div className="flex items-center justify-center h-full flex-col gap-4 bg-[#131313]">
-                            <p className="verge-h3 text-white">ERREUR DE CHARGEMENT</p>
-                            <button onClick={onClose} className="px-8 py-3 bg-white text-black verge-label-mono text-[10px] font-black">RETOUR</button>
+                        <div className="flex items-center justify-center h-full flex-col gap-4 bg-canvas-black">
+                            <p className="verge-h3 text-hazard-white">ERREUR DE CHARGEMENT</p>
+                            <button onClick={onClose} className="px-8 py-3 bg-hazard-white text-absolute-black verge-label-mono text-[10px] font-black">RETOUR</button>
                         </div>
                     ) : playerData ? (
                         <div className="space-y-0">
                             
                             {/* En-tête du joueur - THE VERGE STRUCTURED LAYOUT */}
-                            <div className="flex flex-col lg:grid lg:grid-cols-12 items-center lg:items-start gap-12 p-10 md:p-16 lg:p-24 bg-[#131313] border-b border-white/10 relative overflow-hidden">
+                            <div className="flex flex-col lg:grid lg:grid-cols-12 items-center lg:items-start gap-12 p-10 md:p-16 lg:p-24 bg-canvas-black border-b border-hazard-white/10 relative overflow-hidden">
                                 
                                 {/* Colonne 1: Photo - Fixed Width */}
                                 <div className="lg:col-span-3 flex justify-center lg:justify-start">
                                     <div className="relative group">
-                                        <div className="absolute -inset-1 bg-[#3cffd0] opacity-10 group-hover:opacity-30 blur-[2px] transition-all duration-500 rounded-[2px]" />
-                                        <div className="relative w-48 h-48 md:w-64 md:h-64 bg-[#2d2d2d] border border-white/20 rounded-[2px] overflow-hidden p-1.5">
+                                        <div className="absolute -inset-1 bg-jelly-mint opacity-10 group-hover:opacity-30 blur-[2px] transition-all duration-500 rounded-[2px]" />
+                                        <div className="relative w-48 h-48 md:w-64 md:h-64 bg-surface-slate border border-hazard-white/20 rounded-[2px] overflow-hidden p-1.5">
                                             {playerData.image ? (
                                                 <img src={playerData.image} alt={playerData.name} className="w-full h-full object-cover rounded-[1px]" />
                                             ) : (
-                                                <div className="w-full h-full bg-[#131313] flex items-center justify-center text-8xl font-black text-[#2d2d2d]">
+                                                <div className="w-full h-full bg-canvas-black flex items-center justify-center text-8xl font-black text-surface-slate">
                                                     {playerData?.name ? String(playerData.name).charAt(0) : '?'}
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="absolute -top-2 -left-2 w-6 h-6 border-t-2 border-l-2 border-[#3cffd0]" />
+                                        <div className="absolute -top-2 -left-2 w-6 h-6 border-t-2 border-l-2 border-jelly-mint" />
                                     </div>
                                 </div>
                                 
@@ -173,7 +173,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                     <div className="flex flex-col gap-2 mb-6">
                                         <span className="verge-kicker">{playerData.position_category}</span>
                                         <div className="flex items-center justify-center lg:justify-start gap-6">
-                                            <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-white uppercase leading-[0.85] tracking-tighter break-words">
+                                            <h2 className="text-6xl md:text-7xl lg:text-8xl font-black text-hazard-white uppercase leading-[0.85] tracking-tighter break-words">
                                                 {playerData.name || playerData.full_name}
                                             </h2>
                                             <div className="shrink-0">
@@ -190,16 +190,16 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                     
                                     <div className="space-y-6">
                                         <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 verge-label-mono text-[9px] md:text-[10px] uppercase font-black tracking-[0.15em]">
-                                            <span className="text-[#3cffd0] bg-[#3cffd0]/10 px-3 py-1.5 border border-[#3cffd0]/20">{playerData.last_club_name}</span>
-                                            <span className="text-white/20">/</span>
-                                            <span className="text-[#949494]">{playerData.season}</span>
-                                            <span className="text-white/20">/</span>
-                                            <span className="text-white truncate max-w-[200px]">{playerData.competition}</span>
+                                            <span className="text-jelly-mint bg-jelly-mint/10 px-3 py-1.5 border border-jelly-mint/20">{playerData.last_club_name}</span>
+                                            <span className="text-hazard-white/20">/</span>
+                                            <span className="text-secondary-text">{playerData.season}</span>
+                                            <span className="text-hazard-white/20">/</span>
+                                            <span className="text-hazard-white truncate max-w-[200px]">{playerData.competition}</span>
                                         </div>
 
                                         <div className="flex gap-3 justify-center lg:justify-start">
-                                            <div className="bg-[#2d2d2d] px-5 py-2.5 verge-label-mono text-[10px] text-white border border-white/5 rounded-[2px] font-black">{playerData.season_age || playerData.age} ANS</div>
-                                            <div className="bg-[#2d2d2d] px-5 py-2.5 verge-label-mono text-[10px] text-white border border-white/5 rounded-[2px] font-black uppercase">PIED {playerData?.foot || 'DROIT'}</div>
+                                            <div className="bg-surface-slate px-5 py-2.5 verge-label-mono text-[10px] text-hazard-white border border-hazard-white/5 rounded-[2px] font-black">{playerData.season_age || playerData.age} ANS</div>
+                                            <div className="bg-surface-slate px-5 py-2.5 verge-label-mono text-[10px] text-hazard-white border border-hazard-white/5 rounded-[2px] font-black uppercase">PIED {playerData?.foot || 'DROIT'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -211,24 +211,24 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                         onClick={() => setIsRankingModalOpen(true)}
                                         className="cursor-pointer group flex flex-col lg:items-end w-full lg:w-auto"
                                     >
-                                        <div className="verge-label-mono text-[10px] group-hover:text-[#3cffd0] transition-colors mb-4 uppercase text-[#949494] tracking-[0.2em] font-black">Classement Population</div>
-                                        <div className="text-6xl lg:text-7xl font-black text-white flex items-baseline gap-3 group-hover:text-[#3cffd0] transition-all">
-                                            {(rankingData?.rank && rankingData.rank > 0) ? rankingData.rank : '-'}<span className="text-[#949494] text-2xl opacity-30 font-black">/ {rankingData?.total || '-'}</span>
+                                        <div className="verge-label-mono text-[10px] group-hover:text-jelly-mint transition-colors mb-4 uppercase text-secondary-text tracking-[0.2em] font-black">Classement Population</div>
+                                        <div className="text-6xl lg:text-7xl font-black text-hazard-white flex items-baseline gap-3 group-hover:text-jelly-mint transition-all">
+                                            {(rankingData?.rank && rankingData.rank > 0) ? rankingData.rank : '-'}<span className="text-secondary-text text-2xl opacity-30 font-black">/ {rankingData?.total || '-'}</span>
                                         </div>
                                     </div>
 
                                     {/* Score Tiles */}
                                     <div className="grid grid-cols-2 lg:flex lg:flex-row gap-4 w-full lg:w-auto">
-                                        <div className="bg-[#131313] border border-white/10 p-8 flex-1 lg:min-w-[150px] text-center rounded-[4px]">
-                                            <div className="verge-label-mono text-[9px] mb-4 text-[#949494] uppercase tracking-widest font-black opacity-60">Note Globale</div>
-                                            <div className="text-6xl font-black text-white leading-none tracking-tighter">
+                                        <div className="bg-canvas-black border border-hazard-white/10 p-8 flex-1 lg:min-w-[150px] text-center rounded-[4px]">
+                                            <div className="verge-label-mono text-[9px] mb-4 text-secondary-text uppercase tracking-widest font-black opacity-60">Note Globale</div>
+                                            <div className="text-6xl font-black text-hazard-white leading-none tracking-tighter">
                                                 {Math.round(playerData.note_globale || 64)}
                                             </div>
                                         </div>
                                         
-                                        <div className="bg-[#3cffd0] p-8 flex-1 lg:min-w-[150px] text-center rounded-[4px] shadow-[0_0_40px_rgba(60,255,208,0.1)]">
-                                            <div className="verge-label-mono text-[9px] text-black/60 mb-4 uppercase tracking-widest font-black">Note Pondérée</div>
-                                            <div className="text-6xl font-black text-black leading-none tracking-tighter">
+                                        <div className="bg-jelly-mint p-8 flex-1 lg:min-w-[150px] text-center rounded-[4px] shadow-[0_0_40px_rgba(60,255,208,0.1)]">
+                                            <div className="verge-label-mono text-[9px] text-absolute-black/60 mb-4 uppercase tracking-widest font-black">Note Pondérée</div>
+                                            <div className="text-6xl font-black text-absolute-black leading-none tracking-tighter">
                                                 {Math.round(playerData.note_ponderee || 75)}
                                             </div>
                                         </div>
@@ -237,7 +237,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                             </div>
 
                             {/* Navigation Mobile */}
-                            <div className="lg:hidden flex bg-[#131313] p-4 border-b border-white/10 sticky top-0 z-40 overflow-x-auto scrollbar-hide gap-3">
+                            <div className="lg:hidden flex bg-canvas-black p-4 border-b border-hazard-white/10 sticky top-0 z-40 overflow-x-auto scrollbar-hide gap-3">
                                 {[
                                     { id: 'profil', label: 'PROFIL' },
                                     { id: 'analyse', label: 'ANALYSE' },
@@ -248,7 +248,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
                                         className={`shrink-0 px-6 py-3 verge-label-mono text-[10px] font-black transition-all ${
-                                            activeTab === tab.id ? 'bg-[#3cffd0] text-black' : 'text-[#949494] bg-[#2d2d2d]'
+                                            activeTab === tab.id ? 'bg-jelly-mint text-absolute-black' : 'text-secondary-text bg-surface-slate'
                                         }`}
                                     >
                                         {tab.label}
@@ -280,11 +280,11 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                                 onClick={() => setIsAnalyseExpanded(!isAnalyseExpanded)}
                                                 className="w-full flex items-center justify-between px-2 hover:opacity-80 transition-opacity"
                                             >
-                                                <h3 className="verge-label-mono text-[#3cffd0] flex items-center gap-3 uppercase text-[11px] tracking-[0.2em]">
-                                                    <span className={`w-1.5 h-1.5 transition-all duration-500 ${isAnalyseExpanded ? 'bg-[#3cffd0] shadow-[0_0_8px_#3cffd0]' : 'bg-[#949494]'}`}></span> 
+                                                <h3 className="verge-label-mono text-jelly-mint flex items-center gap-3 uppercase text-[11px] tracking-[0.2em]">
+                                                    <span className={`w-1.5 h-1.5 transition-all duration-500 ${isAnalyseExpanded ? 'bg-jelly-mint shadow-[0_0_8px_#3cffd0]' : 'bg-secondary-text'}`}></span> 
                                                     Analyse Comparative
                                                 </h3>
-                                                <motion.div animate={{ rotate: isAnalyseExpanded ? 180 : 0 }} className={isAnalyseExpanded ? "text-[#3cffd0]" : "text-[#949494]"}>
+                                                <motion.div animate={{ rotate: isAnalyseExpanded ? 180 : 0 }} className={isAnalyseExpanded ? "text-jelly-mint" : "text-secondary-text"}>
                                                     <ChevronDown size={14} />
                                                 </motion.div>
                                             </button>
@@ -295,7 +295,7 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                                         initial={{ height: 0, opacity: 0, overflow: 'hidden' }}
                                                         animate={{ height: 'auto', opacity: 1 }}
                                                         exit={{ height: 0, opacity: 0 }}
-                                                        className="bg-[#131313] border border-white/10 p-2"
+                                                        className="bg-canvas-black border border-hazard-white/10 p-2"
                                                     >
                                                         <RecalculationPanelWidget 
                                                             playerId={playerId}
@@ -313,23 +313,23 @@ export default function PlayerDashboard({ playerId, onClose, activeFilters = {},
                                         
                                         <div className="space-y-6">
                                             <div className="flex justify-between items-center px-2">
-                                                <h3 className="verge-label-mono text-[#3cffd0] flex items-center gap-3 uppercase text-[11px] tracking-[0.2em]">
-                                                    <span className="w-1.5 h-1.5 bg-[#3cffd0]"></span> 
+                                                <h3 className="verge-label-mono text-jelly-mint flex items-center gap-3 uppercase text-[11px] tracking-[0.2em]">
+                                                    <span className="w-1.5 h-1.5 bg-jelly-mint"></span> 
                                                     Tactical Metrics
                                                 </h3>
-                                                <div className="flex bg-[#2d2d2d] p-1 rounded-[2px]">
+                                                <div className="flex bg-surface-slate p-1 rounded-[2px]">
                                                     <button 
                                                         onClick={() => setAnalysisSubTab('radar')}
-                                                        className={`px-5 py-2 verge-label-mono text-[9px] font-black tracking-widest transition-all rounded-[1px] ${analysisSubTab === 'radar' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.2)]' : 'text-[#949494] hover:text-white'}`}
+                                                        className={`px-5 py-2 verge-label-mono text-[9px] font-black tracking-widest transition-all rounded-[1px] ${analysisSubTab === 'radar' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.2)]' : 'text-secondary-text hover:text-hazard-white'}`}
                                                     > RADAR </button>
                                                     <button 
                                                         onClick={() => setAnalysisSubTab('trends')}
-                                                        className={`px-5 py-2 verge-label-mono text-[9px] font-black tracking-widest transition-all rounded-[1px] ${analysisSubTab === 'trends' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.2)]' : 'text-[#949494] hover:text-white'}`}
+                                                        className={`px-5 py-2 verge-label-mono text-[9px] font-black tracking-widest transition-all rounded-[1px] ${analysisSubTab === 'trends' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.2)]' : 'text-secondary-text hover:text-hazard-white'}`}
                                                     > TRENDS </button>
                                                 </div>
                                             </div>
                                             
-                                            <div className="min-h-[450px] bg-[#131313] border border-white/10 p-8 flex items-center justify-center">
+                                            <div className="min-h-[450px] bg-canvas-black border border-hazard-white/10 p-8 flex items-center justify-center">
                                                 <AnimatePresence mode="wait">
                                                     {analysisSubTab === 'radar' ? (
                                                         <motion.div key="radar" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="w-full">
@@ -427,45 +427,45 @@ function RankingModal({ isOpen, onClose, playerId, playerName, competition, seas
         : rankingList;
 
     return (
-        <div className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center p-4">
-            <div className="bg-[#131313] border border-white/20 rounded-[4px] w-full max-w-2xl h-full max-h-[90vh] md:max-h-[85vh] flex flex-col overflow-hidden">
-                <div className="p-4 md:p-10 border-b border-white/10 flex justify-between items-center bg-[#131313]">
+        <div className="fixed inset-0 z-[200] bg-absolute-black/90 flex items-center justify-center p-4">
+            <div className="bg-canvas-black border border-hazard-white/20 rounded-[4px] w-full max-w-2xl h-full max-h-[90vh] md:max-h-[85vh] flex flex-col overflow-hidden">
+                <div className="p-4 md:p-10 border-b border-hazard-white/10 flex justify-between items-center bg-canvas-black">
                     <div className="min-w-0 pr-4">
-                        <h3 className="verge-h3 text-white uppercase italic text-base md:text-2xl truncate">{position || 'LEADERBOARD'}</h3>
-                        <p className="verge-label-mono text-[#3cffd0] text-[9px] md:text-[10px] mt-1 md:mt-2 uppercase font-black tracking-widest truncate">{playerName}</p>
+                        <h3 className="verge-h3 text-hazard-white uppercase italic text-base md:text-2xl truncate">{position || 'LEADERBOARD'}</h3>
+                        <p className="verge-label-mono text-jelly-mint text-[9px] md:text-[10px] mt-1 md:mt-2 uppercase font-black tracking-widest truncate">{playerName}</p>
                     </div>
-                    <button onClick={onClose} className="w-8 h-8 md:w-10 md:h-10 shrink-0 flex items-center justify-center bg-[#2d2d2d] text-white hover:bg-white hover:text-black border border-white/10 rounded-[4px]">✕</button>
+                    <button onClick={onClose} className="w-8 h-8 md:w-10 md:h-10 shrink-0 flex items-center justify-center bg-surface-slate text-hazard-white hover:bg-hazard-white hover:text-absolute-black border border-hazard-white/10 rounded-[4px]">✕</button>
                 </div>
 
-                <div className="px-4 md:px-10 py-4 md:py-6 bg-[#131313] border-b border-white/10 flex gap-3 md:gap-4">
-                    <button onClick={() => setActiveTab('full')} className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${activeTab === 'full' ? 'bg-[#3cffd0] text-black' : 'bg-[#2d2d2d] text-[#949494]'}`}>GLOBAL</button>
-                    <button onClick={() => setActiveTab('focus')} className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${activeTab === 'focus' ? 'bg-[#3cffd0] text-black' : 'bg-[#2d2d2d] text-[#949494]'}`}>FOCUS</button>
+                <div className="px-4 md:px-10 py-4 md:py-6 bg-canvas-black border-b border-hazard-white/10 flex gap-3 md:gap-4">
+                    <button onClick={() => setActiveTab('full')} className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${activeTab === 'full' ? 'bg-jelly-mint text-absolute-black' : 'bg-surface-slate text-secondary-text'}`}>GLOBAL</button>
+                    <button onClick={() => setActiveTab('focus')} className={`flex-1 py-3 rounded-[2px] verge-label-mono text-[10px] font-black transition-all ${activeTab === 'focus' ? 'bg-jelly-mint text-absolute-black' : 'bg-surface-slate text-secondary-text'}`}>FOCUS</button>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto p-4 md:p-10 space-y-2 md:space-y-3 styled-scrollbar bg-[#131313]">
+                <div className="flex-1 overflow-y-auto p-4 md:p-10 space-y-2 md:space-y-3 styled-scrollbar bg-canvas-black">
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-20 gap-4"><div className="w-8 h-8 border-2 border-[#3cffd0] border-t-transparent animate-spin"></div></div>
+                        <div className="flex flex-col items-center justify-center py-20 gap-4"><div className="w-8 h-8 border-2 border-jelly-mint border-t-transparent animate-spin"></div></div>
                     ) : (
                         displayList.map((item, idx) => {
                             const realIdx = activeTab === 'focus' ? rankingList.indexOf(item) : idx;
                             const isTarget = item.id === playerId || item.player_id === playerId;
                             return (
-                                <div key={idx} onClick={() => !isTarget && onSelectPlayer(item.id || item.player_id)} className={`flex items-center justify-between p-3 md:p-4 border transition-all cursor-pointer ${isTarget ? 'bg-[#3cffd0] border-[#3cffd0] text-black' : 'bg-[#2d2d2d] border-white/5 hover:border-white/20'}`}>
+                                <div key={idx} onClick={() => !isTarget && onSelectPlayer(item.id || item.player_id)} className={`flex items-center justify-between p-3 md:p-4 border transition-all cursor-pointer ${isTarget ? 'bg-jelly-mint border-jelly-mint text-absolute-black' : 'bg-surface-slate border-hazard-white/5 hover:border-hazard-white/20'}`}>
                                     <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0">
-                                        <div className={`w-8 h-8 md:w-10 md:h-10 shrink-0 flex items-center justify-center verge-label-mono text-[12px] md:text-[14px] font-black ${isTarget ? 'bg-black text-[#3cffd0]' : 'bg-[#131313] text-white'}`}>{realIdx + 1}</div>
+                                        <div className={`w-8 h-8 md:w-10 md:h-10 shrink-0 flex items-center justify-center verge-label-mono text-[12px] md:text-[14px] font-black ${isTarget ? 'bg-absolute-black text-jelly-mint' : 'bg-canvas-black text-hazard-white'}`}>{realIdx + 1}</div>
                                         <div className="min-w-0">
-                                            <div className={`text-xs md:text-sm font-black uppercase truncate ${isTarget ? 'text-black' : 'text-white'}`}>
+                                            <div className={`text-xs md:text-sm font-black uppercase truncate ${isTarget ? 'text-absolute-black' : 'text-hazard-white'}`}>
                                                 {item.name || item.player_name}
                                                 {item.age && <span className="md:hidden opacity-60 ml-1">({item.age})</span>}
                                             </div>
-                                            <div className={`verge-label-mono text-[7px] md:text-[8px] uppercase tracking-widest truncate ${isTarget ? 'text-black/60' : 'text-[#949494]'}`}>
+                                            <div className={`verge-label-mono text-[7px] md:text-[8px] uppercase tracking-widest truncate ${isTarget ? 'text-absolute-black/60' : 'text-secondary-text'}`}>
                                                 {item.team || item.current_team_name} • {item.season} • {item.position || item.position_category}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="text-right shrink-0">
-                                        <div className={`text-lg md:text-xl font-black ${isTarget ? 'text-black' : 'text-white'}`}>{Number(item.score).toFixed(1)}</div>
-                                        <div className={`verge-label-mono text-[6px] md:text-[7px] uppercase ${isTarget ? 'text-black/40' : 'text-[#949494]'}`}>PTS</div>
+                                        <div className={`text-lg md:text-xl font-black ${isTarget ? 'text-absolute-black' : 'text-hazard-white'}`}>{Number(item.score).toFixed(1)}</div>
+                                        <div className={`verge-label-mono text-[6px] md:text-[7px] uppercase ${isTarget ? 'text-absolute-black/40' : 'text-secondary-text'}`}>PTS</div>
                                     </div>
                                 </div>
                             );

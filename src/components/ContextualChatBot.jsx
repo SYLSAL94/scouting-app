@@ -99,7 +99,7 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
           }
           if (part.type === 'radar') {
             return (
-              <div key={index} className="my-4 p-4 bg-black/40 rounded-[2px] border border-white/10 h-[260px] w-full overflow-hidden shadow-inner">
+              <div key={index} className="my-4 p-4 bg-absolute-black/40 rounded-[2px] border border-hazard-white/10 h-[260px] w-full overflow-hidden shadow-inner">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart cx="50%" cy="50%" outerRadius="80%" data={part.value}>
                     <PolarGrid stroke="#313131" />
@@ -204,48 +204,48 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             style={{ width: size.width, height: size.height }}
-            className="mb-6 flex flex-col overflow-hidden bg-[#131313] border-2 border-white/10 rounded-[4px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] relative"
+            className="mb-6 flex flex-col overflow-hidden bg-canvas-black border-2 border-hazard-white/10 rounded-[4px] shadow-[0_30px_90px_rgba(0,0,0,0.8)] relative"
           >
             {/* Resize Handle (Corner Left Top) */}
             <div 
               onMouseDown={startResizing}
               className="absolute top-0 left-0 w-6 h-6 cursor-nw-resize z-[100] group"
             >
-              <div className="absolute top-1 left-1 w-2 h-2 border-t-2 border-l-2 border-white/20 group-hover:border-[#3cffd0] transition-colors" />
+              <div className="absolute top-1 left-1 w-2 h-2 border-t-2 border-l-2 border-hazard-white/20 group-hover:border-jelly-mint transition-colors" />
             </div>
 
             {/* Header */}
-            <div className="p-6 bg-[#2d2d2d] border-b border-white/10 flex justify-between items-center relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-[#3cffd0]/5 rotate-45 translate-x-8 -translate-y-8" />
+            <div className="p-6 bg-surface-slate border-b border-hazard-white/10 flex justify-between items-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-jelly-mint/5 rotate-45 translate-x-8 -translate-y-8" />
               <div className="flex items-center gap-4 relative z-10">
-                <div className="p-2.5 bg-[#3cffd0] rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.4)]">
-                  <Bot size={22} className="text-black" />
+                <div className="p-2.5 bg-jelly-mint rounded-[2px] shadow-[0_0_15px_rgba(60,255,208,0.4)]">
+                  <Bot size={22} className="text-absolute-black" />
                 </div>
                 <div>
-                  <h3 className="verge-label-mono text-white text-[13px] font-black tracking-widest">Scouting <span className="text-[#3cffd0]">Assistant</span></h3>
+                  <h3 className="verge-label-mono text-hazard-white text-[13px] font-black tracking-widest">Scouting <span className="text-jelly-mint">Assistant</span></h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-pulse"></div>
-                    <span className="verge-label-mono text-[8px] text-[#3cffd0] tracking-[0.2em] font-black uppercase">EN LIGNE • DATAVIZ ACTIVE</span>
+                    <div className="w-1.5 h-1.5 bg-jelly-mint animate-pulse"></div>
+                    <span className="verge-label-mono text-[8px] text-jelly-mint tracking-[0.2em] font-black uppercase">EN LIGNE • DATAVIZ ACTIVE</span>
                   </div>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/10 rounded-[2px] transition-colors relative z-10">
-                <X size={20} className="text-[#949494]" />
+              <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-hazard-white/10 rounded-[2px] transition-colors relative z-10">
+                <X size={20} className="text-secondary-text" />
               </button>
             </div>
 
             {/* Zone de Messages */}
-            <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-8 styled-scrollbar bg-[#131313]">
+            <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-8 styled-scrollbar bg-canvas-black">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`flex gap-4 max-w-[90%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                    <div className={`mt-1 p-2 rounded-[2px] h-fit border ${msg.role === 'user' ? 'bg-[#5200ff]/10 border-[#5200ff]/30' : 'bg-[#2d2d2d] border-white/10'}`}>
-                      {msg.role === 'user' ? <User size={14} className="text-[#5200ff]" /> : <Sparkles size={14} className="text-[#3cffd0]" />}
+                    <div className={`mt-1 p-2 rounded-[2px] h-fit border ${msg.role === 'user' ? 'bg-verge-ultraviolet/10 border-verge-ultraviolet/30' : 'bg-surface-slate border-hazard-white/10'}`}>
+                      {msg.role === 'user' ? <User size={14} className="text-verge-ultraviolet" /> : <Sparkles size={14} className="text-jelly-mint" />}
                     </div>
                     <div className={`p-5 rounded-[2px] text-[11px] leading-relaxed border ${
                       msg.role === 'user' 
-                        ? 'bg-[#5200ff] border-[#5200ff] text-white shadow-[0_10px_30px_rgba(82,0,255,0.2)]' 
-                        : 'bg-[#2d2d2d] border-white/10 text-white/90'
+                        ? 'bg-verge-ultraviolet border-verge-ultraviolet text-hazard-white shadow-[0_10px_30px_rgba(82,0,255,0.2)]' 
+                        : 'bg-surface-slate border-hazard-white/10 text-hazard-white/90'
                     }`}>
                       {msg.role === 'bot' ? renderMessageContent(msg.content) : msg.content}
                     </div>
@@ -254,17 +254,17 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                   <div className="bg-[#2d2d2d] border border-white/10 p-5 rounded-[2px] flex gap-2">
-                      <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-bounce"></div>
-                      <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-bounce [animation-delay:0.2s]"></div>
-                      <div className="w-1.5 h-1.5 bg-[#3cffd0] animate-bounce [animation-delay:0.4s]"></div>
+                   <div className="bg-surface-slate border border-hazard-white/10 p-5 rounded-[2px] flex gap-2">
+                      <div className="w-1.5 h-1.5 bg-jelly-mint animate-bounce"></div>
+                      <div className="w-1.5 h-1.5 bg-jelly-mint animate-bounce [animation-delay:0.2s]"></div>
+                      <div className="w-1.5 h-1.5 bg-jelly-mint animate-bounce [animation-delay:0.4s]"></div>
                    </div>
                 </div>
               )}
             </div>
 
             {/* Zone de saisie */}
-            <div className="p-6 bg-[#2d2d2d] border-t border-white/10">
+            <div className="p-6 bg-surface-slate border-t border-hazard-white/10">
               <div className="relative group">
                 <input
                   type="text"
@@ -272,21 +272,21 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="w-full bg-[#131313] border border-white/10 rounded-[2px] py-4 pl-5 pr-14 verge-label-mono text-[10px] text-white focus:border-[#3cffd0] outline-none transition-all placeholder:text-[#949494] font-black"
+                  className="w-full bg-canvas-black border border-hazard-white/10 rounded-[2px] py-4 pl-5 pr-14 verge-label-mono text-[10px] text-hazard-white focus:border-jelly-mint outline-none transition-all placeholder:text-secondary-text font-black"
                 />
                 <button 
                   onClick={handleSendMessage}
                   disabled={!input.trim() || isLoading}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-[#3cffd0] hover:bg-[#3cffd0]/80 rounded-[2px] text-black disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-95"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-jelly-mint hover:bg-jelly-mint/80 rounded-[2px] text-absolute-black disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-95"
                 >
                   <Send size={18} />
                 </button>
               </div>
               <div className="mt-4 flex justify-between items-center px-1">
-                <span className="verge-label-mono text-[8px] text-[#949494] font-black tracking-[0.3em]">
+                <span className="verge-label-mono text-[8px] text-secondary-text font-black tracking-[0.3em]">
                   DEEPSEEK ENGINE V3
                 </span>
-                <span className="verge-label-mono text-[8px] text-[#3cffd0] font-black tracking-[0.2em]">
+                <span className="verge-label-mono text-[8px] text-jelly-mint font-black tracking-[0.2em]">
                   CONTEXT: {selectedPlayer ? selectedPlayer.name : "DASHBOARD MODE"}
                 </span>
               </div>
@@ -301,17 +301,17 @@ const ContextualChatBot = ({ selectedPlayer, players, activeFilters }) => {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
         className={`group w-16 h-16 rounded-[4px] shadow-2xl flex items-center justify-center transition-all duration-500 relative border-2 ${
-          isOpen ? 'bg-[#131313] border-white/20' : 'bg-[#5200ff] border-[#5200ff] shadow-[0_0_30px_rgba(82,0,255,0.3)]'
+          isOpen ? 'bg-canvas-black border-hazard-white/20' : 'bg-verge-ultraviolet border-verge-ultraviolet shadow-[0_0_30px_rgba(82,0,255,0.3)]'
         }`}
       >
-        {isOpen ? <X size={28} className="text-white" /> : <MessageSquare size={28} className="text-white" />}
+        {isOpen ? <X size={28} className="text-hazard-white" /> : <MessageSquare size={28} className="text-hazard-white" />}
         {!isOpen && (
-          <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#3cffd0] rounded-[2px] flex items-center justify-center shadow-lg">
-             <span className="text-[9px] font-black text-black">1</span>
+          <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-jelly-mint rounded-[2px] flex items-center justify-center shadow-lg">
+             <span className="text-[9px] font-black text-absolute-black">1</span>
           </div>
         )}
         {!isOpen && (
-          <div className="absolute inset-0 rounded-[4px] bg-[#5200ff] opacity-0 group-hover:opacity-40 blur-xl transition-opacity"></div>
+          <div className="absolute inset-0 rounded-[4px] bg-verge-ultraviolet opacity-0 group-hover:opacity-40 blur-xl transition-opacity"></div>
         )}
       </motion.button>
     </div>

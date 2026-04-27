@@ -87,14 +87,14 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
   return (
     <div className="relative w-full" ref={searchRef}>
       <div className="relative group">
-        <div className={`absolute left-6 top-1/2 -translate-y-1/2 transition-colors ${isLoading ? 'text-[#3cffd0]' : 'text-[#949494] group-focus-within:text-[#3cffd0]'}`}>
+        <div className={`absolute left-6 top-1/2 -translate-y-1/2 transition-colors ${isLoading ? 'text-jelly-mint' : 'text-secondary-text group-focus-within:text-jelly-mint'}`}>
           {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Search size={20} />}
         </div>
         
         <input 
           type="text" 
           placeholder="RECHERCHER UN JOUEUR..." 
-          className="verge-label-mono w-full pl-14 pr-14 py-4 text-xs bg-[#2d2d2d] border border-white/10 rounded-full outline-none focus:border-[#3cffd0] transition-all"
+          className="verge-label-mono w-full pl-14 pr-14 py-4 text-xs bg-surface-slate border border-hazard-white/10 rounded-full outline-none focus:border-jelly-mint transition-all"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -107,7 +107,7 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
         {query && (
           <button 
             onClick={() => setQuery('')}
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-[#949494] hover:text-white transition-colors"
+            className="absolute right-6 top-1/2 -translate-y-1/2 text-secondary-text hover:text-hazard-white transition-colors"
           >
             <X size={18} />
           </button>
@@ -121,11 +121,11 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute z-[1000] left-0 right-0 mt-3 bg-[#131313] border border-white/20 rounded-[12px] overflow-hidden"
+            className="absolute z-[1000] left-0 right-0 mt-3 bg-canvas-black border border-hazard-white/20 rounded-[12px] overflow-hidden"
           >
-            <div className="p-3 border-b border-white/10 bg-white/5 flex justify-between px-6">
-              <span className="verge-label-mono text-[9px] text-[#949494]">Résultats suggérés</span>
-              <span className="verge-label-mono text-[9px] text-[#3cffd0]">{results.length} joueurs</span>
+            <div className="p-3 border-b border-hazard-white/10 bg-hazard-white/5 flex justify-between px-6">
+              <span className="verge-label-mono text-[9px] text-secondary-text">Résultats suggérés</span>
+              <span className="verge-label-mono text-[9px] text-jelly-mint">{results.length} joueurs</span>
             </div>
             
             <div className="max-h-[400px] overflow-y-auto py-2 styled-scrollbar">
@@ -133,14 +133,14 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
                 <div 
                   key={player.id}
                   className={`px-6 py-4 flex items-center justify-between cursor-pointer transition-all ${
-                    index === activeIndex ? 'bg-[#3cffd0] text-black' : 'hover:bg-white/5 text-white'
+                    index === activeIndex ? 'bg-jelly-mint text-absolute-black' : 'hover:bg-hazard-white/5 text-hazard-white'
                   }`}
                   onClick={() => handleSelect(player)}
                   onMouseEnter={() => setActiveIndex(index)}
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <div className={`w-12 h-12 rounded-[4px] flex items-center justify-center shrink-0 overflow-hidden border ${
-                      index === activeIndex ? 'border-black/20' : 'border-white/10 bg-[#2d2d2d]'
+                      index === activeIndex ? 'border-absolute-black/20' : 'border-hazard-white/10 bg-surface-slate'
                     }`}>
                       {player.image ? (
                         <img 
@@ -150,7 +150,7 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
                           onError={(e) => { e.target.onerror = null; e.target.src = 'https://api-scouting.theanalyst.cloud/static/default-player.png'; }}
                         />
                       ) : (
-                        <User size={20} className={index === activeIndex ? 'text-black' : 'text-[#3cffd0]'} />
+                        <User size={20} className={index === activeIndex ? 'text-absolute-black' : 'text-jelly-mint'} />
                       )}
                     </div>
                     <div className="flex flex-col min-w-0">
@@ -158,11 +158,11 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
                         {player.name || player.full_name}
                       </span>
                       <div className="flex items-center gap-1.5 mt-1 overflow-hidden">
-                        <span className={`verge-label-mono text-[8px] truncate ${index === activeIndex ? 'text-black/60' : 'text-[#3cffd0]'}`}>
+                        <span className={`verge-label-mono text-[8px] truncate ${index === activeIndex ? 'text-absolute-black/60' : 'text-jelly-mint'}`}>
                           {player.last_club_name || 'Free Agent'}
                         </span>
                         <span className="text-[9px] opacity-20">•</span>
-                        <span className={`verge-label-mono text-[8px] truncate ${index === activeIndex ? 'text-black/40' : 'text-[#949494]'}`}>
+                        <span className={`verge-label-mono text-[8px] truncate ${index === activeIndex ? 'text-absolute-black/40' : 'text-secondary-text'}`}>
                           {player.position_category}
                         </span>
                       </div>
@@ -170,20 +170,20 @@ const GlobalPlayerSearch = ({ onPlayerSelect }) => {
                   </div>
                   <div className="flex items-center gap-4 shrink-0">
                     <div className="flex flex-col items-end">
-                      <span className={`verge-label-mono text-[10px] ${index === activeIndex ? 'text-black' : 'text-[#3cffd0]'}`}>
+                      <span className={`verge-label-mono text-[10px] ${index === activeIndex ? 'text-absolute-black' : 'text-jelly-mint'}`}>
                         {player.note_ponderee?.toFixed(1) || '0.0'}
                       </span>
                       <span className="verge-label-mono text-[6px] opacity-40">Score</span>
                     </div>
-                    <ChevronRight size={14} className={index === activeIndex ? 'text-black' : 'text-white/20'} />
+                    <ChevronRight size={14} className={index === activeIndex ? 'text-absolute-black' : 'text-hazard-white/20'} />
                   </div>
                 </div>
               ))}
             </div>
             
-            <div className="p-4 bg-white/5 border-t border-white/10 text-center">
-               <span className="verge-label-mono text-[8px] text-[#949494] flex items-center justify-center gap-2">
-                 Appuyez sur <span className="px-1.5 py-0.5 bg-white/10 rounded text-white">Entrée</span> pour ouvrir
+            <div className="p-4 bg-hazard-white/5 border-t border-hazard-white/10 text-center">
+               <span className="verge-label-mono text-[8px] text-secondary-text flex items-center justify-center gap-2">
+                 Appuyez sur <span className="px-1.5 py-0.5 bg-hazard-white/10 rounded text-hazard-white">Entrée</span> pour ouvrir
                </span>
             </div>
           </motion.div>

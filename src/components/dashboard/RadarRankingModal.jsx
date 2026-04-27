@@ -44,11 +44,11 @@ export const RadarRankingModal = ({
 
     const modal = (
         <div
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4 transition-all duration-300"
+            className="fixed inset-0 bg-absolute-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4 transition-all duration-300"
             onClick={onClose}
         >
             <div
-                className="relative bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-200 flex flex-col max-h-[80vh]"
+                className="relative bg-hazard-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-200 flex flex-col max-h-[80vh]"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -58,7 +58,7 @@ export const RadarRankingModal = ({
                             <Trophy className="w-5 h-5 text-sky-600 dark:text-sky-400" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-slate-900 dark:text-white leading-tight">Ranking</h3>
+                            <h3 className="font-bold text-slate-900 dark:text-hazard-white leading-tight">Ranking</h3>
                             <p className="text-xs text-sky-600 dark:text-sky-400 font-semibold truncate max-w-[200px]" title={metric}>
                                 {metric}
                             </p>
@@ -87,7 +87,7 @@ export const RadarRankingModal = ({
                         return (
                             <div
                                 key={player.id || index}
-                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 ${isMedian ? 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-800/30 border-slate-100 dark:border-slate-700/50 hover:border-sky-300 dark:hover:border-sky-500/50 hover:shadow-md'
+                                className={`flex items-center gap-3 p-3 rounded-xl border transition-all duration-200 ${isMedian ? 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700' : 'bg-hazard-white dark:bg-slate-800/30 border-slate-100 dark:border-slate-700/50 hover:border-sky-300 dark:hover:border-sky-500/50 hover:shadow-md'
                                     } ${!isMedian && onPlayerSelect ? 'cursor-pointer' : ''}`}
                                 onClick={() => !isMedian && onPlayerSelect && onPlayerSelect({
                                     id: player.id,
@@ -104,7 +104,7 @@ export const RadarRankingModal = ({
                                 {/* Image */}
                                 <div className="relative">
                                     <div
-                                        className="w-10 h-10 rounded-full border-2 bg-white dark:bg-slate-900 overflow-hidden shadow-sm"
+                                        className="w-10 h-10 rounded-full border-2 bg-hazard-white dark:bg-slate-900 overflow-hidden shadow-sm"
                                         style={{ borderColor: color }}
                                     >
                                         {player.image ? (
@@ -116,7 +116,7 @@ export const RadarRankingModal = ({
                                         )}
                                     </div>
                                     <div
-                                        className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900"
+                                        className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-hazard-white dark:border-slate-900"
                                         style={{ backgroundColor: color }}
                                     />
                                 </div>
@@ -133,7 +133,7 @@ export const RadarRankingModal = ({
 
                                 {/* Value */}
                                 <div className="text-right">
-                                    <div className="text-sm font-black text-slate-900 dark:text-white tabular-nums">
+                                    <div className="text-sm font-black text-slate-900 dark:text-hazard-white tabular-nums">
                                         {typeof displayValue === 'number' ? displayValue.toFixed(2) : displayValue}
                                     </div>
                                 </div>
@@ -147,7 +147,7 @@ export const RadarRankingModal = ({
                                         }}
                                         className={`ml-2 p-2 rounded-lg transition-all duration-200 ${isCurrentlyOnRadar
                                             ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
-                                            : 'bg-sky-500 text-white shadow-lg shadow-sky-500/20 hover:scale-110 active:scale-95'
+                                            : 'bg-sky-500 text-hazard-white shadow-lg shadow-sky-500/20 hover:scale-110 active:scale-95'
                                             }`}
                                         title={isCurrentlyOnRadar ? 'Déjà dans la comparaison' : 'Ajouter à la comparaison'}
                                     >

@@ -64,14 +64,14 @@ const FavoriteToggle = ({ playerId, season, competition, user, onUpdateUser }) =
       onClick={handleToggle}
       className={`relative group flex items-center gap-3 px-5 py-2.5 rounded-[4px] transition-all duration-300 border ${
         isFavorite 
-          ? 'bg-[#5200ff] border-[#5200ff] text-white shadow-[0_0_30px_rgba(82,0,255,0.2)]' 
-          : 'bg-[#2d2d2d] border-white/10 text-[#949494] hover:border-white/30 hover:text-white'
+          ? 'bg-verge-ultraviolet border-verge-ultraviolet text-hazard-white shadow-[0_0_30px_rgba(82,0,255,0.2)]' 
+          : 'bg-surface-slate border-hazard-white/10 text-secondary-text hover:border-hazard-white/30 hover:text-hazard-white'
       }`}
     >
       <Heart 
         size={14} 
         fill={isFavorite ? "currentColor" : "none"} 
-        className={`${isFavorite ? "text-white" : "text-[#949494] group-hover:text-white transition-colors"}`}
+        className={`${isFavorite ? "text-hazard-white" : "text-secondary-text group-hover:text-hazard-white transition-colors"}`}
       />
       <span className="verge-label-mono text-[9px] font-black uppercase tracking-widest">
         {isFavorite ? 'Enregistré' : 'Suivre'}

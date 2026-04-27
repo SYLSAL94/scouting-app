@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Activity, Users, ArrowLeft, BarChart2, X, SlidersHorizontal } from 'lucide-react';
+import { Search, Activity, Users, ArrowLeft, BarChart2, X, SlidersHorizontal, Sun, Moon } from 'lucide-react';
 
 // Import des composants factorisés
 import ExplorationPath from './components/layout/ExplorationPath';
@@ -64,6 +64,7 @@ function App() {
   const [pendingFilters, setPendingFilters] = useState(defaultFilters);
   const [openSection, setOpenSection] = useState('ligues');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLightMode, setIsLightMode] = useState(false);
   const pageSize = 20;
 
   useEffect(() => {
@@ -125,6 +126,15 @@ function App() {
     }
   }, [activeFilters]);
 
+  // Sync theme with document root
+  useEffect(() => {
+    if (isLightMode) {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }, [isLightMode]);
+
   const handleApplyFilters = () => { setActiveFilters(pendingFilters); setCurrentPage(1); setShowFilters(false); };
   const handleResetFilters = () => { setPendingFilters(defaultFilters); setActiveFilters(defaultFilters); setCurrentPage(1); };
   const loadProfile = (config) => { setPendingFilters({ ...defaultFilters, ...config }); };
@@ -140,21 +150,21 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#131313] text-white font-sans relative flex flex-col">
+    <div className="min-h-screen bg-canvas-black text-hazard-white font-sans relative flex flex-col">
       {/* Header Premium Apple-Style */}
       {true && (
-        <div className="sticky top-0 z-[100] w-full px-4 md:px-8 bg-[#131313] border-b border-white/10 h-24 flex items-center">
+        <div className="sticky top-0 z-[100] w-full px-4 md:px-8 bg-canvas-black border-b border-hazard-white/10 h-24 flex items-center">
           <div className="w-full max-w-[1700px] mx-auto grid grid-cols-2 md:grid-cols-3 items-center">
             
             {/* Logo - Colonne Gauche */}
             <div className="flex items-center gap-8">
                <div className="flex items-center gap-4 cursor-pointer group w-fit" onClick={() => setView('EXPLORATION')}>
-                  <div className="w-12 h-12 bg-white text-black rounded-[4px] flex items-center justify-center group-hover:bg-[#3cffd0] transition-colors">
+                  <div className="w-12 h-12 bg-hazard-white text-absolute-black rounded-[4px] flex items-center justify-center group-hover:bg-jelly-mint transition-colors">
                      <Activity size={24} />
                   </div>
                   <div className="hidden lg:flex flex-col">
-                     <span className="verge-h3 text-white leading-none tracking-tighter">The Analyst</span>
-                     <span className="verge-label-mono text-[#3cffd0] text-[10px] mt-1">Intelligence Hub</span>
+                     <span className="verge-h3 text-hazard-white leading-none tracking-tighter">The Analyst</span>
+                     <span className="verge-label-mono text-jelly-mint text-[10px] mt-1">Intelligence Hub</span>
                   </div>
                </div>
             </div>
@@ -167,7 +177,14 @@ function App() {
             </div>
 
             {/* Espace Droite - User Profile */}
-            <div className="hidden md:flex justify-end order-2 md:order-3">
+            <div className="hidden md:flex justify-end items-center gap-4 order-2 md:order-3">
+               <button 
+                 onClick={() => setIsLightMode(!isLightMode)}
+                 className="p-2 bg-surface-slate hover:bg-jelly-mint border border-hazard-white/10 hover:border-jelly-mint rounded-full transition-all group"
+                 title="Toggle Theme"
+               >
+                 {isLightMode ? <Moon size={16} className="text-absolute-black" /> : <Sun size={16} className="text-hazard-white group-hover:text-absolute-black" />}
+               </button>
                <UserMenu 
                 user={user} 
                 onLogout={() => { setIsAuthenticated(false); setUser(null); }}
@@ -195,7 +212,7 @@ function App() {
           />
         ) : view === 'MATCHUP' ? (
           <div key="matchup" className="min-h-screen">
-            <div className="bg-sky-500 text-white text-[10px] p-1 text-center font-bold">MODE MATCHUP ACTIF</div>
+            <div className="bg-sky-500 text-hazard-white text-[10px] p-1 text-center font-bold">MODE MATCHUP ACTIF</div>
             <VersusDashboard 
               metricsList={metricsList}
               selectedPlayersToCompare={selectedPlayersToCompare}
@@ -211,14 +228,14 @@ function App() {
           >
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
               <div className="flex flex-col items-center md:items-start">
-                <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-4">
+                <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-deep-link-blue hover:text-hazard-white flex items-center gap-2 mb-4">
                   <ArrowLeft size={14} /> Intelligence Hub
                 </button>
-                <h1 className="verge-h1 text-white">
-                  {dashboardView === 'TABLE' && <>Player <span className="text-[#3cffd0]">Rankings</span></>}
-                  {dashboardView === 'SCATTER' && <>Scatter <span className="text-[#3cffd0]">Analysis</span></>}
-                  {dashboardView === 'TRENDS' && <>Player <span className="text-[#3cffd0]">Trends</span></>}
-                  {dashboardView === 'VERSUS' && <>Head to <span className="text-[#3cffd0]">Head</span></>}
+                <h1 className="verge-h1 text-hazard-white">
+                  {dashboardView === 'TABLE' && <>Player <span className="text-jelly-mint">Rankings</span></>}
+                  {dashboardView === 'SCATTER' && <>Scatter <span className="text-jelly-mint">Analysis</span></>}
+                  {dashboardView === 'TRENDS' && <>Player <span className="text-jelly-mint">Trends</span></>}
+                  {dashboardView === 'VERSUS' && <>Head to <span className="text-jelly-mint">Head</span></>}
                 </h1>
               </div>
             </div>
@@ -247,17 +264,17 @@ function App() {
                 )}
                 {dashboardView === 'SCATTER' && (
                   loading ? (
-                    <div className="flex-1 flex flex-col items-center justify-center gap-8 bg-[#131313] border border-white/5 rounded-[24px] min-h-[600px] relative overflow-hidden">
+                    <div className="flex-1 flex flex-col items-center justify-center gap-8 bg-canvas-black border border-hazard-white/5 rounded-[24px] min-h-[600px] relative overflow-hidden">
                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
                        <div className="relative">
-                          <div className="w-16 h-16 border-2 border-[#3cffd0]/20 border-t-[#3cffd0] animate-spin rounded-full"></div>
+                          <div className="w-16 h-16 border-2 border-jelly-mint/20 border-t-[#3cffd0] animate-spin rounded-full"></div>
                           <div className="absolute inset-0 flex items-center justify-center">
-                             <div className="w-2 h-2 bg-[#3cffd0] rounded-full animate-pulse"></div>
+                             <div className="w-2 h-2 bg-jelly-mint rounded-full animate-pulse"></div>
                           </div>
                        </div>
                        <div className="text-center space-y-2">
-                          <p className="verge-label-mono text-[#3cffd0] text-[10px] uppercase tracking-[0.4em] font-black">Analyse Multi-Dimensionnelle</p>
-                          <p className="verge-label-mono text-[#949494] text-[8px] uppercase tracking-[0.2em] font-black opacity-60">Synchronisation des 200 profils les plus performants...</p>
+                          <p className="verge-label-mono text-jelly-mint text-[10px] uppercase tracking-[0.4em] font-black">Analyse Multi-Dimensionnelle</p>
+                          <p className="verge-label-mono text-secondary-text text-[8px] uppercase tracking-[0.2em] font-black opacity-60">Synchronisation des 200 profils les plus performants...</p>
                        </div>
                     </div>
                   ) : (
@@ -272,21 +289,21 @@ function App() {
                   <TrendsDashboard metricsList={metricsList} />
                 )}
                 {dashboardView === 'VERSUS' && (
-                  <div className="flex-1 bg-[#131313] border border-white/10 rounded-[4px] p-20 flex flex-col items-center justify-center gap-12 relative overflow-hidden">
+                  <div className="flex-1 bg-canvas-black border border-hazard-white/10 rounded-[4px] p-20 flex flex-col items-center justify-center gap-12 relative overflow-hidden">
                     {/* Background Texture */}
                     <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#3cffd0 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
                     
                     <div className="relative group">
-                      <div className="absolute -inset-8 bg-[#3cffd0]/10 blur-[40px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="w-24 h-24 bg-[#131313] border border-[#3cffd0]/30 flex items-center justify-center relative z-10">
-                         <Users className="text-[#3cffd0]" size={48} />
+                      <div className="absolute -inset-8 bg-jelly-mint/10 blur-[40px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="w-24 h-24 bg-canvas-black border border-jelly-mint/30 flex items-center justify-center relative z-10">
+                         <Users className="text-jelly-mint" size={48} />
                       </div>
                     </div>
 
                     <div className="text-center space-y-4">
-                      <span className="verge-kicker text-[#3cffd0] block">Ready for analysis</span>
-                      <h2 className="verge-h1 text-white">MODE VERSUS ACTIVÉ</h2>
-                      <p className="verge-label-mono text-[#949494] text-[10px] tracking-[0.3em]">DEUX JOUEURS SÉLECTIONNÉS POUR COMPARAISON</p>
+                      <span className="verge-kicker text-jelly-mint block">Ready for analysis</span>
+                      <h2 className="verge-h1 text-hazard-white">MODE VERSUS ACTIVÉ</h2>
+                      <p className="verge-label-mono text-secondary-text text-[10px] tracking-[0.3em]">DEUX JOUEURS SÉLECTIONNÉS POUR COMPARAISON</p>
                     </div>
 
                     <button 
@@ -302,7 +319,7 @@ function App() {
           </motion.div>
         ) : view === 'RADAR' ? (
           <div key="radar" className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
-             <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-8 group self-start">
+             <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-deep-link-blue hover:text-hazard-white flex items-center gap-2 mb-8 group self-start">
                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
              </button>
              <RadarDashboard players={players} metricsList={metricsList} activeFilters={activeFilters} initialSelectedPlayer={selectedPlayer || (selectedPlayersToCompare.length > 0 ? selectedPlayersToCompare[0] : null)} />
@@ -310,7 +327,7 @@ function App() {
         ) : view === 'TEAMBUILDER' ? (
           <div key="teambuilder" className="w-full px-4 md:px-8 min-h-screen flex flex-col">
              <div className="max-w-[1700px] mx-auto w-full flex flex-col flex-1">
-                <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mt-8 mb-4 md:mb-8 group self-start">
+                <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-deep-link-blue hover:text-hazard-white flex items-center gap-2 mt-8 mb-4 md:mb-8 group self-start">
                   <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
                 </button>
                 <TeamBuilderDashboard activeFilters={activeFilters} onPlayerClick={handlePlayerClick} filterProps={{ openSection, setOpenSection, pendingFilters, setPendingFilters, competitionsList, positionsList, teamsList, seasonsList, metricsList, handleResetFilters, handleApplyFilters, hasChanges: JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters) }} />
@@ -318,7 +335,7 @@ function App() {
           </div>
         ) : view === 'LAB' ? (
           <div key="lab" className="p-4 md:p-8 max-w-[1800px] mx-auto min-h-screen flex flex-col">
-             <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-[#3860be] hover:text-white flex items-center gap-2 mb-8 group self-start">
+             <button onClick={() => setView('EXPLORATION')} className="verge-label-mono text-deep-link-blue hover:text-hazard-white flex items-center gap-2 mb-8 group self-start">
                <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Intelligence Hub
              </button>
              <LabDashboard activeFilters={activeFilters} metricsList={metricsList} onPlayerClick={handlePlayerClick} activeTab={activeTab} setActiveTab={setActiveTab} />
@@ -326,8 +343,8 @@ function App() {
         ) : null}
       </AnimatePresence>
 
-      <footer className="w-full py-12 border-t border-white/5 bg-[#131313] text-center">
-        <span className="verge-label-mono text-[9px] text-[#949494] tracking-[0.4em] font-black uppercase">
+      <footer className="w-full py-12 border-t border-hazard-white/5 bg-canvas-black text-center">
+        <span className="verge-label-mono text-[9px] text-secondary-text tracking-[0.4em] font-black uppercase">
           © 2026 THE ANALYST SCOUTING SYSTEM • CLOUD-NATIVE ARCHITECTURE
         </span>
       </footer>
@@ -343,7 +360,7 @@ function App() {
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
               onClick={() => setShowFilters(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200]"
+              className="fixed inset-0 bg-absolute-black/60 backdrop-blur-sm z-[200]"
             />
             
             {/* Drawer */}
@@ -354,10 +371,10 @@ function App() {
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="fixed top-0 left-0 h-full w-full md:w-[420px] z-[201] shadow-[20px_0_50px_rgba(0,0,0,0.5)]"
             >
-              <div className="h-full bg-[#131313] border-r border-white/10 flex flex-col">
-                 <div className="flex justify-between items-center p-4 border-b border-white/10">
-                    <span className="verge-label-mono text-[10px] text-[#3cffd0] font-black uppercase tracking-widest">Configuration Globale</span>
-                    <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors text-[#949494] hover:text-white">
+              <div className="h-full bg-canvas-black border-r border-hazard-white/10 flex flex-col">
+                 <div className="flex justify-between items-center p-4 border-b border-hazard-white/10">
+                    <span className="verge-label-mono text-[10px] text-jelly-mint font-black uppercase tracking-widest">Configuration Globale</span>
+                    <button onClick={() => setShowFilters(false)} className="p-2 hover:bg-hazard-white/5 rounded-full transition-colors text-secondary-text hover:text-hazard-white">
                        <X size={20} />
                     </button>
                  </div>
@@ -385,11 +402,11 @@ function App() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           onClick={() => setShowFilters(true)}
-          className="fixed bottom-10 left-10 z-[150] w-14 h-14 bg-black border border-[#3cffd0]/30 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(60,255,208,0.2)] hover:scale-110 hover:border-[#3cffd0] transition-all group"
+          className="fixed bottom-10 left-10 z-[150] w-14 h-14 bg-absolute-black border border-jelly-mint/30 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(60,255,208,0.2)] hover:scale-110 hover:border-jelly-mint transition-all group"
         >
-           <SlidersHorizontal size={22} className="text-[#3cffd0] group-hover:rotate-90 transition-transform duration-500" />
+           <SlidersHorizontal size={22} className="text-jelly-mint group-hover:rotate-90 transition-transform duration-500" />
            {JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters) && (
-              <span className="absolute top-0 right-0 w-4 h-4 bg-[#f43f5e] border-2 border-black rounded-full" />
+              <span className="absolute top-0 right-0 w-4 h-4 bg-[#f43f5e] border-2 border-absolute-black rounded-full" />
            )}
         </motion.button>
       )}

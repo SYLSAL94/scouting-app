@@ -10,7 +10,7 @@ const PlayerRadar = ({ player }) => {
 
     if (!config) {
         return (
-            <div className="w-full h-64 md:h-80 flex items-center justify-center text-[#949494] verge-label-mono text-[10px] text-center px-4 bg-[#131313] border border-white/10 rounded-[2px]">
+            <div className="w-full h-64 md:h-80 flex items-center justify-center text-secondary-text verge-label-mono text-[10px] text-center px-4 bg-canvas-black border border-hazard-white/10 rounded-[2px]">
                 AUCUNE CONFIGURATION RADAR : {pos}
             </div>
         );
@@ -34,8 +34,8 @@ const PlayerRadar = ({ player }) => {
         <div className="w-full h-[400px] bg-transparent relative overflow-visible">
             {/* Legend / Status */}
             <div className="absolute top-0 left-0 flex items-center gap-3">
-                <div className="w-1.5 h-1.5 bg-[#3cffd0]" />
-                <span className="verge-label-mono text-[9px] uppercase font-black tracking-[0.2em] text-[#3cffd0]">Dynamic Tactical Mapping</span>
+                <div className="w-1.5 h-1.5 bg-jelly-mint" />
+                <span className="verge-label-mono text-[9px] uppercase font-black tracking-[0.2em] text-jelly-mint">Dynamic Tactical Mapping</span>
             </div>
 
             <ResponsiveContainer width="100%" height="100%" key={`${player.id}-${player.note_ponderee}`}>

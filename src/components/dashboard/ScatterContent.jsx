@@ -19,38 +19,38 @@ const ScatterTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
-      <div className="bg-[#131313] p-3 md:p-5 border border-white/20 rounded-[4px] min-w-[160px] md:min-w-[220px] shadow-2xl">
-        <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4 pb-3 md:pb-4 border-b border-white/10">
-          <div className="w-8 h-8 md:w-12 md:h-12 rounded-[2px] bg-[#2d2d2d] border border-white/10 overflow-hidden shrink-0">
+      <div className="bg-canvas-black p-3 md:p-5 border border-hazard-white/20 rounded-[4px] min-w-[160px] md:min-w-[220px] shadow-2xl">
+        <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4 pb-3 md:pb-4 border-b border-hazard-white/10">
+          <div className="w-8 h-8 md:w-12 md:h-12 rounded-[2px] bg-surface-slate border border-hazard-white/10 overflow-hidden shrink-0">
             {data.image ? (
               <img src={data.image} alt="" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-white/10 text-base md:text-xl font-black">
+              <div className="w-full h-full flex items-center justify-center text-hazard-white/10 text-base md:text-xl font-black">
                 {data.name?.charAt(0)}
               </div>
             )}
           </div>
           <div className="min-w-0">
-            <div className="text-base md:text-lg font-black text-white truncate uppercase leading-tight">{data.name}</div>
-            <div className="verge-label-mono text-[7px] md:text-[8px] text-[#3cffd0] uppercase truncate">{data.team}</div>
+            <div className="text-base md:text-lg font-black text-hazard-white truncate uppercase leading-tight">{data.name}</div>
+            <div className="verge-label-mono text-[7px] md:text-[8px] text-jelly-mint uppercase truncate">{data.team}</div>
           </div>
         </div>
         <div className="space-y-2 md:space-y-3">
           <div className="flex justify-between items-center">
-            <span className="verge-label-mono text-[7px] md:text-[8px] text-[#949494] uppercase">X</span>
-            <span className="verge-label-mono text-[8px] md:text-[10px] text-white bg-white/5 px-1.5 md:px-2 py-0.5 md:py-1 border border-white/10">
+            <span className="verge-label-mono text-[7px] md:text-[8px] text-secondary-text uppercase">X</span>
+            <span className="verge-label-mono text-[8px] md:text-[10px] text-hazard-white bg-hazard-white/5 px-1.5 md:px-2 py-0.5 md:py-1 border border-hazard-white/10">
               {formatNumber(data.x)}
             </span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="verge-label-mono text-[7px] md:text-[8px] text-[#949494] uppercase">Y</span>
-            <span className="verge-label-mono text-[8px] md:text-[10px] text-[#3cffd0] bg-[#3cffd0]/10 px-1.5 md:px-2 py-0.5 md:py-1 border border-[#3cffd0]/20">
+            <span className="verge-label-mono text-[7px] md:text-[8px] text-secondary-text uppercase">Y</span>
+            <span className="verge-label-mono text-[8px] md:text-[10px] text-jelly-mint bg-jelly-mint/10 px-1.5 md:px-2 py-0.5 md:py-1 border border-jelly-mint/20">
               {formatNumber(data.y)}
             </span>
           </div>
         </div>
-        <div className="hidden md:block mt-4 pt-3 border-t border-white/10 text-center">
-          <div className="verge-label-mono text-[7px] text-[#949494] uppercase">
+        <div className="hidden md:block mt-4 pt-3 border-t border-hazard-white/10 text-center">
+          <div className="verge-label-mono text-[7px] text-secondary-text uppercase">
             Click: Focus • 2x Click: Profile
           </div>
         </div>
@@ -339,21 +339,21 @@ plt.show()
 
   const Toggle = ({ label, checked, onChange }) => (
     <div className="flex items-center justify-between gap-4 py-1.5">
-      <span className="verge-label-mono text-[8px] text-[#949494] uppercase">{label}</span>
+      <span className="verge-label-mono text-[8px] text-secondary-text uppercase">{label}</span>
       <button 
         onClick={() => onChange(!checked)}
-        className={`w-9 h-4 p-0.5 transition-all rounded-[2px] ${checked ? 'bg-[#3cffd0]' : 'bg-white/10'}`}
+        className={`w-9 h-4 p-0.5 transition-all rounded-[2px] ${checked ? 'bg-jelly-mint' : 'bg-hazard-white/10'}`}
       >
-        <div className={`w-3 h-3 transition-transform rounded-[1px] ${checked ? 'bg-black translate-x-5' : 'bg-[#949494] translate-x-0'}`} />
+        <div className={`w-3 h-3 transition-transform rounded-[1px] ${checked ? 'bg-absolute-black translate-x-5' : 'bg-secondary-text translate-x-0'}`} />
       </button>
     </div>
   );
 
   return (
-    <div className="flex flex-col md:flex-row flex-wrap gap-6 md:gap-8 items-stretch md:items-start p-5 md:p-8 bg-[#2d2d2d] border border-white/5 rounded-[12px] md:rounded-[24px] relative z-[60]">
+    <div className="flex flex-col md:flex-row flex-wrap gap-6 md:gap-8 items-stretch md:items-start p-5 md:p-8 bg-surface-slate border border-hazard-white/5 rounded-[12px] md:rounded-[24px] relative z-[60]">
       {/* X/Y Mapping */}
       <div className="flex flex-col gap-4">
-        <span className="verge-label-mono text-[9px] text-[#3cffd0] uppercase">X / Y Mapping</span>
+        <span className="verge-label-mono text-[9px] text-jelly-mint uppercase">X / Y Mapping</span>
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="w-full md:w-[200px]">
             <Select 
@@ -378,7 +378,7 @@ plt.show()
       {/* Subject Focus & Labels */}
       <div className="flex flex-col gap-4 min-w-0 md:w-[280px]">
         <div className="flex flex-col">
-          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Subject Focus (Highlight)</span>
+          <span className="verge-label-mono text-[9px] text-jelly-mint mb-2 uppercase">Subject Focus (Highlight)</span>
           <Select 
             isMulti
             options={chartData.map(p => ({ value: p.id, label: p.name }))}
@@ -389,7 +389,7 @@ plt.show()
           />
         </div>
         <div className="flex flex-col">
-          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Subject Name (Labels)</span>
+          <span className="verge-label-mono text-[9px] text-jelly-mint mb-2 uppercase">Subject Name (Labels)</span>
           <Select 
             isMulti
             options={chartData.map(p => ({ value: p.id, label: p.name }))}
@@ -402,8 +402,8 @@ plt.show()
       </div>
 
       {/* Display Options */}
-      <div className="flex flex-col md:border-l border-white/10 md:pl-8 min-w-0">
-        <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Display Options</span>
+      <div className="flex flex-col md:border-l border-hazard-white/10 md:pl-8 min-w-0">
+        <span className="verge-label-mono text-[9px] text-jelly-mint mb-2 uppercase">Display Options</span>
         <div className="grid grid-cols-2 gap-x-8">
           <Toggle label="Mean X" checked={showAvgX} onChange={setShowAvgX} />
           <Toggle label="Mean Y" checked={showAvgY} onChange={setShowAvgY} />
@@ -416,13 +416,13 @@ plt.show()
         </div>
 
         {/* Moteur IA (K-Means) */}
-        <div className="mt-4 pt-4 border-t border-white/5 space-y-3">
+        <div className="mt-4 pt-4 border-t border-hazard-white/5 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="verge-label-mono text-[8px] text-[#949494] uppercase tracking-widest">Nb Profiles (AI)</span>
+            <span className="verge-label-mono text-[8px] text-secondary-text uppercase tracking-widest">Nb Profiles (AI)</span>
             <select 
               value={nClusters} 
               onChange={(e) => setNClusters(Number(e.target.value))}
-              className="bg-[#131313] border border-white/10 rounded-[2px] text-[10px] text-white px-2 py-1 outline-none"
+              className="bg-canvas-black border border-hazard-white/10 rounded-[2px] text-[10px] text-hazard-white px-2 py-1 outline-none"
             >
               {[2,3,4,5,6,7].map(n => <option key={n} value={n}>{n}</option>)}
             </select>
@@ -430,7 +430,7 @@ plt.show()
           <button 
             onClick={onClusterize}
             disabled={isClustering || isSwarmMode}
-            className={`w-full py-2 rounded-[4px] verge-label-mono text-[8px] font-black transition-all ${isClustering ? 'bg-white/10 text-white/30' : 'bg-[#5200ff] text-white hover:bg-[#3cffd0] hover:text-black shadow-[0_0_20px_rgba(82,0,255,0.3)]'}`}
+            className={`w-full py-2 rounded-[4px] verge-label-mono text-[8px] font-black transition-all ${isClustering ? 'bg-hazard-white/10 text-hazard-white/30' : 'bg-verge-ultraviolet text-hazard-white hover:bg-jelly-mint hover:text-absolute-black shadow-[0_0_20px_rgba(82,0,255,0.3)]'}`}
           >
             {isClustering ? 'CALCUL EN COURS...' : 'GÉNÉRER PROFILS TYPES'}
           </button>
@@ -438,13 +438,13 @@ plt.show()
       </div>
 
       {/* Action Bar (Presets) */}
-      <div className="flex flex-col md:border-l border-white/10 md:pl-8 min-w-[250px]">
+      <div className="flex flex-col md:border-l border-hazard-white/10 md:pl-8 min-w-[250px]">
         {/* Presets */}
         <div className="flex flex-col flex-1">
-          <span className="verge-label-mono text-[9px] text-[#3cffd0] mb-2 uppercase">Presets & Export</span>
+          <span className="verge-label-mono text-[9px] text-jelly-mint mb-2 uppercase">Presets & Export</span>
           <div className="flex items-center gap-2">
             <select 
-              className="flex-1 bg-[#131313] border border-white/10 rounded-[4px] px-3 h-[44px] verge-label-mono text-[9px] text-white outline-none focus:border-[#3cffd0] min-w-[120px]"
+              className="flex-1 bg-canvas-black border border-hazard-white/10 rounded-[4px] px-3 h-[44px] verge-label-mono text-[9px] text-hazard-white outline-none focus:border-jelly-mint min-w-[120px]"
               onChange={(e) => {
                 const preset = savedPresets.find(p => String(p.id) === e.target.value);
                 if (preset && preset.axes_config) { 
@@ -461,14 +461,14 @@ plt.show()
             </select>
             <button 
               onClick={() => setIsDeleting(!isDeleting)}
-              className={`h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-[#131313] border border-white/10 rounded-[4px] transition-all ${isDeleting ? 'text-red-500 border-red-500/50' : 'text-[#949494] hover:text-red-500'}`}
+              className={`h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-canvas-black border border-hazard-white/10 rounded-[4px] transition-all ${isDeleting ? 'text-red-500 border-red-500/50' : 'text-secondary-text hover:text-red-500'}`}
               title="Gérer les presets"
             >
               <Trash2 size={16} />
             </button>
             <button 
               onClick={() => setShowSave(true)}
-              className="h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-[#131313] border border-white/10 rounded-[4px] text-[#949494] hover:text-[#3cffd0] hover:border-[#3cffd0] transition-all"
+              className="h-[44px] w-[44px] shrink-0 flex items-center justify-center bg-canvas-black border border-hazard-white/10 rounded-[4px] text-secondary-text hover:text-jelly-mint hover:border-jelly-mint transition-all"
             >
               <Save size={16} />
             </button>
@@ -477,9 +477,9 @@ plt.show()
           {isDeleting && savedPresets.length > 0 && (
             <div className="mt-3 space-y-1">
               {savedPresets.map(p => (
-                <div key={p.id} className="flex items-center justify-between bg-black/40 p-2 rounded-[2px] border border-white/5">
-                  <span className="verge-label-mono text-[8px] text-white truncate">{p.profile_name}</span>
-                  <button onClick={() => handleDelete(p.id)} className="text-[#949494] hover:text-red-500 p-1">
+                <div key={p.id} className="flex items-center justify-between bg-absolute-black/40 p-2 rounded-[2px] border border-hazard-white/5">
+                  <span className="verge-label-mono text-[8px] text-hazard-white truncate">{p.profile_name}</span>
+                  <button onClick={() => handleDelete(p.id)} className="text-secondary-text hover:text-red-500 p-1">
                     <CloseIcon size={12} />
                   </button>
                 </div>
@@ -490,7 +490,7 @@ plt.show()
           {/* Python Export Button - Moved under Presets */}
           <button 
             onClick={handleExportPython}
-            className="mt-4 h-[44px] w-full bg-white text-black rounded-[4px] verge-label-mono text-[9px] font-black hover:bg-[#3cffd0] transition-colors flex items-center justify-center gap-2"
+            className="mt-4 h-[44px] w-full bg-hazard-white text-absolute-black rounded-[4px] verge-label-mono text-[9px] font-black hover:bg-jelly-mint transition-colors flex items-center justify-center gap-2"
           >
             <Activity size={14} /> PYTHON SCRIPT
           </button>
@@ -498,17 +498,17 @@ plt.show()
       </div>
 
       {showSave && (
-        <div className="absolute top-full left-0 right-0 md:left-auto md:right-8 mt-4 p-6 bg-[#131313] border border-white/20 rounded-[12px] shadow-2xl z-[70] w-full md:w-[250px]">
-          <span className="verge-label-mono text-[8px] text-[#3cffd0] mb-3 block">NEW PRESET NAME</span>
+        <div className="absolute top-full left-0 right-0 md:left-auto md:right-8 mt-4 p-6 bg-canvas-black border border-hazard-white/20 rounded-[12px] shadow-2xl z-[70] w-full md:w-[250px]">
+          <span className="verge-label-mono text-[8px] text-jelly-mint mb-3 block">NEW PRESET NAME</span>
           <input 
             type="text" placeholder="..." 
-            className="bg-[#2d2d2d] border border-white/10 rounded-[4px] px-3 py-3 verge-label-mono text-[10px] text-white mb-4 block w-full outline-none focus:border-[#3cffd0]"
+            className="bg-surface-slate border border-hazard-white/10 rounded-[4px] px-3 py-3 verge-label-mono text-[10px] text-hazard-white mb-4 block w-full outline-none focus:border-jelly-mint"
             value={newPresetName}
             onChange={(e) => setNewPresetName(e.target.value)}
           />
           <div className="flex gap-2">
-            <button onClick={handleSave} className="flex-1 bg-[#3cffd0] text-black verge-label-mono text-[9px] font-black py-3 rounded-[4px]">SAVE</button>
-            <button onClick={() => setShowSave(false)} className="flex-1 bg-white/5 text-[#949494] verge-label-mono text-[9px] py-3 rounded-[4px]">CANCEL</button>
+            <button onClick={handleSave} className="flex-1 bg-jelly-mint text-absolute-black verge-label-mono text-[9px] font-black py-3 rounded-[4px]">SAVE</button>
+            <button onClick={() => setShowSave(false)} className="flex-1 bg-hazard-white/5 text-secondary-text verge-label-mono text-[9px] py-3 rounded-[4px]">CANCEL</button>
           </div>
         </div>
       )}
@@ -636,8 +636,8 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
     return { 
       averages: { x: avgX, y: avgY }, 
       stats: [
-        { label: 'High Performers', count: qStats.q1, pct: ((qStats.q1/total)*100).toFixed(1), color: 'text-[#3cffd0]' },
-        { label: 'Efficiency Bias', count: qStats.q2, pct: ((qStats.q2/total)*100).toFixed(1), color: 'text-[#5200ff]' },
+        { label: 'High Performers', count: qStats.q1, pct: ((qStats.q1/total)*100).toFixed(1), color: 'text-jelly-mint' },
+        { label: 'Efficiency Bias', count: qStats.q2, pct: ((qStats.q2/total)*100).toFixed(1), color: 'text-verge-ultraviolet' },
         { label: 'Volume Bias', count: qStats.q4, pct: ((qStats.q4/total)*100).toFixed(1), color: 'text-[#facc15]' },
         { label: 'Underperformers', count: qStats.q3, pct: ((qStats.q3/total)*100).toFixed(1), color: 'text-red-500' },
       ]
@@ -657,16 +657,16 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
   return (
     <div className="flex flex-col h-full space-y-4 md:space-y-8">
       {/* Switch Mobile */}
-      <div className="flex md:hidden bg-[#1a1a1a] p-1 rounded-[4px] border border-white/10 mb-2">
+      <div className="flex md:hidden bg-[#1a1a1a] p-1 rounded-[4px] border border-hazard-white/10 mb-2">
         <button 
           onClick={() => setActiveMobileTab('visionnage')}
-          className={`flex-1 py-3 verge-label-mono text-[10px] font-black transition-all ${activeMobileTab === 'visionnage' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+          className={`flex-1 py-3 verge-label-mono text-[10px] font-black transition-all ${activeMobileTab === 'visionnage' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-secondary-text'}`}
         >
           Visionnage
         </button>
         <button 
           onClick={() => setActiveMobileTab('parametres')}
-          className={`flex-1 py-3 verge-label-mono text-[10px] font-black transition-all ${activeMobileTab === 'parametres' ? 'bg-[#3cffd0] text-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-[#949494]'}`}
+          className={`flex-1 py-3 verge-label-mono text-[10px] font-black transition-all ${activeMobileTab === 'parametres' ? 'bg-jelly-mint text-absolute-black shadow-[0_0_15px_rgba(60,255,208,0.3)]' : 'text-secondary-text'}`}
         >
           Paramètres
         </button>
@@ -695,25 +695,25 @@ const ScatterContent = ({ players = [], metricsList = [], onPlayerClick }) => {
       </div>
 
       <div className={`${activeMobileTab === 'visionnage' ? 'block' : 'hidden'} md:block space-y-6 md:space-y-8`}>
-        <div className="hidden md:flex flex-wrap items-center justify-center gap-x-6 gap-y-3 py-4 border-b border-white/10">
+        <div className="hidden md:flex flex-wrap items-center justify-center gap-x-6 gap-y-3 py-4 border-b border-hazard-white/10">
           {Object.entries(ROLE_COLORS).map(([role, color]) => (
             <div key={role} className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-[1px]" style={{ backgroundColor: color }} />
-              <span className="verge-label-mono text-[8px] text-[#949494] uppercase tracking-wider">{role}</span>
+              <span className="verge-label-mono text-[8px] text-secondary-text uppercase tracking-wider">{role}</span>
             </div>
           ))}
         </div>
 
-        <div className="flex-1 min-h-[500px] md:min-h-[600px] bg-[#131313] p-4 md:p-10 relative border border-white/10 rounded-[12px] md:rounded-[24px] overflow-hidden">
+        <div className="flex-1 min-h-[500px] md:min-h-[600px] bg-canvas-black p-4 md:p-10 relative border border-hazard-white/10 rounded-[12px] md:rounded-[24px] overflow-hidden">
           {showQuadrant && showAvgX && showAvgY && !isNaN(averages.x) && !isNaN(averages.y) && (
-            <div className="absolute top-2 right-2 md:top-10 md:right-10 z-10 w-28 md:w-56 p-2 md:p-6 bg-[#131313]/90 backdrop-blur-md border border-white/20 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
-              <div className="verge-label-mono text-[7px] md:text-[9px] text-[#3cffd0] uppercase mb-2 md:mb-4 font-black">Stats</div>
+            <div className="absolute top-2 right-2 md:top-10 md:right-10 z-10 w-28 md:w-56 p-2 md:p-6 bg-canvas-black/90 backdrop-blur-md border border-hazard-white/20 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+              <div className="verge-label-mono text-[7px] md:text-[9px] text-jelly-mint uppercase mb-2 md:mb-4 font-black">Stats</div>
               <div className="space-y-2 md:space-y-4">
                 {stats.map(item => (
                   <div key={item.label} className="flex flex-col gap-0.5 md:gap-1">
                     <div className="flex justify-between items-center">
                       <span className={`verge-label-mono text-[6px] md:text-[8px] uppercase font-bold ${item.color}`}>{item.label.split(' ')[0]}</span>
-                      <span className="verge-label-mono text-[8px] md:text-[10px] text-white font-black">{item.count}</span>
+                      <span className="verge-label-mono text-[8px] md:text-[10px] text-hazard-white font-black">{item.count}</span>
                     </div>
                   </div>
                 ))}
