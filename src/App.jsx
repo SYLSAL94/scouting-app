@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Search, Activity, Users, ArrowLeft, BarChart2, X, SlidersHorizontal } from 'lucide-react';
 
 // Import des composants factorisés
-import LandingPage from './components/layout/LandingPage';
 import ExplorationPath from './components/layout/ExplorationPath';
 import LoginScreen from './components/layout/LoginScreen';
 import FilterPanel from './components/dashboard/FilterPanel';
@@ -29,7 +28,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  const [view, setView] = useState('LANDING'); 
+  const [view, setView] = useState('EXPLORATION'); 
   const [dashboardView, setDashboardView] = useState('TABLE'); 
   const [players, setPlayers] = useState([]);
   const [selectedPlayersToCompare, setSelectedPlayersToCompare] = useState([]);
@@ -143,7 +142,7 @@ function App() {
   return (
     <div className="min-h-screen bg-[#131313] text-white font-sans relative flex flex-col">
       {/* Header Premium Apple-Style */}
-      {view !== 'LANDING' && (
+      {true && (
         <div className="sticky top-0 z-[100] w-full px-4 md:px-8 bg-[#131313] border-b border-white/10 h-24 flex items-center">
           <div className="w-full max-w-[1700px] mx-auto grid grid-cols-2 md:grid-cols-3 items-center">
             
@@ -171,7 +170,7 @@ function App() {
             <div className="hidden md:flex justify-end order-2 md:order-3">
                <UserMenu 
                 user={user} 
-                onLogout={() => { setIsAuthenticated(false); setUser(null); setView('LANDING'); }}
+                onLogout={() => { setIsAuthenticated(false); setUser(null); }}
                 onUpdateUser={setUser}
                 onOpenSettings={(tab) => { setSettingsTab(tab); setShowSettings(true); }}
                />
@@ -182,9 +181,7 @@ function App() {
       )}
 
       <AnimatePresence>
-        {view === 'LANDING' ? (
-          <LandingPage key="landing" onEnter={(v) => setView(v)} />
-        ) : view === 'EXPLORATION' ? (
+        {view === 'EXPLORATION' ? (
           <ExplorationPath key="exploration" 
             onSelectPath={(p) => {
                 if (p === 'SCATTER') { setView('DASHBOARD'); setDashboardView('SCATTER'); }
@@ -194,7 +191,7 @@ function App() {
                else if (p === 'LAB') { setView('LAB'); }
                else setView(p);
             }} 
-            onBack={() => setView('LANDING')} 
+            onBack={() => {}} 
           />
         ) : view === 'MATCHUP' ? (
           <div key="matchup" className="min-h-screen">
@@ -382,8 +379,8 @@ function App() {
         )}
       </AnimatePresence>
 
-      {/* Floating Toggle Button - Visible in all views except Landing */}
-      {view !== 'LANDING' && (
+      {/* Floating Toggle Button - Visible in all views */}
+      {true && (
         <motion.button
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}

@@ -42,14 +42,6 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       
       <div className="relative z-10 w-full max-w-7xl">
-        <button 
-          onClick={onBack} 
-          className="group flex items-center gap-3 verge-label-mono text-[10px] text-[#949494] hover:text-[#3cffd0] transition-colors mb-16"
-        >
-          <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> 
-          BACK TO WELCOME
-        </button>
-
         <div className="flex items-center gap-3 mb-6">
           <div className="w-1.5 h-1.5 bg-[#3cffd0]" />
           <div className="verge-label-mono text-[10px] text-[#3cffd0] tracking-[0.3em] font-black uppercase">
@@ -139,6 +131,11 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
                   icon={<Zap />} title="Lab : Expérimentation" 
                   desc="Créez vos propres scores pondérés pour dénicher des pépites hors-radar." 
                   onClick={() => onSelectPath('LAB')} 
+                />
+                <PathCard 
+                  icon={<Activity />} title="OptaVision SUAOL" 
+                  desc="Accédez à l'analyse tactique enrichie (xT, Carries, Sequences) en Zéro-Calcul." 
+                  onClick={() => onSelectPath('OPTAVISION')} 
                 />
               </>
             )}
