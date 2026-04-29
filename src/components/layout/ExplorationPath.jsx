@@ -132,11 +132,6 @@ const ExplorationPath = ({ onSelectPath, onBack }) => {
                   desc="Créez vos propres scores pondérés pour dénicher des pépites hors-radar." 
                   onClick={() => onSelectPath('LAB')} 
                 />
-                <PathCard 
-                  icon={<Activity />} title="OptaVision SUAOL" 
-                  desc="Accédez à l'analyse tactique enrichie (xT, Carries, Sequences) en Zéro-Calcul." 
-                  onClick={() => onSelectPath('OPTAVISION')} 
-                />
               </>
             )}
           </motion.div>
